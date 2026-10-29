@@ -16,7 +16,7 @@ void Hook_BSInputDeviceManager_PollInputDevices(BSInputDeviceManager* inputDevic
 static TiltedPhoques::Initializer s_initInputDeviceManager(
     []()
     {
-        const VersionDbPtr<void> pollInputDevices(68617);
+        const VersionDbPtr<void> pollInputDevices(68616);
 
         BSInputDeviceManager_PollInputDevices = static_cast<decltype(BSInputDeviceManager_PollInputDevices)>(pollInputDevices.GetPtr());
 

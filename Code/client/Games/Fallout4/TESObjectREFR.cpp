@@ -74,7 +74,7 @@ void TESObjectREFR::SetInventory(const Inventory& aInventory) noexcept
 void TESObjectREFR::RemoveAllItems() noexcept
 {
     using TRemoveAllItems = void(void*, void*, TESObjectREFR*, TESObjectREFR*, bool);
-    POINTER_FALLOUT4(TRemoveAllItems, s_removeAllItems, 534059);
+    POINTER_FALLOUT4(TRemoveAllItems, s_removeAllItems, 534058);
     s_removeAllItems(nullptr, nullptr, this, nullptr, false);
 }
 
@@ -123,7 +123,7 @@ ActorValueInfo* TESObjectREFR::GetActorValueInfo(uint32_t aId) const noexcept
 {
     using TGetActorValueInfoArray = ActorValueInfo**();
 
-    POINTER_FALLOUT4(TGetActorValueInfoArray, s_getActorValueInfoArray, 405391);
+    POINTER_FALLOUT4(TGetActorValueInfoArray, s_getActorValueInfoArray, 405390);
 
     ActorValueInfo** actorValueInfoArray = s_getActorValueInfoArray.Get()();
 
@@ -134,7 +134,7 @@ const BGSEquipSlot* TESObjectREFR::GetEquipSlot(uint32_t aEquipIndex) const noex
 {
     TP_THIS_FUNCTION(TGetEquipSlot, const BGSEquipSlot*, const TESObjectREFR, uint32_t);
 
-    POINTER_FALLOUT4(TGetEquipSlot, getEquipSlot, 180924);
+    POINTER_FALLOUT4(TGetEquipSlot, getEquipSlot, 180923);
 
     return TiltedPhoques::ThisCall(getEquipSlot, this, aEquipIndex);
 }
@@ -174,9 +174,9 @@ uint32_t* TP_MAKE_THISCALL(HookRemoveInventoryItem, TESObjectREFR, uint32_t* apU
 static TiltedPhoques::Initializer s_objectReferencesHooks(
     []()
     {
-        POINTER_FALLOUT4(TActivate, s_activate, 753532);
-        POINTER_FALLOUT4(TAddInventoryItem, s_addItem, 78186);
-        POINTER_FALLOUT4(TRemoveInventoryItem, s_removeItem, 943234);
+        POINTER_FALLOUT4(TActivate, s_activate, 753531);
+        POINTER_FALLOUT4(TAddInventoryItem, s_addItem, 78185);
+        POINTER_FALLOUT4(TRemoveInventoryItem, s_removeItem, 943233);
 
         RealActivate = s_activate.Get();
         RealAddInventoryItem = s_addItem.Get();

@@ -10,7 +10,7 @@ void TESQuest::SetActive(bool toggle)
     // whenever a quest is activated, that's why
     // we use the game function instead of reimplementing it.
     using TSetActive = void(TESQuest*, bool);
-    POINTER_FALLOUT4(TSetActive, SetActive, 1567563);
+    POINTER_FALLOUT4(TSetActive, SetActive, 1567562);
 
     SetActive(this, toggle);
 }
@@ -24,14 +24,14 @@ void TESQuest::SetStopped()
 bool TESQuest::EnsureQuestStarted(bool& success, bool force)
 {
     TP_THIS_FUNCTION(TSetRunning, bool, TESQuest, bool*, bool);
-    POINTER_FALLOUT4(TSetRunning, SetRunning, 966434);
+    POINTER_FALLOUT4(TSetRunning, SetRunning, 966433);
     return SetRunning(this, &success, force);
 }
 
 bool TESQuest::SetStage(uint16_t stage)
 {
     using TSetStage = bool(TESQuest*, uint16_t);
-    POINTER_FALLOUT4(TSetStage, SetStage, 952800);
+    POINTER_FALLOUT4(TSetStage, SetStage, 952799);
 
     return SetStage(this, stage);
 }

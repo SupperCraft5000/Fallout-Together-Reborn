@@ -76,21 +76,21 @@ namespace Settings
 int32_t* GetDifficulty() noexcept
 {
     POINTER_SKYRIMSE(int32_t, s_difficulty, 381472);
-    POINTER_FALLOUT4(int32_t, s_difficulty, 1072875);
+    POINTER_FALLOUT4(int32_t, s_difficulty, 1072874);
     return s_difficulty.Get();
 }
 
 float* GetGreetDistance() noexcept
 {
     POINTER_SKYRIMSE(float, s_greetDistance, 370892);
-    POINTER_FALLOUT4(float, s_greetDistance, 855966);
+    POINTER_FALLOUT4(float, s_greetDistance, 855965);
     return s_greetDistance.Get();
 }
 
 #if TP_FALLOUT4
 float* GetVATSSelectTargetTimeMultiplier() noexcept
 {
-    POINTER_FALLOUT4(float, s_vatsSelectTargetMult, 302827);
+    POINTER_FALLOUT4(float, s_vatsSelectTargetMult, 302826);
     return s_vatsSelectTargetMult.Get();
 }
 #endif
@@ -145,7 +145,7 @@ TESObjectREFR* TESObjectREFR::GetByHandle(uint32_t aHandle) noexcept
     using TGetRefrByHandle = void(uint32_t & aHandle, TESObjectREFR * &apResult);
 
     POINTER_SKYRIMSE(TGetRefrByHandle, s_getRefrByHandle, 17201);
-    POINTER_FALLOUT4(TGetRefrByHandle, s_getRefrByHandle, 1152089);
+    POINTER_FALLOUT4(TGetRefrByHandle, s_getRefrByHandle, 1152088);
 
     s_getRefrByHandle.Get()(aHandle, pResult);
 
@@ -159,7 +159,7 @@ BSPointerHandle<TESObjectREFR> TESObjectREFR::GetHandle() const noexcept
 {
     TP_THIS_FUNCTION(TGetHandle, BSPointerHandle<TESObjectREFR>, const TESObjectREFR, BSPointerHandle<TESObjectREFR>* apResult);
     POINTER_SKYRIMSE(TGetHandle, s_getHandle, 19846);
-    POINTER_FALLOUT4(TGetHandle, s_getHandle, 1573131);
+    POINTER_FALLOUT4(TGetHandle, s_getHandle, 1573130);
 
     BSPointerHandle<TESObjectREFR> result{};
     TiltedPhoques::ThisCall(s_getHandle, this, &result);
@@ -170,7 +170,7 @@ BSPointerHandle<TESObjectREFR> TESObjectREFR::GetHandle() const noexcept
 uint32_t* TESObjectREFR::GetNullHandle() noexcept
 {
     POINTER_SKYRIMSE(uint32_t, s_nullHandle, 400312);
-    POINTER_FALLOUT4(uint32_t, s_nullHandle, 888642);
+    POINTER_FALLOUT4(uint32_t, s_nullHandle, 888641);
 
     return s_nullHandle.Get();
 }
@@ -475,7 +475,7 @@ void TESObjectREFR::MoveTo(TESObjectCELL* apCell, const NiPoint3& acPosition) co
     TP_THIS_FUNCTION(TInternalMoveTo, bool, const TESObjectREFR, uint32_t*&, TESObjectCELL*, TESWorldSpace*, const NiPoint3&, const NiPoint3&);
 
     POINTER_SKYRIMSE(TInternalMoveTo, s_internalMoveTo, 56626);
-    POINTER_FALLOUT4(TInternalMoveTo, s_internalMoveTo, 1332435);
+    POINTER_FALLOUT4(TInternalMoveTo, s_internalMoveTo, 1332434);
 
     TiltedPhoques::ThisCall(s_internalMoveTo, this, GetNullHandle(), apCell, apCell->worldspace, acPosition, rotation);
 }
@@ -517,7 +517,7 @@ uint16_t Actor::GetLevel() const noexcept
 {
     TP_THIS_FUNCTION(TGetLevel, uint16_t, const Actor);
     POINTER_SKYRIMSE(TGetLevel, s_getLevel, 37334);
-    POINTER_FALLOUT4(TGetLevel, s_getLevel, 661618);
+    POINTER_FALLOUT4(TGetLevel, s_getLevel, 661617);
     return TiltedPhoques::ThisCall(s_getLevel, this);
 }
 
@@ -542,7 +542,7 @@ void Actor::QueueUpdate() noexcept
 #endif
 
     POINTER_SKYRIMSE(TQueueUpdate, QueueUpdate, 40255);
-    POINTER_FALLOUT4(TQueueUpdate, QueueUpdate, 302889);
+    POINTER_FALLOUT4(TQueueUpdate, QueueUpdate, 302888);
 
 #ifdef TP_SKYRIM
     TiltedPhoques::ThisCall(QueueUpdate, this, true);
@@ -612,7 +612,7 @@ void Actor::SetLevelMod(uint32_t aLevel) noexcept
 {
     TP_THIS_FUNCTION(TActorSetLevelMod, void, ExtraDataList, uint32_t);
     POINTER_SKYRIMSE(TActorSetLevelMod, realSetLevelMod, 11806);
-    POINTER_FALLOUT4(TActorSetLevelMod, realSetLevelMod, 780730);
+    POINTER_FALLOUT4(TActorSetLevelMod, realSetLevelMod, 780729);
 
 #if TP_FALLOUT4
     const auto pExtraDataList = extraData;
@@ -656,7 +656,7 @@ ExPlayerCharacter* Actor::AsExPlayerCharacter() noexcept
 
 PlayerCharacter* PlayerCharacter::Get() noexcept
 {
-    POINTER_FALLOUT4(PlayerCharacter*, s_character, 303411);
+    POINTER_FALLOUT4(PlayerCharacter*, s_character, 303410);
     POINTER_SKYRIMSE(PlayerCharacter*, s_character, 401069);
 
     return *s_character.Get();
@@ -676,7 +676,7 @@ Lock* TESObjectREFR::GetLock() const noexcept
 {
     TP_THIS_FUNCTION(TGetLock, Lock*, const TESObjectREFR);
     POINTER_SKYRIMSE(TGetLock, realGetLock, 20223);
-    POINTER_FALLOUT4(TGetLock, realGetLock, 930786);
+    POINTER_FALLOUT4(TGetLock, realGetLock, 930785);
 
     return TiltedPhoques::ThisCall(realGetLock, this);
 }
@@ -685,7 +685,7 @@ Lock* TESObjectREFR::CreateLock() noexcept
 {
     TP_THIS_FUNCTION(TCreateLock, Lock*, TESObjectREFR);
     POINTER_SKYRIMSE(TCreateLock, realCreateLock, 20221);
-    POINTER_FALLOUT4(TCreateLock, realCreateLock, 1303718);
+    POINTER_FALLOUT4(TCreateLock, realCreateLock, 1303717);
 
     return TiltedPhoques::ThisCall(realCreateLock, this);
 }
@@ -715,7 +715,7 @@ bool ActorState::SetWeaponDrawn(bool aDraw) noexcept
     TP_THIS_FUNCTION(TSetWeaponState, bool, ActorState, bool aDraw);
 
     POINTER_SKYRIMSE(TSetWeaponState, setWeaponState, 38979);
-    POINTER_FALLOUT4(TSetWeaponState, setWeaponState, 835807);
+    POINTER_FALLOUT4(TSetWeaponState, setWeaponState, 835806);
 
     return TiltedPhoques::ThisCall(setWeaponState, this, aDraw);
 }
@@ -776,7 +776,7 @@ void Actor::SetNoBleedoutRecovery(bool aSet) noexcept
 {
     TP_THIS_FUNCTION(TSetNoBleedoutRecovery, void, Actor, bool);
     POINTER_SKYRIMSE(TSetNoBleedoutRecovery, s_setNoBleedoutRecovery, 38533);
-    POINTER_FALLOUT4(TSetNoBleedoutRecovery, s_setNoBleedoutRecovery, 925299);
+    POINTER_FALLOUT4(TSetNoBleedoutRecovery, s_setNoBleedoutRecovery, 925298);
     TiltedPhoques::ThisCall(s_setNoBleedoutRecovery, this, aSet);
 }
 
@@ -789,7 +789,7 @@ void MagicTarget::DispelAllSpells(bool aNow) noexcept
 {
     TP_THIS_FUNCTION(TDispelAllSpells, void, MagicTarget, bool aNow);
     POINTER_SKYRIMSE(TDispelAllSpells, dispelAllSpells, 34512);
-    POINTER_FALLOUT4(TDispelAllSpells, dispelAllSpells, 629903);
+    POINTER_FALLOUT4(TDispelAllSpells, dispelAllSpells, 629902);
     TiltedPhoques::ThisCall(dispelAllSpells, this, aNow);
 }
 
@@ -797,14 +797,14 @@ void TESObjectCELL::GetCOCPlacementInfo(NiPoint3* aOutPos, NiPoint3* aOutRot, bo
 {
     TP_THIS_FUNCTION(TGetCOCPlacementInfo, void, TESObjectCELL, NiPoint3*, NiPoint3*, bool);
     POINTER_SKYRIMSE(TGetCOCPlacementInfo, s_getCOCPlacementInfo, 19075);
-    POINTER_FALLOUT4(TGetCOCPlacementInfo, s_getCOCPlacementInfo, 1045265);
+    POINTER_FALLOUT4(TGetCOCPlacementInfo, s_getCOCPlacementInfo, 1045264);
     TiltedPhoques::ThisCall(s_getCOCPlacementInfo, this, aOutPos, aOutRot, aAllowCellLoad);
 }
 
 void PlayerCharacter::SetGodMode(bool aSet) noexcept
 {
     POINTER_SKYRIMSE(bool, bGodMode, 404238);
-    POINTER_FALLOUT4(bool, bGodMode, 806707);
+    POINTER_FALLOUT4(bool, bGodMode, 806706);
     *bGodMode.Get() = aSet;
 }
 
@@ -812,7 +812,7 @@ void AIProcess::KnockExplosion(Actor* apActor, const NiPoint3* aSourceLocation, 
 {
     TP_THIS_FUNCTION(TKnockExplosion, void, AIProcess, Actor*, const NiPoint3*, float);
     POINTER_SKYRIMSE(TKnockExplosion, knockExplosion, 39895);
-    POINTER_FALLOUT4(TKnockExplosion, knockExplosion, 803088);
+    POINTER_FALLOUT4(TKnockExplosion, knockExplosion, 803087);
     TiltedPhoques::ThisCall(knockExplosion, this, apActor, aSourceLocation, afMagnitude);
 }
 
@@ -894,7 +894,7 @@ Sky* Sky::Get() noexcept
 
     POINTER_SKYRIMSE(SkyGet, skyGet, 13878);
     // TODO(ft): verify
-    POINTER_FALLOUT4(SkyGet, skyGet, 484695);
+    POINTER_FALLOUT4(SkyGet, skyGet, 484694);
 
     return skyGet.Get()();
 }
@@ -927,7 +927,7 @@ void Sky::ResetWeather() noexcept
     TP_THIS_FUNCTION(TResetWeather, void, Sky);
     POINTER_SKYRIMSE(TResetWeather, resetWeather, 26242);
     // TODO(ft): verify
-    POINTER_FALLOUT4(TResetWeather, resetWeather, 6512);
+    POINTER_FALLOUT4(TResetWeather, resetWeather, 6511);
 
     TiltedPhoques::ThisCall(resetWeather, this);
 }
@@ -1136,46 +1136,46 @@ TiltedPhoques::Initializer s_referencesHooks(
     []()
     {
         POINTER_SKYRIMSE(TSetPosition, s_setPosition, 19790);
-        POINTER_FALLOUT4(TSetPosition, s_setPosition, 1101833);
+        POINTER_FALLOUT4(TSetPosition, s_setPosition, 1101832);
 
         POINTER_SKYRIMSE(TRotate, s_rotateX, 19787);
-        POINTER_FALLOUT4(TRotate, s_rotateX, 158657);
+        POINTER_FALLOUT4(TRotate, s_rotateX, 158656);
 
         POINTER_SKYRIMSE(TRotate, s_rotateY, 19788);
-        POINTER_FALLOUT4(TRotate, s_rotateY, 942683);
+        POINTER_FALLOUT4(TRotate, s_rotateY, 942682);
 
         POINTER_SKYRIMSE(TRotate, s_rotateZ, 19789);
-        POINTER_FALLOUT4(TRotate, s_rotateZ, 144722);
+        POINTER_FALLOUT4(TRotate, s_rotateZ, 144721);
 
         POINTER_SKYRIMSE(TActorProcess, s_actorProcess, 37356);
-        POINTER_FALLOUT4(TActorProcess, s_actorProcess, 1479788);
+        POINTER_FALLOUT4(TActorProcess, s_actorProcess, 1479787);
 
         POINTER_SKYRIMSE(TLockChange, s_lockChange, 19512);
-        POINTER_FALLOUT4(TLockChange, s_lockChange, 1578707);
+        POINTER_FALLOUT4(TLockChange, s_lockChange, 1578706);
 
         POINTER_SKYRIMSE(TCheckForNewPackage, s_checkForNewPackage, 39114);
-        POINTER_FALLOUT4(TCheckForNewPackage, s_checkForNewPackage, 609986);
+        POINTER_FALLOUT4(TCheckForNewPackage, s_checkForNewPackage, 609985);
 
         POINTER_SKYRIMSE(TInitFromPackage, s_initFromPackage, 38959);
-        POINTER_FALLOUT4(TInitFromPackage, s_initFromPackage, 644844);
+        POINTER_FALLOUT4(TInitFromPackage, s_initFromPackage, 644843);
 
         POINTER_SKYRIMSE(TSetCurrentPickREFR, s_setCurrentPickREFR, 51093);
 
         POINTER_SKYRIMSE(TSetWeather, setWeather, 26241);
         // TODO(ft): verify
-        POINTER_FALLOUT4(TSetWeather, setWeather, 1244029);
+        POINTER_FALLOUT4(TSetWeather, setWeather, 1244028);
 
         POINTER_SKYRIMSE(TForceWeather, forceWeather, 26243);
         // TODO(ft): verify
-        POINTER_FALLOUT4(TForceWeather, forceWeather, 698559);
+        POINTER_FALLOUT4(TForceWeather, forceWeather, 698558);
 
         POINTER_SKYRIMSE(TUpdateWeather, updateWeather, 26231);
         // TODO(ft): verify
-        POINTER_FALLOUT4(TUpdateWeather, updateWeather, 1278860);
+        POINTER_FALLOUT4(TUpdateWeather, updateWeather, 1278859);
 
         POINTER_SKYRIMSE(TAddDeathItems, addDeathItems, 37198);
         // TODO(ft): verify
-        POINTER_FALLOUT4(TAddDeathItems, addDeathItems, 708754);
+        POINTER_FALLOUT4(TAddDeathItems, addDeathItems, 708753);
 
         POINTER_SKYRIMSE(TIsFleeing, isFleeing, 37577);
 

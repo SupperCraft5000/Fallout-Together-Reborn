@@ -12,7 +12,7 @@ void PlayerCharacter::SetDifficulty(const int32_t aDifficulty, bool aForceUpdate
         return;
 
     TP_THIS_FUNCTION(TSetDifficulty, void, PlayerCharacter, const int32_t aDifficulty, bool aForceUpdate, bool aExpectGameDataLoaded);
-    POINTER_FALLOUT4(TSetDifficulty, setDifficulty, 657345);
+    POINTER_FALLOUT4(TSetDifficulty, setDifficulty, 657344);
     TiltedPhoques::ThisCall(setDifficulty, this, aDifficulty, aForceUpdate, aExpectGameDataLoaded);
 }
 

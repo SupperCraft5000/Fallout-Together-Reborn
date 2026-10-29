@@ -107,7 +107,7 @@ static TiltedPhoques::Initializer s_vmHooks(
     []()
     {
         POINTER_SKYRIMSE(TRegisterPapyrusFunction, s_registerPapyrusFunction, 104788);
-        POINTER_FALLOUT4(TRegisterPapyrusFunction, s_registerPapyrusFunction, 919894);
+        POINTER_FALLOUT4(TRegisterPapyrusFunction, s_registerPapyrusFunction, 919893);
 
 #if TP_SKYRIM64
         POINTER_SKYRIMSE(TBindEverythingToScript, s_bindEverythingToScript, 55739);

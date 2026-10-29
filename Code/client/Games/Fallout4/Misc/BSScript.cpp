@@ -15,7 +15,7 @@ void BSScript::Variable::Reset() noexcept
 {
     TP_THIS_FUNCTION(TReset, void, BSScript::Variable);
 
-    POINTER_FALLOUT4(TReset, s_reset, 1183889);
+    POINTER_FALLOUT4(TReset, s_reset, 1183888);
 
     TiltedPhoques::ThisCall(s_reset, this);
 }
@@ -64,7 +64,7 @@ void BSScript::Statement::SetSize(uint32_t aCount) noexcept
 {
     TP_THIS_FUNCTION(TSetSize, void, BSScript::Statement, uint32_t aCount);
 
-    POINTER_FALLOUT4(TSetSize, s_setSize, 1293891);
+    POINTER_FALLOUT4(TSetSize, s_setSize, 1293890);
 
     TiltedPhoques::ThisCall(s_setSize, this, aCount);
 }

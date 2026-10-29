@@ -8,7 +8,7 @@ static TiltedPhoques::Initializer s_skillsMenuInit(
         // https://github.com/Vermunds/SkyrimSoulsRE/blob/master/src/Menus/StatsMenuEx.cpp
         // Hoooks from souls RE
         // Fix for menu not appearing
-        VersionDbPtr<uint8_t> ProcessMessage(52510);
+        VersionDbPtr<uint8_t> ProcessMessage(52509);
         TiltedPhoques::Nop(ProcessMessage.Get() + 0x84E, 6);
         // Prevent setting kFreezeFrameBackground flag
         TiltedPhoques::Nop(ProcessMessage.Get() + 0xA10, 4);
@@ -16,7 +16,7 @@ static TiltedPhoques::Initializer s_skillsMenuInit(
         TiltedPhoques::Nop(ProcessMessage.Get() + 0x1040, 2);
 
         // Fix for controls not working
-        VersionDbPtr<uint8_t> controlPatch(52518);
+        VersionDbPtr<uint8_t> controlPatch(52517);
         TiltedPhoques::Nop(controlPatch.Get() + 0x46, 4);
         TiltedPhoques::Nop(controlPatch.Get() + 0x4A, 2);
     });

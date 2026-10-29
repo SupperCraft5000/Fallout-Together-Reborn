@@ -6,7 +6,7 @@ BSFixedString::BSFixedString(const char* acpData)
 {
     TP_THIS_FUNCTION(TConstructor, void, BSFixedString, const char*);
 
-    POINTER_FALLOUT4(TConstructor, s_constructor, 640274);
+    POINTER_FALLOUT4(TConstructor, s_constructor, 640273);
 
     TiltedPhoques::ThisCall(s_constructor, this, acpData);
 }
@@ -31,7 +31,7 @@ void BSFixedString::Release() noexcept
 {
     TP_THIS_FUNCTION(TConstructor, void, BSFixedString);
 
-    POINTER_FALLOUT4(TConstructor, s_release, 1204431);
+    POINTER_FALLOUT4(TConstructor, s_release, 1204430);
 
     TiltedPhoques::ThisCall(s_release, this);
 }
@@ -40,7 +40,7 @@ void BSFixedString::Set(const char* acpStr) noexcept
 {
     TP_THIS_FUNCTION(TSet, void, BSFixedString, const char* acpStr);
 
-    POINTER_FALLOUT4(TSet, s_set, 1064964);
+    POINTER_FALLOUT4(TSet, s_set, 1064963);
 
     TiltedPhoques::ThisCall(s_set, this, acpStr);
 }

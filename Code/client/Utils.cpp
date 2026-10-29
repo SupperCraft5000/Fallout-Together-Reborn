@@ -37,7 +37,7 @@ void ShowHudMessage(const TiltedPhoques::String& acMessage)
 #endif
 
     POINTER_SKYRIMSE(TShowHudMessage, s_showHudMessage, 52933);
-    POINTER_FALLOUT4(TShowHudMessage, s_showHudMessage, 1163006);
+    POINTER_FALLOUT4(TShowHudMessage, s_showHudMessage, 1163005);
 
 #if TP_SKYRIM64
     s_showHudMessage(acMessage.c_str(), nullptr, false);

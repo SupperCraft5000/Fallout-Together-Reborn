@@ -23,14 +23,14 @@ BOOL ClipCursor_H(const RECT*)
 static TiltedPhoques::Initializer s_initInputDeviceManager(
     []()
     {
-        const VersionDbPtr<uint8_t> pollInputDevices(1328120);
+        const VersionDbPtr<uint8_t> pollInputDevices(1328119);
 
         BSInputDeviceManager_PollInputDevices = static_cast<decltype(BSInputDeviceManager_PollInputDevices)>(pollInputDevices.GetPtr());
 
         TP_HOOK_IMMEDIATE(&BSInputDeviceManager_PollInputDevices, &Hook_BSInputDeviceManager_PollInputDevices);
 
         // TODO: move to a proper place.
-        const VersionDbPtr<uint8_t> updateGameCursor(847267);
+        const VersionDbPtr<uint8_t> updateGameCursor(847266);
         // disable the game being able to force the OS cursor
         TiltedPhoques::Put<uint8_t>(updateGameCursor.Get() + 0xB1, 0xEB);
 

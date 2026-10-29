@@ -29,7 +29,7 @@ static void Hook_Construct_TaskletManager(BSTaskletManager* apSelf)
 static TiltedPhoques::Initializer s_BSThreadInit(
     []()
     {
-        const VersionDbPtr<uint8_t> getTaskletManagerInstance(69554);
+        const VersionDbPtr<uint8_t> getTaskletManagerInstance(69553);
 
         // tasklet naming
         TiltedPhoques::SwapCall(getTaskletManagerInstance.Get() + 0x63, Construct_TaskletManager, &Hook_Construct_TaskletManager);

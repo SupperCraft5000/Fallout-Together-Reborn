@@ -120,7 +120,7 @@ static TiltedPhoques::Initializer s_projectileHooks(
 
         TP_HOOK(&RealLaunch, HookLaunch);
 
-        VersionDbPtr<uint8_t> hookLoc(34452);
+        VersionDbPtr<uint8_t> hookLoc(34451);
 
         struct C : TiltedPhoques::CodeGenerator
         {

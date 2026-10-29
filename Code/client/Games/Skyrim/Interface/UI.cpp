@@ -21,7 +21,7 @@ bool UI::GetMenuOpen(const BSFixedString& acName) const
     TP_THIS_FUNCTION(TMenuSystem_IsOpen, bool, const UI, const BSFixedString&);
 
     POINTER_SKYRIMSE(TMenuSystem_IsOpen, s_isMenuOpen, 82074);
-    POINTER_FALLOUT4(TMenuSystem_IsOpen, s_isMenuOpen, 1065115);
+    POINTER_FALLOUT4(TMenuSystem_IsOpen, s_isMenuOpen, 1065114);
 
     return TiltedPhoques::ThisCall(s_isMenuOpen.Get(), this, acName);
 }
@@ -123,17 +123,17 @@ static TiltedPhoques::Initializer s_s(
     []()
     {
         // pray that this doesnt fail!
-        VersionDbPtr<uint8_t> ProcessHook(82082);
+        VersionDbPtr<uint8_t> ProcessHook(82081);
         TiltedPhoques::SwapCall(ProcessHook.Get() + 0x682, UI_AddToActiveQueue, &UI_AddToActiveQueue_Hook);
 
         // Ignore startup movie
         // TODO: Move me later.
-        VersionDbPtr<uint8_t> MainInit(36548);
+        VersionDbPtr<uint8_t> MainInit(36547);
         TiltedPhoques::Put<uint8_t>(MainInit.Get() + 0xFE, 0xEB);
 
         // Credits to Skyrim Souls RE for this fix.
         // Allows the favorites menu to be numbered during connect.
-        VersionDbPtr<uint8_t> FavoritesCanProcess(51538);
+        VersionDbPtr<uint8_t> FavoritesCanProcess(51537);
         TiltedPhoques::Put<uint16_t>(FavoritesCanProcess.Get() + 0x15, 0x9090);
 
         // Some experiments:

@@ -31,7 +31,7 @@ bool MagicTarget::AddTarget(AddTargetData& arData) noexcept
 Actor* MagicTarget::GetTargetAsActor()
 {
     TP_THIS_FUNCTION(TGetTargetAsActor, Actor*, MagicTarget);
-    POINTER_FALLOUT4(TGetTargetAsActor, getTargetAsActor, 129826);
+    POINTER_FALLOUT4(TGetTargetAsActor, getTargetAsActor, 129825);
     return TiltedPhoques::ThisCall(getTargetAsActor, this);
 }
 
@@ -108,8 +108,8 @@ bool TP_MAKE_THISCALL(HookCheckAddEffectTargetData, MagicTarget::AddTargetData, 
 static TiltedPhoques::Initializer s_magicTargetHooks(
     []()
     {
-        POINTER_FALLOUT4(TAddTarget, addTarget, 385036);
-        POINTER_FALLOUT4(TCheckAddEffectTargetData, checkAddEffectTargetData, 113034);
+        POINTER_FALLOUT4(TAddTarget, addTarget, 385035);
+        POINTER_FALLOUT4(TCheckAddEffectTargetData, checkAddEffectTargetData, 113033);
 
         RealAddTarget = addTarget.Get();
         RealCheckAddEffectTargetData = checkAddEffectTargetData.Get();

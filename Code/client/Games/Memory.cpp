@@ -13,7 +13,7 @@ struct GameHeap
     static GameHeap* Get()
     {
         POINTER_SKYRIMSE(GameHeap, s_gameHeap, 400188);
-        POINTER_FALLOUT4(GameHeap, s_gameHeap, 42694);
+        POINTER_FALLOUT4(GameHeap, s_gameHeap, 42693);
 
         return s_gameHeap.Get();
     }
@@ -110,10 +110,10 @@ static TiltedPhoques::Initializer s_memoryHooks(
     []()
     {
         POINTER_SKYRIMSE(TFormAllocate, s_formAllocate, 68115);
-        POINTER_FALLOUT4(TFormAllocate, s_formAllocate, 652768);
+        POINTER_FALLOUT4(TFormAllocate, s_formAllocate, 652767);
 
         POINTER_SKYRIMSE(TFormFree, s_formFree, 68117);
-        POINTER_FALLOUT4(TFormFree, s_formFree, 1582182);
+        POINTER_FALLOUT4(TFormFree, s_formFree, 1582181);
 
         RealFormAllocate = s_formAllocate.Get();
         RealFormFree = s_formFree.Get();

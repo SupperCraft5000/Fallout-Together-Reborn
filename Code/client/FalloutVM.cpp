@@ -47,9 +47,9 @@ uintptr_t TP_MAKE_THISCALL(HookVMDestructor, void)
 static TiltedPhoques::Initializer s_mainHooks(
     []()
     {
-        POINTER_FALLOUT4(TMainLoop, cMainLoop, 633525);
-        POINTER_FALLOUT4(TVMUpdate, cVMUpdate, 759509);
-        POINTER_FALLOUT4(TVMDestructor, cVMDestructor, 694341);
+        POINTER_FALLOUT4(TMainLoop, cMainLoop, 633524);
+        POINTER_FALLOUT4(TVMUpdate, cVMUpdate, 759508);
+        POINTER_FALLOUT4(TVMDestructor, cVMDestructor, 694340);
 
         VMUpdate = cVMUpdate.Get();
         MainLoop = cMainLoop.Get();

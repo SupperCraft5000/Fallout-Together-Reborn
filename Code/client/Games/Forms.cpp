@@ -13,7 +13,7 @@ TESForm* TESForm::GetById(const uint32_t aId)
 {
     using TGetFormById = TESForm*(uint32_t);
 
-    POINTER_FALLOUT4(TGetFormById, getFormById, 796115);
+    POINTER_FALLOUT4(TGetFormById, getFormById, 796114);
     POINTER_SKYRIMSE(TGetFormById, getFormById, 14617);
 
     return getFormById.Get()(aId);
@@ -107,10 +107,10 @@ uint32_t TESForm::GetChangeFlags() const noexcept
 
     TP_THIS_FUNCTION(InternalGetChangeFlags, bool, void, uint32_t formId, ChangeFlags& changeFlags);
 
-    POINTER_FALLOUT4(InternalGetChangeFlags, internalGetChangeFlags, 1464380);
+    POINTER_FALLOUT4(InternalGetChangeFlags, internalGetChangeFlags, 1464379);
     POINTER_SKYRIMSE(InternalGetChangeFlags, internalGetChangeFlags, 35503);
 
-    POINTER_FALLOUT4(Unk*, s_singleton, 177948);
+    POINTER_FALLOUT4(Unk*, s_singleton, 177947);
     POINTER_SKYRIMSE(Unk*, s_singleton, 403330);
 
     const auto pUnk = *(s_singleton.Get());

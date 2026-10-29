@@ -75,12 +75,12 @@ void Hook_StopTimer(int type)
 static TiltedPhoques::Initializer s_viewportHooks(
     []()
     {
-        const VersionDbPtr<void> initWindowLoc(193855);
+        const VersionDbPtr<void> initWindowLoc(193854);
         // patch dwStyle in BSGraphics::InitWindows
         TiltedPhoques::Put(mem::pointer(initWindowLoc.GetPtr()) + 0xD7 + 1, WS_OVERLAPPEDWINDOW);
 
-        const VersionDbPtr<void> timerLoc(700870);
-        const VersionDbPtr<void> renderInit(564406);
+        const VersionDbPtr<void> timerLoc(700869);
+        const VersionDbPtr<void> renderInit(564405);
 
         TiltedPhoques::SwapCall(mem::pointer(timerLoc.GetPtr()) + 0xE, StopTimer, &Hook_StopTimer);
 

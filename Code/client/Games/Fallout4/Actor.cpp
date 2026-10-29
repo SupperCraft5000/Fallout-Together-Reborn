@@ -64,7 +64,7 @@ TESForm* Actor::GetEquippedWeapon(uint32_t aSlotId) const noexcept
 {
     using TGetEquippedWeapon = TESForm*(__fastcall)(void*, void*, const Actor*, uint32_t);
 
-    POINTER_FALLOUT4(TGetEquippedWeapon, s_getEquippedWeapon, 811140);
+    POINTER_FALLOUT4(TGetEquippedWeapon, s_getEquippedWeapon, 811139);
 
     return s_getEquippedWeapon(nullptr, nullptr, this, aSlotId);
 }
@@ -137,7 +137,7 @@ ActorValues Actor::GetEssentialActorValues() noexcept
 void* Actor::GetCurrentWeapon(void* apResult, uint32_t aEquipIndex) noexcept
 {
     TP_THIS_FUNCTION(TGetCurrentWeapon, void*, Actor, void* apResult, uint32_t aEquipIndex);
-    POINTER_FALLOUT4(TGetCurrentWeapon, getCurrentWeapon, 1277202);
+    POINTER_FALLOUT4(TGetCurrentWeapon, getCurrentWeapon, 1277201);
     return TiltedPhoques::ThisCall(getCurrentWeapon, this, apResult, aEquipIndex);
 }
 
@@ -242,7 +242,7 @@ void Actor::SetActorInventory(const Inventory& acInventory) noexcept
 void Actor::UnEquipAll() noexcept
 {
     TP_THIS_FUNCTION(TUnEquipAll, void, Actor);
-    POINTER_FALLOUT4(TUnEquipAll, s_unequipAll, 1260318);
+    POINTER_FALLOUT4(TUnEquipAll, s_unequipAll, 1260317);
     TiltedPhoques::ThisCall(s_unequipAll, this);
 }
 
@@ -283,7 +283,7 @@ void Actor::ProcessScriptedEquip(TESBoundObject* apObj, bool abEquipLockState, b
     ScopedEquipOverride _;
 
     TP_THIS_FUNCTION(TProcessScriptedEquip, void, Actor, TESBoundObject*, bool, bool);
-    POINTER_FALLOUT4(TProcessScriptedEquip, processScriptedEquip, 868003);
+    POINTER_FALLOUT4(TProcessScriptedEquip, processScriptedEquip, 868002);
     TiltedPhoques::ThisCall(processScriptedEquip, this, apObj, abEquipLockState, abSilent);
 }
 
@@ -309,7 +309,7 @@ void Actor::DropObject(TESBoundObject* apObject, int32_t aCount, NiPoint3* apPoi
     BGSObjectInstance object(apObject, nullptr);
 
     TP_THIS_FUNCTION(TDropObject, BSPointerHandle<TESObjectREFR>*, Actor, BSPointerHandle<TESObjectREFR>*, BGSObjectInstance*, void*, int32_t, NiPoint3*, NiPoint3*);
-    POINTER_FALLOUT4(TDropObject, dropObject, 1482294);
+    POINTER_FALLOUT4(TDropObject, dropObject, 1482293);
 
     BSPointerHandle<TESObjectREFR> result{};
     TiltedPhoques::ThisCall(dropObject, this, &result, &object, nullptr, aCount, apPoint, apRotate);
@@ -438,14 +438,14 @@ void Actor::SpeakSound(const char* pFile)
 static TiltedPhoques::Initializer s_specificReferencesHooks(
     []()
     {
-        POINTER_FALLOUT4(TActorConstructor, s_actorCtor, 1027501);
-        POINTER_FALLOUT4(TActorConstructor2, s_actorCtor2, 1331729);
-        POINTER_FALLOUT4(TActorDestructor, s_actorDtor, 1104083);
-        POINTER_FALLOUT4(TDamageActor, s_damageActor, 1539011);
+        POINTER_FALLOUT4(TActorConstructor, s_actorCtor, 1027500);
+        POINTER_FALLOUT4(TActorConstructor2, s_actorCtor2, 1331728);
+        POINTER_FALLOUT4(TActorDestructor, s_actorDtor, 1104082);
+        POINTER_FALLOUT4(TDamageActor, s_damageActor, 1539010);
         // TODO: not sure about this ID, seems to interfere with jump when hooked?
-        POINTER_FALLOUT4(TApplyActorEffect, s_applyActorEffect, 703727);
-        POINTER_FALLOUT4(TRunDetection, s_runDetection, 906785);
-        POINTER_FALLOUT4(TSpeakSoundFunction, s_speakSoundFunction, 1567997);
+        POINTER_FALLOUT4(TApplyActorEffect, s_applyActorEffect, 703726);
+        POINTER_FALLOUT4(TRunDetection, s_runDetection, 906784);
+        POINTER_FALLOUT4(TSpeakSoundFunction, s_speakSoundFunction, 1567996);
 
         RealActorConstructor = s_actorCtor.Get();
         RealActorConstructor2 = s_actorCtor2.Get();

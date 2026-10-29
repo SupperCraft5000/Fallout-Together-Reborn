@@ -4,7 +4,7 @@
 
 NEW_REFR_DATA::NEW_REFR_DATA()
 {
-    POINTER_FALLOUT4(void*, s_vtbl, 1139813);
+    POINTER_FALLOUT4(void*, s_vtbl, 1139812);
     // Set the vtable
     this->vtbl = s_vtbl.Get();
 

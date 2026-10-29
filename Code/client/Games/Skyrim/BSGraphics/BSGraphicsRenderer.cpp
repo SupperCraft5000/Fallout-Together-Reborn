@@ -77,19 +77,19 @@ void Hook_StopTimer(int type)
 static TiltedPhoques::Initializer s_viewportHooks(
     []()
     {
-        const VersionDbPtr<void> initWindowLoc(77226);
+        const VersionDbPtr<void> initWindowLoc(77225);
         // patch dwStyle in BSGraphics::InitWindows
         TiltedPhoques::Put(mem::pointer(initWindowLoc.GetPtr()) + 0x174 + 1, WS_OVERLAPPEDWINDOW);
 
-        const VersionDbPtr<void> windowLoc(68781);
+        const VersionDbPtr<void> windowLoc(68780);
         // TODO: move me to input patches.
         // don't let the game steal the media keys in windowed mode
         TiltedPhoques::Put(
             mem::pointer(windowLoc.GetPtr()) + 0x55 + 2,
             /*strip DISCL_EXCLUSIVE bits and append DISCL_NONEXCLUSIVE*/ 3);
 
-        const VersionDbPtr<void> timerLoc(77246);
-        const VersionDbPtr<void> renderInit(77226);
+        const VersionDbPtr<void> timerLoc(77245);
+        const VersionDbPtr<void> renderInit(77225);
 
         TiltedPhoques::SwapCall(mem::pointer(timerLoc.GetPtr()) + 9, StopTimer, &Hook_StopTimer);
 

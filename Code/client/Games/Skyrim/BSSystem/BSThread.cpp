@@ -75,16 +75,16 @@ HANDLE WINAPI Hook_CreateThread(LPSECURITY_ATTRIBUTES lpThreadAttributes, SIZE_T
 static TiltedPhoques::Initializer s_BSThreadInit(
     []()
     {
-        const VersionDbPtr<uint8_t> threadInit(68261);
+        const VersionDbPtr<uint8_t> threadInit(68260);
         BSThread_Initialize = static_cast<decltype(BSThread_Initialize)>(threadInit.GetPtr());
         // need to detour this for now :/
         TP_HOOK_IMMEDIATE(&BSThread_Initialize, &Hook_BSThread_Initialize);
 
-        const VersionDbPtr<uint8_t> setThreadName(69066);
+        const VersionDbPtr<uint8_t> setThreadName(69065);
         TiltedPhoques::Jump(setThreadName.Get(), &Hook_SetThreadName);
 
 #if 0
-    const VersionDbPtr<uint8_t> createHavokThread(57704);
+    const VersionDbPtr<uint8_t> createHavokThread(57703);
     // relatively safe to do, since this is unlikely to ever change, as beth wont update havok
     TiltedPhoques::Nop(createHavokThread.Get() + 0x81, 6);
 

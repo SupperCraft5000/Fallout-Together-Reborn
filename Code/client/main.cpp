@@ -47,11 +47,37 @@ void RunTiltedInit(const std::filesystem::path& acGamePath, const String& aExeVe
 #if TP_SKYRIM64
     if (!VersionDb::Get().Load(acGamePath, aExeVersion))
 #else
-    if (!VersionDb::Get().LoadFallout4(acGamePath))
+    if (!VersionDb::Get().LoadFallout4(acGamePath, aExeVersion))
 #endif
     {
         ShowAddressLibraryError(acGamePath.c_str());
     }
+
+#if TP_FALLOUT4
+    // Report unresolved IDs up front instead of crashing on the first null pointer.
+    if (const auto missing = VersionDb::Get().FindMissingIds(); !missing.empty())
+    {
+        wchar_t modulePath[MAX_PATH]{};
+        GetModuleFileNameW(nullptr, modulePath, MAX_PATH);
+        const auto logDir = std::filesystem::path(modulePath).parent_path() / "logs";
+        std::filesystem::create_directories(logDir);
+        const auto reportPath = logDir / fmt::format("missing-offsets-{}.txt", aExeVersion.c_str());
+        {
+            std::ofstream report(reportPath);
+            for (const auto id : missing)
+                report << id << '\n';
+        }
+
+        if (!GetEnvironmentVariableW(L"TP_ALLOW_MISSING_OFFSETS", nullptr, 0))
+        {
+            const auto detail = fmt::format(L"{} of {} game addresses are unknown for Fallout 4 {}. List: {}", missing.size(), VersionDb::RequestedIds().size(),
+                                            std::wstring(aExeVersion.begin(), aExeVersion.end()), reportPath.wstring());
+            Base::TaskDialog dia(g_SharedWindowIcon, L"Error", L"This Fallout 4 version is not supported yet", L"", detail.c_str());
+            dia.Show();
+            exit(5);
+        }
+    }
+#endif
 
     // VersionDb::Get().DumpToTextFile(R"(S:\Work\Tilted\fallout\_addresslib.txt)");
 

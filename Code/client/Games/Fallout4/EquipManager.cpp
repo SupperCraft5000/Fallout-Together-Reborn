@@ -33,7 +33,7 @@ TUnEquip* RealUnEquip = nullptr;
 
 EquipManager* EquipManager::Get() noexcept
 {
-    POINTER_FALLOUT4(EquipManager*, s_singleton, 1174341);
+    POINTER_FALLOUT4(EquipManager*, s_singleton, 1174340);
 
     return *s_singleton.Get();
 }
@@ -43,7 +43,7 @@ bool EquipManager::EquipObject(Actor* apActor, BGSObjectInstance& arObject, uint
     spdlog::warn("EquipObject {:X}", arObject.pObject->formID);
 
     TP_THIS_FUNCTION(TEquipObject, bool, EquipManager, Actor* apActor, BGSObjectInstance& arObject, uint32_t auiStackID, uint32_t auiNumber, const BGSEquipSlot* apSlot, bool abQueueEquip, bool abForceEquip, bool abPlaySounds, bool abApplyNow, bool abLocked);
-    POINTER_FALLOUT4(TEquipObject, equipObject, 988030);
+    POINTER_FALLOUT4(TEquipObject, equipObject, 988029);
 
     ScopedEquipOverride _;
 
@@ -58,7 +58,7 @@ bool EquipManager::UnequipObject(Actor* apActor, BGSObjectInstance& arObject, ui
     // Maybe the equipped slot index should be sent even? (see BGSInventoryItem enum)
 
     TP_THIS_FUNCTION(TUnequipObject, bool, EquipManager, Actor* apActor, BGSObjectInstance& arObject, uint32_t auiNumber, const BGSEquipSlot* apSlot, uint32_t auiStackID, bool abQueueEquip, bool abForceEquip, bool abPlaySounds, bool abApplyNow, const BGSEquipSlot* apSlotBeingReplaced);
-    POINTER_FALLOUT4(TUnequipObject, unequipObject, 1292494);
+    POINTER_FALLOUT4(TUnequipObject, unequipObject, 1292493);
 
     ScopedEquipOverride _;
 
@@ -122,8 +122,8 @@ void* TP_MAKE_THISCALL(UnEquipHook, EquipManager, Actor* apActor, BGSObjectInsta
 static TiltedPhoques::Initializer s_equipmentHooks(
     []()
     {
-        POINTER_FALLOUT4(TEquip, s_equipFunc, 1474879);
-        POINTER_FALLOUT4(TUnEquip, s_unequipFunc, 1265293);
+        POINTER_FALLOUT4(TEquip, s_equipFunc, 1474878);
+        POINTER_FALLOUT4(TUnEquip, s_unequipFunc, 1265292);
 
         RealUnEquip = s_unequipFunc.Get();
         RealEquip = s_equipFunc.Get();
