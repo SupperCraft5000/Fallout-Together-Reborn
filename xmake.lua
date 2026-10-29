@@ -3,6 +3,8 @@ set_xmakever("2.8.5")
 -- If newer version of xmake, remove ccache until it actually works
 if set_policy ~= nil then
     set_policy("build.ccache", false)
+    -- precompiled artifacts are built against newer deps (abseil/protobuf) than the pinned ones
+    set_policy("package.precompiled", false)
 end
 
 -- c code will use c99,

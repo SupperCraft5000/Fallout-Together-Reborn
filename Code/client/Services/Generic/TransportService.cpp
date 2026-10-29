@@ -198,6 +198,7 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     using AR = AuthenticationResponse::ResponseType;
     if (acMessage.Type == AR::kAccepted)
     {
+        spdlog::info("Connected to server as player {}", acMessage.PlayerId);
         m_connected = true;
 
         m_world.SetServerSettings(acMessage.Settings);

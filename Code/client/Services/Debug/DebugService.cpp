@@ -151,6 +151,27 @@ extern thread_local bool g_forceAnimation;
 
 void DebugService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
 {
+    // Automated tests: TP_AUTOCONNECT=host:port (and optionally TP_PASSWORD) connects once the player is in a cell,
+    // independent of window focus so several instances can run side by side.
+    static bool s_autoConnectChecked = false;
+    if (!s_autoConnectChecked)
+    {
+        char address[256]{};
+        if (!GetEnvironmentVariableA("TP_AUTOCONNECT", address, static_cast<DWORD>(std::size(address))))
+        {
+            s_autoConnectChecked = true;
+        }
+        else if (PlayerCharacter* pPlayer = PlayerCharacter::Get(); pPlayer && pPlayer->parentCell)
+        {
+            s_autoConnectChecked = true;
+            char password[256]{};
+            GetEnvironmentVariableA("TP_PASSWORD", password, static_cast<DWORD>(std::size(password)));
+            spdlog::info("Auto connect to {}", address);
+            m_transport.SetServerPassword(password);
+            m_transport.Connect(address);
+        }
+    }
+
     if (!BSGraphics::GetMainWindow()->IsForeground())
         return;
 
