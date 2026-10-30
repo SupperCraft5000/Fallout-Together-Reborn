@@ -48,6 +48,10 @@
 #include <Games/Misc/SubtitleManager.h>
 #include <Games/Overrides.h>
 #include <OverlayApp.hpp>
+#include <filesystem>
+#include <fstream>
+#include <Structs/ActorValues.h>
+#include <Structs/Inventory.h>
 
 #include <EquipManager.h>
 #include <Forms/TESAmmo.h>
@@ -149,6 +153,95 @@ void DebugService::OnMoveActor(const MoveActorEvent& acEvent) noexcept
 
 extern thread_local bool g_forceAnimation;
 
+namespace
+{
+constexpr uint32_t kFigureValues[]{ActorValueInfo::kStrength,     ActorValueInfo::kPerception, ActorValueInfo::kEndurance, ActorValueInfo::kCharisma,
+                                   ActorValueInfo::kIntelligence, ActorValueInfo::kAgility,    ActorValueInfo::kLuck};
+
+void SaveFigure(PlayerCharacter* apPlayer, const std::string& acPath)
+{
+    ActorValues values;
+    for (const uint32_t id : kFigureValues)
+        values.ActorValuesList.insert({id, apPlayer->GetActorValue(id)});
+
+    Buffer buffer(1 << 22);
+    Buffer::Writer writer(&buffer);
+    apPlayer->GetActorInventory().Serialize(writer);
+    values.Serialize(writer);
+
+    const std::string temp = acPath + ".tmp";
+    {
+        std::ofstream file(temp, std::ios::binary | std::ios::trunc);
+        file.write(reinterpret_cast<const char*>(buffer.GetData()), static_cast<std::streamsize>(writer.Size()));
+    }
+    std::error_code error;
+    std::filesystem::rename(temp, acPath, error);
+    if (error)
+        spdlog::error("Could not save figure: {}", error.message());
+}
+
+void ApplyFigure(PlayerCharacter* apPlayer, const std::string& acPath)
+{
+    std::ifstream file(acPath, std::ios::binary);
+    const std::string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    if (data.empty())
+    {
+        spdlog::warn("No figure found at {}", acPath);
+        return;
+    }
+
+    Buffer buffer(reinterpret_cast<const uint8_t*>(data.data()), data.size());
+    Buffer::Reader reader(&buffer);
+    Inventory inventory{};
+    ActorValues values{};
+    inventory.Deserialize(reader);
+    values.Deserialize(reader);
+
+    apPlayer->SetActorInventory(inventory);
+    for (const auto& value : values.ActorValuesList)
+        apPlayer->SetActorValue(value.first, value.second);
+
+    spdlog::info("Applied figure: {} items, {} values", inventory.Entries.size(), values.ActorValuesList.size());
+}
+
+// The ids in a figure are server mod ids, so reading and writing has to wait until the server assigned them.
+void UpdateFigure(const bool acOnline, const double acDelta)
+{
+    static double s_wait = 10.0;
+    static bool s_finished = false;
+    if (s_finished || !acOnline)
+        return;
+
+    s_wait -= acDelta;
+    if (s_wait > 0.0)
+        return;
+
+    char mode[16]{};
+    char path[MAX_PATH]{};
+    if (!GetEnvironmentVariableA("TP_FIGURE_MODE", mode, static_cast<DWORD>(std::size(mode))) ||
+        !GetEnvironmentVariableA("TP_FIGURE_FILE", path, static_cast<DWORD>(std::size(path))))
+    {
+        s_finished = true;
+        return;
+    }
+
+    PlayerCharacter* pPlayer = PlayerCharacter::Get();
+    if (!pPlayer)
+        return;
+
+    if (strcmp(mode, "apply") == 0)
+    {
+        s_finished = true;
+        ApplyFigure(pPlayer, path);
+    }
+    else
+    {
+        s_wait = 60.0;
+        SaveFigure(pPlayer, path);
+    }
+}
+} // namespace
+
 void DebugService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
 {
     // Automated tests: TP_AUTOCONNECT=host:port (and optionally TP_PASSWORD) connects once the player is in a cell,
@@ -171,6 +264,8 @@ void DebugService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
             m_transport.Connect(address);
         }
     }
+
+    UpdateFigure(m_transport.IsOnline(), acUpdateEvent.Delta);
 
     if (!BSGraphics::GetMainWindow()->IsForeground())
         return;
