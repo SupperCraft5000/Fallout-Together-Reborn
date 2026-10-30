@@ -34,14 +34,11 @@ void InstallStartHook()
 #if defined(TARGET_FT)
     // Fallout4 is linked against an old silly CRT, so we need to apply our init
     // hooks differently
-    if (auto hCrt = GetModuleHandleW(L"MSVCR110.dll") /*Shut up the compiler*/)
+    Real_ismbbled = reinterpret_cast<decltype(Real_ismbbled)>(TP_HOOK_IAT2("MSVCR110.dll", "_ismbblead", TP_ismbblead));
+    if (!Real_ismbbled)
     {
-        Real_ismbbled = reinterpret_cast<decltype(Real_ismbbled)>(GetProcAddress(hCrt, "_ismbblead"));
-        TP_HOOK_IAT2("MSVCR110.dll", "_ismbblead", TP_ismbblead);
-    }
-    else
-    {
-        // Next-gen builds use the regular UCRT startup
+        // Next-gen builds use the regular UCRT startup. Don't test for a loaded MSVCR110 here,
+        // GFSDK_GodraysLib still pulls it in even though the game doesn't import it.
         TP_HOOK_IAT2("Kernel32.dll", "GetStartupInfoW", TP_GetStartupInfoW);
         TP_HOOK_IAT2("Kernel32.dll", "RaiseException", TP_RaiseException);
     }
