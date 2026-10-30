@@ -147,10 +147,21 @@ void QuestService::OnQuestUpdate(const NotifyQuestUpdate& aUpdate) noexcept
         break;
     }
     case NotifyQuestUpdate::StageUpdate:
+    {
+        // The stage event can reach the server before the start event, the quest may not be running here yet
+        const bool wasStopped = pQuest->IsStopped();
+        if (wasStopped)
+        {
+            bool started = false;
+            pQuest->EnsureQuestStarted(started, true);
+            pQuest->SetActive(true);
+        }
+
         pQuest->ScriptSetStage(aUpdate.Stage);
         bResult = true;
-        spdlog::info("Remote quest updated: {:X}, stage: {}", formId, aUpdate.Stage);
+        spdlog::info("Remote quest updated: {:X}, stage: {}, was stopped: {}, stopped now: {}, current stage: {}", formId, aUpdate.Stage, wasStopped, pQuest->IsStopped(), pQuest->currentStage);
         break;
+    }
     case NotifyQuestUpdate::Stopped:
         bResult = StopQuest(formId);
         spdlog::info("Remote quest stopped: {:X}, stage: {}", formId, aUpdate.Stage);
