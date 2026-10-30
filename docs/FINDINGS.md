@@ -1,5 +1,7 @@
 # Entdeckungen und Fallstricke
 
+Verweise wie `patches/0014` sind Commits, siehe [HISTORY.md](HISTORY.md).
+
 ## 1. Off-by-one beim Lesen der Address Library (Fallout Together, upstream)
 `VersionDb::LoadFallout4` las `version-1-10-163-0.bin` ab Byte 0 als Paare `(Adresse, ID)` und ignorierte die
 letzten 8 Byte („strangely has no ID“). Tatsächlich ist das Format `u64 Anzahl`, dann `(u64 ID, u64 Adresse)`.

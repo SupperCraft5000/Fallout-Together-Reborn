@@ -43,7 +43,7 @@ def seq(x, f):
 
 
 def vtable_pairs():
-    src = (PORT / "graphport.py").read_text(encoding="utf-8")
+    src = (Path(__file__).resolve().parents[1] / "graphport.py").read_text(encoding="utf-8")
     ns = {}
     exec(compile(src[:src.index("ap = argparse.ArgumentParser()")], "gp", "exec"), ns)
     Pg, vt = ns["Pe"], ns["vtables"]

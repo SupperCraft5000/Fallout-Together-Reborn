@@ -9,6 +9,8 @@
 git clone --recurse-submodules <Repo-Adresse> Fallout-Together-Reborn
 ```
 
+Alle Umgebungsvariablen: [ENVIRONMENT.md](ENVIRONMENT.md).
+
 ## Wrapper `scripts/xm.ps1`
 Alle xmake-Aufrufe darüber. `FTR_WORK` muss auf einen kurzen Arbeitsordner zeigen, `FTR_XMAKE` optional auf die `xmake.exe`.
 Der Wrapper:

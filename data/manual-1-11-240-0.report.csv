@@ -1,0 +1,154 @@
+og_id,name,old_rva,new_rva,status
+6511,resetWeather,651AE0,6BFBE0,Signatur 32 Byte
+7491,s_instance,5AC64F0,,manuell (Daten/VTable)
+14773,getGenerator,30E70DC,,manuell (Daten/VTable)
+27400,InternalSetFloatVariable,81D410,8190F0,Signatur 32 Byte
+34451,hookLoc,F33A57,,manuell (in Funktion)
+36547,MainInit,1048D35,,manuell (in Funktion)
+42693,s_gameHeap,38CC980,,manuell (Daten/VTable)
+51537,FavoritesCanProcess,260FA28,,manuell (in Funktion)
+52509,ProcessMessage,291D440,,kein eindeutiger Treffer
+52517,controlPatch,673D6E4,,manuell (Daten/VTable)
+53111,hookLoc,32BA30C,,manuell (Daten/VTable)
+57456,s_registerSink,CD3980,,kein eindeutiger Treffer
+57703,createHavokThread,1EF6FC3,,manuell (in Funktion)
+68260,threadInit,2E72B60,,manuell (Daten/VTable)
+68275,unsignedInt,345C578,,manuell (Daten/VTable)
+68616,pollInputDevices,35F5050,,manuell (Daten/VTable)
+68780,windowLoc,355F298,,manuell (Daten/VTable)
+69065,setThreadName,386DDF8,,manuell (Daten/VTable)
+69553,getTaskletManagerInstance,305767,,manuell (in Funktion)
+77225,renderInit,130BBF8,,manuell (in Funktion)
+77245,timerLoc,F85B00,,kein eindeutiger Treffer
+78185,s_addItem,3FBB00,,kein eindeutiger Treffer
+82081,ProcessHook,18A3D7A,,manuell (in Funktion)
+109441,s_w2s,1BADB00,,kein eindeutiger Treffer
+113033,checkAddEffectTargetData,C6D4F0,,kein eindeutiger Treffer
+129825,getTargetAsActor,C6CC60,B8BD50,Signatur 32 Byte
+144721,s_rotateZ,40BF90,,kein eindeutiger Treffer
+157617,realSetLock,B7E10,,manuell (in Funktion)
+158656,s_rotateX,40BE70,,kein eindeutiger Treffer
+177947,s_singleton,5A73360,,manuell (Daten/VTable)
+180923,getEquipSlot,3FE4F0,,kein eindeutiger Treffer
+193854,initWindowLoc,1D17E10,,kein eindeutiger Treffer
+196396,bUseFaceGenPreprocessedHeads,3733CE0,,manuell (Daten/VTable)
+210458,s_writeId,D09A20,,kein eindeutiger Treffer
+228366,s_factories,58D3BF0,,manuell (Daten/VTable)
+239710,processMenus,2042430,,kein eindeutiger Treffer
+277976,s_requestLoadingText,12985D0,,kein eindeutiger Treffer
+302826,s_vatsSelectTargetMult,372FAA0,,manuell (Daten/VTable)
+302888,QueueUpdate,D8A1F0,,kein eindeutiger Treffer
+303410,s_character,5AA4388,,manuell (Daten/VTable)
+385035,addTarget,C6C5E0,,kein eindeutiger Treffer
+385617,getCell,113480,2E43F0,Signatur 32 Byte
+405390,s_getActorValueInfoArray,6B1F0,,kein eindeutiger Treffer
+454121,s_device,61E0918,,manuell (Daten/VTable)
+472572,s_SetLeveledNpc,149340,,kein eindeutiger Treffer
+484694,skyGet,128CB0,,kein eindeutiger Treffer
+484974,GetDefaultObjectManager,6B2A0,,kein eindeutiger Treffer
+500304,s_realSpawnNewREFR,1140B0,,kein eindeutiger Treffer
+502376,performAction,E20FB0,,kein eindeutiger Treffer
+534058,s_removeAllItems,140CE90,,kein eindeutiger Treffer
+548587,s_instance,58D0898,,manuell (Daten/VTable)
+556001,s_writeFormId,D09AA0,C11C80,Signatur 32 Byte
+564405,s_realCreateViewport,1D09DA0,,kein eindeutiger Treffer
+601668,s_readFormId,D06BC0,,kein eindeutiger Treffer
+609985,s_checkForNewPackage,E28F80,,kein eindeutiger Treffer
+629902,dispelAllSpells,C6B910,,kein eindeutiger Treffer
+633524,cMainLoop,D38E60,,kein eindeutiger Treffer
+640273,s_constructor,1B41D40,,kein eindeutiger Treffer
+644843,s_initFromPackage,E219A0,,kein eindeutiger Treffer
+646455,s_pushEvent,460220,,kein eindeutiger Treffer
+652767,s_formAllocate,1B0EFD0,,kein eindeutiger Treffer
+657344,setDifficulty,EB06E0,D6D630,Signatur 32 Byte
+661617,s_getLevel,D79E90,C633E0,"Funktion+20, Abstand ungeprüft"
+668528,winMain,D35930,,kein eindeutiger Treffer
+694340,cVMDestructor,E986D0,,kein eindeutiger Treffer
+698558,forceWeather,651BE0,,kein eindeutiger Treffer
+698829,s_matrix,5A66AA0,,manuell (Daten/VTable)
+700869,s_realRenderPresent,1D0B670,1818550,Signatur 32 Byte
+703726,s_applyActorEffect,C8B180,,kein eindeutiger Treffer
+708753,addDeathItems,D70AF0,,kein eindeutiger Treffer
+711558,modManager,58CF080,,manuell (Daten/VTable)
+740511,s_singleton,58D0AE0,,manuell (Daten/VTable)
+753531,s_activate,40C750,,kein eindeutiger Treffer
+755147,s_hideSubtitle,12B3220,,kein eindeutiger Treffer
+759508,cVMUpdate,1372150,,kein eindeutiger Treffer
+780200,s_vtbl,2C4A2A8,,manuell (Daten/VTable)
+780729,realSetLevelMod,8F660,,kein eindeutiger Treffer
+791183,settingCollection,5EDB528,,manuell (Daten/VTable)
+796114,getFormById,152C90,,kein eindeutiger Treffer
+803087,knockExplosion,E83A60,,kein eindeutiger Treffer
+806706,bGodMode,5AC7BB4,,manuell (Daten/VTable)
+811139,s_getEquippedWeapon,1388BC0,10F9110,Signatur 32 Byte
+824898,ctor,D09300,C11760,Signatur 64 Byte
+835806,setWeaponState,E22DF0,,manuell (in Funktion)
+847266,updateGameCursor,D38B40,,kein eindeutiger Treffer
+855965,s_greetDistance,371B168,,manuell (Daten/VTable)
+868002,processScriptedEquip,DBA020,1D5FA60,Signatur 32 Byte
+875508,s_showSubtitle,12B2F70,,kein eindeutiger Treffer
+888641,s_nullHandle,38CCE04,,manuell (Daten/VTable)
+906784,s_runDetection,F60320,,kein eindeutiger Treffer
+919893,s_registerPapyrusFunction,27338A0,,kein eindeutiger Treffer
+925298,s_setNoBleedoutRecovery,DFCAB0,,kein eindeutiger Treffer
+930785,realGetLock,47FEE0,,kein eindeutiger Treffer
+942682,s_rotateY,40BF00,,kein eindeutiger Treffer
+943233,s_removeItem,3F9830,,kein eindeutiger Treffer
+952799,SetStage,5D71E0,66B550,Signatur 32 Byte
+966433,SetRunning,5D70C0,,kein eindeutiger Treffer
+988029,equipObject,E1BCD0,,kein eindeutiger Treffer
+994875,ctor,123F00,,kein eindeutiger Treffer
+996227,s_instance,58D3308,,manuell (Daten/VTable)
+1000678,pObjManager,58D0788,,manuell (Daten/VTable)
+1001403,handleInput,12A1B20,,kein eindeutiger Treffer
+1027500,s_actorCtor,D6E9A0,C57B60,Signatur 32 Byte
+1045264,s_getCOCPlacementInfo,3BAFB0,4D1A60,Signatur 64 Byte
+1056037,fire,34D490,,kein eindeutiger Treffer
+1064963,s_set,1B41E70,,kein eindeutiger Treffer
+1065114,s_isMenuOpen,2042160,,kein eindeutiger Treffer
+1072874,s_difficulty,3795C60,,manuell (Daten/VTable)
+1079380,mainMenuCtor,129FF30,,kein eindeutiger Treffer
+1089537,s_unregisterSink,CD6680,,kein eindeutiger Treffer
+1095748,bgsObjectInstance,2F7B50,,kein eindeutiger Treffer
+1101832,s_setPosition,40C060,,kein eindeutiger Treffer
+1104082,s_actorDtor,D6F1C0,,kein eindeutiger Treffer
+1139812,s_vtbl,2C56418,,manuell (Daten/VTable)
+1152088,s_getRefrByHandle,23740,,kein eindeutiger Treffer
+1163005,s_showHudMessage,AE1E90,,kein eindeutiger Treffer
+1174340,s_singleton,59D75C8,,manuell (Daten/VTable)
+1183888,s_reset,26F0960,,kein eindeutiger Treffer
+1194835,tes,5AA4288,,manuell (Daten/VTable)
+1204430,s_release,1B42FD0,,kein eindeutiger Treffer
+1235449,s_instance,609BF80,,manuell (Daten/VTable)
+1244028,setWeather,651A60,6BFB60,"Funktion+C, Abstand ungeprüft"
+1247320,instance,5A735C8,,manuell (Daten/VTable)
+1260317,s_unequipAll,D8E370,,kein eindeutiger Treffer
+1265292,s_unequipFunc,E203A0,,kein eindeutiger Treffer
+1277201,getCurrentWeapon,DFFD00,,kein eindeutiger Treffer
+1278859,updateWeather,64E530,,kein eindeutiger Treffer
+1292493,unequipObject,E1C0B0,CE62C0,Signatur 32 Byte
+1293890,s_setSize,551440,,kein eindeutiger Treffer
+1303717,realCreateLock,47FD20,,kein eindeutiger Treffer
+1328119,pollInputDevices,1B2BE30,,kein eindeutiger Treffer
+1330304,s_SimulateTime,D1D850,,kein eindeutiger Treffer
+1331728,s_actorCtor2,D6ED80,,kein eindeutiger Treffer
+1332434,s_internalMoveTo,13FE7E0,1181020,Signatur 32 Byte
+1358858,s_actorMediator,5AA4710,,manuell (Daten/VTable)
+1420077,bAlwaysActive,378E618,,manuell (Daten/VTable)
+1444952,s_instance,58D0AC0,,manuell (Daten/VTable)
+1445652,PerformComplexAction,E211A0,,kein eindeutiger Treffer
+1452334,s_launch,FCA260,,kein eindeutiger Treffer
+1464379,internalGetChangeFlags,CD8160,,kein eindeutiger Treffer
+1474878,s_equipFunc,E1EB50,,kein eindeutiger Treffer
+1479787,s_actorProcess,D7CEB0,,kein eindeutiger Treffer
+1482293,dropObject,D8EE10,C797C0,Signatur 32 Byte
+1482948,s_port,5A66B30,,manuell (Daten/VTable)
+1512371,mainMenuLoop,12A0E20,,kein eindeutiger Treffer
+1539010,s_damageActor,D79EB0,,kein eindeutiger Treffer
+1549777,s_viewportLock,3846668,,manuell (Daten/VTable)
+1567562,SetActive,5D6AC0,,kein eindeutiger Treffer
+1567996,s_speakSoundFunction,D92090,,kein eindeutiger Treffer
+1569706,processLists,58CEE98,,manuell (Daten/VTable)
+1573130,s_getHandle,411410,5194C0,Signatur 32 Byte
+1578706,s_lockChange,3EDBA0,,kein eindeutiger Treffer
+1582181,s_formFree,1B0F2E0,1658240,Signatur 32 Byte

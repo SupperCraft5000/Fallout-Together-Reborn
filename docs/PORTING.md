@@ -22,6 +22,23 @@ python -I Tools\port\pipeline.py --ids data\ids-1.10.163.csv --og-exe Fallout4.a
 ```
 Dauer: Sekunden. Ergebnis `offsets-<version>.csv` + `.bin` im Spielordner.
 
+## Ghidra-Ablauf für schwierige Adressen
+Für Adressen, die `graphport.py` nicht findet. Braucht `FTR_WORK`, `FTR_GHIDRA` und `FTR_JAVA_HOME` ([ENVIRONMENT.md](ENVIRONMENT.md)) sowie `Fallout4.analysis.exe` in `%FTR_WORK%\exe-1.10.163` und `Fallout4.exe` in `%FTR_WORK%\exe-1.11.240`.
+
+```powershell
+Tools\port\ghidra\run-dump.ps1 old     # Listing aller Funktionen -> %FTR_WORK%\ghidra\dump\old.txt
+Tools\port\ghidra\run-dump.ps1 new
+python Tools\port\ghidra\lst.py        # Blattfunktionen ohne .pdata auflisten
+Tools\port\ghidra\run-extra.ps1 old <in> <out>   # deren Listings nachladen, ebenso new
+python Tools\port\ghidra\prop.py       # Zuordnung ausbreiten -> ext.pkl
+python Tools\port\ghidra\final.py      # offene Adressen bewerten -> final.pkl
+python Tools\port\ghidra\report.py     # data\manual-ghidra-*.csv und Bericht
+```
+Startpunkt ist `data/out/map-240-plus.csv`, die Zuordnung alt nach neu. Einzelne Funktionen dekompiliert `run-decomp.ps1 new|old <liste> <ausgabe>`, Vergleich zweier Funktionen `cmpf.py alt:neu`.
+Für eine andere Fallout-Version müssen die Versionsnummern in `fdis.py`, `run-dump.ps1` und `ctx.py` angepasst werden.
+
+Grenze dieses Repos: Die Analyse setzt eine lesbare 1.10.163-exe voraus, die hier nicht enthalten ist. Fertig portierte Adressen für 1.11.240 stehen in `data/final-1-11-240-0.csv`.
+
 ## Werkzeuge (`Tools/port`, nur Python-Standardbibliothek)
 | Skript | Zweck |
 |---|---|

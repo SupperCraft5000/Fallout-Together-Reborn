@@ -1,7 +1,7 @@
 # AGENTS.md – Einstieg für KI-Agenten und neue Mitwirkende
 
 Lies zuerst [docs/STATUS.md](docs/STATUS.md) (was geht, was offen ist), dann je nach Aufgabe
-[docs/PORTING.md](docs/PORTING.md) oder [docs/BUILD.md](docs/BUILD.md).
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/DEBUGGING.md](docs/DEBUGGING.md), [docs/PORTING.md](docs/PORTING.md) oder [docs/BUILD.md](docs/BUILD.md).
 
 ## Projekt in Kürze
 - Fallout Together Reborn: Co-op-Mod für Fallout 4 auf Basis von Fallout Together (TiltedEvolution, C++20, xmake, Windows x64).

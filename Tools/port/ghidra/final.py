@@ -2,7 +2,7 @@ import sys, json
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).parent))
 from cmpf import *
 from sim import sim, feats, jacc
-src=(PORT/"graphport.py").read_text(encoding="utf-8")
+src=(Path(__file__).resolve().parents[1]/"graphport.py").read_text(encoding="utf-8")
 ns={}
 exec(compile(src[:src.index("ap = argparse.ArgumentParser()")],"gp","exec"),ns)
 vo=ns["vtables"](ns["Pe"](OLD_EXE)); vn=ns["vtables"](ns["Pe"](NEW_EXE))

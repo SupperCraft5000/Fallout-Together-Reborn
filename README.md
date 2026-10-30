@@ -33,6 +33,11 @@ Fallout Together Reborn ist ein Fork von [TiltedEvolution / Tilted Online](https
 | [docs/TESTING.md](docs/TESTING.md) | Tests |
 | [docs/PORTING.md](docs/PORTING.md) | Neue Fallout-Versionen |
 | [docs/FINDINGS.md](docs/FINDINGS.md) | Erkenntnisse zur Engine |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Starter, Protokoll, Sitzungsablauf |
+| [docs/DEBUGGING.md](docs/DEBUGGING.md) | Logs, Abstürze, Vorgehen bei Bugs |
+| [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) | Umgebungsvariablen |
+| [docs/HISTORY.md](docs/HISTORY.md) | Alte Patch-Nummern und Commits |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Bugs melden, mitmachen |
 | [AGENTS.md](AGENTS.md) | Einstieg für Mitwirkende und KI-Agenten |
 
 ## Lizenz

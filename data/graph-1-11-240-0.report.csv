@@ -1,0 +1,154 @@
+og_id,name,old_rva,new_rva,art,stimmen
+633524,cMainLoop,D38E60,C339D0,Funktion,3
+759508,cVMUpdate,1372150,10E9F60,Funktion,12
+694340,cVMDestructor,E986D0,,Funktion offen,0
+1358858,s_actorMediator,5AA4710,32DD6C8,Daten,2
+1445652,PerformComplexAction,E211A0,,Funktion offen,0
+780200,s_vtbl,2C4A2A8,2467748,Daten,3
+502376,performAction,E20FB0,,Funktion offen,0
+1000678,pObjManager,58D0788,30E88A8,Daten,2
+811139,s_getEquippedWeapon,1388BC0,10F9110,Funktion,3
+1277201,getCurrentWeapon,DFFD00,,Funktion offen,0
+1260317,s_unequipAll,D8E370,,Funktion offen,0
+868002,processScriptedEquip,DBA020,CA8240,Funktion,6
+1482293,dropObject,D8EE10,C797C0,Funktion,3
+1027500,s_actorCtor,D6E9A0,,Funktion offen,0
+1331728,s_actorCtor2,D6ED80,C57B60,Funktion,8
+1104082,s_actorDtor,D6F1C0,,Funktion offen,0
+1539010,s_damageActor,D79EB0,C63400,Funktion,12
+703726,s_applyActorEffect,C8B180,,Funktion offen,0
+906784,s_runDetection,F60320,,Funktion offen,0
+1567996,s_speakSoundFunction,D92090,,Funktion offen,0
+640273,s_constructor,1B41D40,,Funktion offen,0
+1204430,s_release,1B42FD0,167D4A0,Funktion,58
+1064963,s_set,1B41E70,167C320,Funktion,1136
+193854,initWindowLoc,1D17E10,,Funktion offen,0
+700869,timerLoc,1D0B670,1818550,Funktion,15
+564405,renderInit,1D09DA0,1816080,Funktion,3
+1328119,pollInputDevices,1B2BE30,,Funktion offen,0
+847266,updateGameCursor,D38B40,,Funktion offen,0
+484974,GetDefaultObjectManager,6B2A0,308100,Funktion,137
+1174340,s_singleton,59D75C8,31EE428,Daten,6
+988029,equipObject,E1BCD0,CE5E20,Funktion,2
+1292493,unequipObject,E1C0B0,CE62C0,Funktion,15
+1474878,s_equipFunc,E1EB50,,Funktion offen,0
+1265292,s_unequipFunc,E203A0,,Funktion offen,0
+57456,s_registerSink,CD3980,,Funktion offen,0
+1089537,s_unregisterSink,CD6680,,Funktion offen,0
+646455,s_pushEvent,460220,540D30,Funktion,9
+711558,s_instance,58CF080,30E7100,Daten,20
+405390,GetActorValueInfoArray,6B1F0,,Funktion offen,0
+1095748,bgsObjectInstance,2F7B50,436B50,Funktion,268
+472572,s_SetLeveledNpc,149340,30A2D0,Funktion,2
+1567562,SetActive,5D6AC0,,Funktion offen,0
+966433,SetRunning,5D70C0,66B440,Funktion,2
+952799,SetStage,5D71E0,66B550,Funktion,3
+548587,s_instance,58D0898,30E8930,Daten,32
+1065114,s_isMenuOpen,2042160,1A80320,Funktion,92
+1079380,mainMenuCtor,129FF30,,Funktion offen,0
+1512371,mainMenuLoop,12A0E20,106FA20,Funktion,3
+1001403,handleInput,12A1B20,,Funktion offen,0
+239710,processMenus,2042430,1A80610,Funktion,8
+277976,s_requestLoadingText,12985D0,1068180,Funktion,12
+129825,getTargetAsActor,C6CC60,B8BD50,Funktion,15
+385035,addTarget,C6C5E0,,Funktion offen,0
+113033,checkAddEffectTargetData,C6D4F0,,Funktion offen,0
+1183888,s_reset,26F0960,20ECB60,Funktion,205
+1293890,s_setSize,551440,,Funktion offen,0
+996227,s_instance,58D3308,30EB308,Daten,9
+1139812,s_vtbl,2C56418,24744A8,Daten,3
+7491,s_instance,5AC64F0,32FF808,Daten,15
+657344,setDifficulty,EB06E0,D6D630,Funktion,15
+1452334,s_launch,FCA260,,Funktion offen,0
+1056037,fire,34D490,,Funktion offen,0
+534058,s_removeAllItems,140CE90,115BC50,Funktion,3
+180923,getEquipSlot,3FE4F0,505CA0,Funktion,12
+753531,s_activate,40C750,5144B0,Funktion,34
+78185,s_addItem,3FBB00,502C70,Funktion,12
+943233,s_removeItem,3F9830,,Funktion offen,0
+228366,s_factories,58D3BF0,,Daten offen,0
+796114,getFormById,152C90,311B80,Funktion,437
+1464379,internalGetChangeFlags,CD8160,BE8A50,Funktion,13
+177947,s_singleton,5A73360,32A85A8,Daten,10
+27400,InternalSetFloatVariable,81D410,,Funktion offen,0
+791183,settingCollection,5EDB528,344B4B8,Daten,4
+42693,s_gameHeap,38CC980,3E74AB0,Daten,816
+652767,s_formAllocate,1B0EFD0,,Funktion offen,0
+1582181,s_formFree,1B0F2E0,1658240,Funktion,617
+919893,s_registerPapyrusFunction,27338A0,,Funktion offen,0
+157617,realSetLock,B7E10,,Funktion offen,0
+740511,s_singleton,58D0AE0,30E8B08,Daten,2
+755147,s_hideSubtitle,12B3220,,Funktion offen,0
+875508,s_showSubtitle,12B2F70,,Funktion offen,0
+385617,getCell,113480,2E43F0,Funktion,3
+500304,s_realSpawnNewREFR,1140B0,2E5110,Funktion,2
+1072874,s_difficulty,3795C60,2F34588,Daten,4
+855965,s_greetDistance,371B168,,Daten offen,0
+302826,s_vatsSelectTargetMult,372FAA0,,Daten offen,0
+1152088,s_getRefrByHandle,23740,,Funktion offen,0
+1573130,s_getHandle,411410,,Funktion offen,0
+888641,s_nullHandle,38CCE04,30E5280,Daten,69
+1332434,s_internalMoveTo,13FE7E0,1181020,Funktion,3
+661617,s_getLevel,D79E90,,Funktion offen,0
+302888,QueueUpdate,D8A1F0,C742F0,Funktion,43
+780729,realSetLevelMod,8F660,284D20,Funktion,2
+303410,s_character,5AA4388,32DD370,Daten,258
+930785,realGetLock,47FEE0,5634A0,Funktion,46
+1303717,realCreateLock,47FD20,,Funktion offen,0
+835806,setWeaponState,E22DF0,,Funktion offen,0
+925298,s_setNoBleedoutRecovery,DFCAB0,,Funktion offen,0
+629902,dispelAllSpells,C6B910,,Funktion offen,0
+1045264,s_getCOCPlacementInfo,3BAFB0,4D1A60,Funktion,13
+806706,bGodMode,5AC7BB4,,Daten offen,0
+803087,knockExplosion,E83A60,,Funktion offen,0
+484694,skyGet,128CB0,2F2730,Funktion,100
+6511,resetWeather,651AE0,6BFBE0,Funktion,3
+1101832,s_setPosition,40C060,513DB0,Funktion,45
+158656,s_rotateX,40BE70,,Funktion offen,0
+942682,s_rotateY,40BF00,,Funktion offen,0
+144721,s_rotateZ,40BF90,513CE0,Funktion,2
+1479787,s_actorProcess,D7CEB0,,Funktion offen,0
+1578706,s_lockChange,3EDBA0,,Funktion offen,0
+609985,s_checkForNewPackage,E28F80,,Funktion offen,0
+644843,s_initFromPackage,E219A0,CE9E60,Funktion,8
+1244028,setWeather,651A60,,Funktion offen,0
+698558,forceWeather,651BE0,,Funktion offen,0
+1278859,updateWeather,64E530,,Funktion offen,0
+708753,addDeathItems,D70AF0,,Funktion offen,0
+1235449,s_instance,609BF80,38E13A0,Daten,2
+454121,s_device,61E0918,,Daten offen,0
+1247320,instance,5A735C8,32A8618,Daten,37
+824898,ctor,D09300,C11760,Funktion,3
+994875,ctor,123F00,,Funktion offen,0
+601668,s_readFormId,D06BC0,C0FA10,Funktion,53
+556001,s_writeFormId,D09AA0,C11C80,Funktion,54
+210458,s_writeId,D09A20,C11C00,Funktion,11
+77225,initWindowLoc,130BBF8,,Funktion offen,0
+68780,windowLoc,355F298,,Daten offen,0
+77245,timerLoc,F85B00,,Funktion offen,0
+68616,pollInputDevices,35F5050,,Daten offen,0
+68275,unsignedInt,345C578,,Daten offen,0
+14773,getGenerator,30E70DC,,Daten offen,0
+69553,getTaskletManagerInstance,305767,,Funktion offen,0
+68260,threadInit,2E72B60,,Daten offen,0
+69065,setThreadName,386DDF8,,Daten offen,0
+57703,createHavokThread,1EF6FC3,,Funktion offen,0
+698829,s_matrix,5A66AA0,,Daten offen,0
+1482948,s_port,5A66B30,,Daten offen,0
+53111,hookLoc,32BA30C,,Daten offen,0
+52509,ProcessMessage,291D440,,Funktion offen,0
+52517,controlPatch,673D6E4,,Funktion offen,0
+82081,ProcessHook,18A3D7A,,Funktion offen,0
+36547,MainInit,1048D35,,Funktion offen,0
+51537,FavoritesCanProcess,260FA28,,Funktion offen,0
+109441,s_w2s,1BADB00,,Funktion offen,0
+34451,hookLoc,F33A57,,Funktion offen,0
+1194835,tes,5AA4288,32DD158,Daten,42
+1569706,processLists,58CEE98,30E71C0,Daten,39
+1444952,s_instance,58D0AC0,30E8B28,Daten,26
+1330304,s_SimulateTime,D1D850,C1F3D0,Funktion,10
+1549777,s_viewportLock,3846668,,Daten offen,0
+668528,winMain,D35930,,Funktion offen,0
+196396,bUseFaceGenPreprocessedHeads,3733CE0,,Daten offen,0
+1420077,bAlwaysActive,378E618,,Daten offen,0
+1163005,s_showHudMessage,AE1E90,A37270,Funktion,195
