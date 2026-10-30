@@ -217,6 +217,20 @@ void PartyService::OnPlayerJoin(const PlayerJoinEvent& acEvent) noexcept
 
     GameServer::Get()->SendToPlayers(notify, acEvent.pPlayer);
 
+    // The Fallout build ships no party UI, so the first player has to open the party for quests to sync
+    if (m_parties.empty() && bAutoPartyJoin)
+    {
+        uint32_t partyId = m_nextId++;
+        Party& party = m_parties[partyId];
+        party.Members.push_back(acEvent.pPlayer);
+        party.LeaderPlayerId = acEvent.pPlayer->GetId();
+        acEvent.pPlayer->GetParty().JoinedPartyId = partyId;
+
+        spdlog::info("[PartyService]: Created party {} for first player {}", partyId, acEvent.pPlayer->GetId());
+        SendPartyJoinedEvent(party, acEvent.pPlayer);
+        return;
+    }
+
     if (m_parties.size() == 1 && bAutoPartyJoin)
     {
         for (Player* player : m_world.GetPlayerManager())
