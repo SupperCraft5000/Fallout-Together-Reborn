@@ -38,10 +38,15 @@ NiPoint3 PlayerCharacter::RespawnPlayer() noexcept
     actorState.ResetLifeState();
 
     // Stay where the player went down: the placement of an exterior cell can be below the ground, which dropped players
-    // through the world, and in an interior it means walking back from the entrance.
+    // through the world, and in an interior it means walking back from the entrance. The move itself is still needed,
+    // without it the animation graph and character controller stay in the downed state (tilted pose, no jumping).
+    NiPoint3 pos = position;
+    pos.z += 16.f;
+    if (TESObjectCELL* pCell = GetParentCell())
+        MoveTo(pCell, pos);
 
     // Make bleedout state unrecoverable again for when the player goes down the next time
     SetNoBleedoutRecovery(true);
 
-    return position;
+    return pos;
 }
