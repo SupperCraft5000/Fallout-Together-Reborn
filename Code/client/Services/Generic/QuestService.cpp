@@ -100,6 +100,7 @@ BSTEventResult QuestService::OnEvent(const TESQuestStageEvent* apEvent, const Ev
     // there is no reason to even fetch the quest object, since the event provides everything already....
     if (TESQuest* pQuest = Cast<TESQuest>(TESForm::GetById(apEvent->formId)))
     {
+        spdlog::info("Quest {:X}: type {}, objectives {}, syncable {}", pQuest->formID, static_cast<int>(pQuest->type), pQuest->objectives.length, !IsNonSyncableQuest(pQuest));
         if (IsNonSyncableQuest(pQuest))
             return BSTEventResult::kOk;
 
@@ -179,8 +180,9 @@ bool QuestService::IsNonSyncableQuest(TESQuest* apQuest)
 {
     // non story quests are "blocked" and not synced
     auto& stages = apQuest->stages;
+    // Miscellaneous also holds the player's "Aufgaben", those are the ones with objectives
     return apQuest->type == TESQuest::Type::None // internal event
-           || apQuest->type == TESQuest::Type::Miscellaneous || stages.Empty();
+           || (apQuest->type == TESQuest::Type::Miscellaneous && apQuest->objectives.Empty()) || stages.Empty();
 }
 
 void QuestService::DebugDumpQuests()

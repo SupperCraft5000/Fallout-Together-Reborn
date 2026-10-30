@@ -77,5 +77,6 @@ void QuestService::OnQuestChanges(const PacketEvent<RequestQuestUpdate>& acMessa
     if (!partyComponent.JoinedPartyId.has_value())
         return;
 
+    spdlog::info("Quest update {:X}:{:X}, stage {} from player {} -> party {}", message.Id.ModId, message.Id.BaseId, message.Stage, acMessage.pPlayer->GetId(), *partyComponent.JoinedPartyId);
     GameServer::Get()->SendToParty(notify, partyComponent, acMessage.GetSender());
 }
