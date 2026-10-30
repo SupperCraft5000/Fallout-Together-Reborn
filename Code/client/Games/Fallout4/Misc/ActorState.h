@@ -13,6 +13,7 @@ struct ActorState
 
     // TODO: ft (verify)
     bool IsBleedingOut() const noexcept { return ((flags1 >> 17) & 0xFu) - 7 <= 1; }
+    void ResetLifeState() noexcept { flags1 &= ~(0xFu << 17); }
 
     bool SetWeaponDrawn(bool aDraw) noexcept;
 };

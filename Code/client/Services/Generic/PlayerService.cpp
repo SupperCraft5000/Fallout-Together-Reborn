@@ -226,6 +226,7 @@ void PlayerService::RunRespawnUpdates(const double acDeltaTime) noexcept
         return;
 
     static bool s_startTimer = false;
+    static bool s_respawned = false;
 
     PlayerCharacter* pPlayer = PlayerCharacter::Get();
     if (!pPlayer->actorState.IsBleedingOut())
@@ -237,8 +238,13 @@ void PlayerService::RunRespawnUpdates(const double acDeltaTime) noexcept
 #endif
 
         s_startTimer = false;
+        s_respawned = false;
         return;
     }
+
+    // Respawning teleports the player, never do it twice for the same death
+    if (s_respawned)
+        return;
 
     if (!s_startTimer)
     {
@@ -266,6 +272,7 @@ void PlayerService::RunRespawnUpdates(const double acDeltaTime) noexcept
         m_transport.Send(PlayerRespawnRequest());
 
         s_startTimer = false;
+        s_respawned = true;
 
 #if TP_SKYRIM64
         auto* pEquipManager = EquipManager::Get();
