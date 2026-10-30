@@ -34,11 +34,12 @@ NiPoint3 PlayerCharacter::RespawnPlayer() noexcept
     // TODO(cosideci): there's a cleaner way to do this
     ForceActorValue(ActorValueOwner::ForceMode::DAMAGE, ActorValueInfo::kHealth, 1000000);
 
-    // Clearing the life state alone leaves the player downed for the rest of the game: no jumping, no AP or ammo display.
-    Resurrect(false, false);
-
-    // Health alone doesn't end the essential down state in Fallout 4
-    actorState.ResetLifeState();
+    // Health alone doesn't end the essential down state. It has to go through the game's own setter: going down adds an
+    // input enable layer (mask 0x424) and a camera state, and only this call removes them again. Clearing the bits leaves
+    // the player without jumping and firing. Resurrect is no option either, it replaces currentProcess.
+    TP_THIS_FUNCTION(TSetLifeState, void, PlayerCharacter, uint32_t);
+    POINTER_FALLOUT4(TSetLifeState, s_setLifeState, 776975);
+    TiltedPhoques::ThisCall(s_setLifeState, this, 0u);
 
     // Stay where the player went down: the placement of an exterior cell can be below the ground, which dropped players
     // through the world, and in an interior it means walking back from the entrance. The move itself is still needed,
