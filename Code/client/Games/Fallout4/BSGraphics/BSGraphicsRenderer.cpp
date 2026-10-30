@@ -34,6 +34,12 @@ void (*Renderer_Init)(Renderer*, BSGraphics::RendererInitOSData*, const BSGraphi
 // WNDPROC seems to be part of the renderer
 LRESULT CALLBACK Hook_WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    // tells a closed window or a Windows logoff apart from the game quitting on its own
+    if (uMsg == WM_CLOSE || uMsg == WM_DESTROY || uMsg == WM_QUERYENDSESSION || uMsg == WM_ENDSESSION)
+        spdlog::info("Window message {:X}, foreground: {}", uMsg, GetForegroundWindow() == hwnd);
+    else if (uMsg == WM_SYSCOMMAND && (wParam & 0xFFF0) == SC_CLOSE)
+        spdlog::info("Window close command, lParam: {:X}", lParam);
+
     if (InputService::WndProc(hwnd, uMsg, wParam, lParam) != 0)
         return 0;
 
