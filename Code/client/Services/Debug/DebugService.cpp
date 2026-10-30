@@ -169,6 +169,24 @@ void SaveFigure(PlayerCharacter* apPlayer, const std::string& acPath)
     apPlayer->GetActorInventory().Serialize(writer);
     values.Serialize(writer);
 
+    if (auto* pNpc = Cast<TESNPC>(apPlayer->baseForm))
+    {
+        // same flags as a player spawn, these carry the face
+        pNpc->MarkChanged(0x2000800);
+        const uint32_t changeFlags = pNpc->GetChangeFlags();
+        String appearance;
+        pNpc->Serialize(&appearance);
+        const std::string name = pNpc->fullName.value.AsAscii();
+
+        const uint32_t appearanceSize = static_cast<uint32_t>(appearance.size());
+        const uint32_t nameSize = static_cast<uint32_t>(name.size());
+        writer.WriteBytes(reinterpret_cast<const uint8_t*>(&changeFlags), sizeof(changeFlags));
+        writer.WriteBytes(reinterpret_cast<const uint8_t*>(&appearanceSize), sizeof(appearanceSize));
+        writer.WriteBytes(reinterpret_cast<const uint8_t*>(appearance.data()), appearanceSize);
+        writer.WriteBytes(reinterpret_cast<const uint8_t*>(&nameSize), sizeof(nameSize));
+        writer.WriteBytes(reinterpret_cast<const uint8_t*>(name.data()), nameSize);
+    }
+
     const std::string temp = acPath + ".tmp";
     {
         std::ofstream file(temp, std::ios::binary | std::ios::trunc);
@@ -197,24 +215,49 @@ void ApplyFigure(PlayerCharacter* apPlayer, const std::string& acPath)
     inventory.Deserialize(reader);
     values.Deserialize(reader);
 
+    // figures written by older builds end here
+    uint32_t changeFlags = 0;
+    uint32_t appearanceSize = 0;
+    if (reader.ReadBytes(reinterpret_cast<uint8_t*>(&changeFlags), sizeof(changeFlags)) &&
+        reader.ReadBytes(reinterpret_cast<uint8_t*>(&appearanceSize), sizeof(appearanceSize)) && appearanceSize > 0 &&
+        reader.GetBytePosition() + appearanceSize <= data.size())
+    {
+        String appearance(appearanceSize, '\0');
+        reader.ReadBytes(reinterpret_cast<uint8_t*>(appearance.data()), appearanceSize);
+
+        uint32_t nameSize = 0;
+        reader.ReadBytes(reinterpret_cast<uint8_t*>(&nameSize), sizeof(nameSize));
+        std::string name(nameSize, '\0');
+        reader.ReadBytes(reinterpret_cast<uint8_t*>(name.data()), nameSize);
+
+        if (auto* pNpc = Cast<TESNPC>(apPlayer->baseForm))
+        {
+            pNpc->Deserialize(appearance, changeFlags);
+            if (!name.empty())
+                pNpc->fullName.value = BSFixedString(name.c_str());
+        }
+    }
+
     apPlayer->SetActorInventory(inventory);
     for (const auto& value : values.ActorValuesList)
         apPlayer->SetActorValue(value.first, value.second);
+    apPlayer->QueueUpdate();
 
     spdlog::info("Applied figure: {} items, {} values", inventory.Entries.size(), values.ActorValuesList.size());
 }
 
 // The ids in a figure are server mod ids, so reading and writing has to wait until the server assigned them.
-void UpdateFigure(const bool acOnline, const double acDelta)
+// Returns true once a figure was applied.
+bool UpdateFigure(const bool acOnline, const double acDelta)
 {
     static double s_wait = 10.0;
     static bool s_finished = false;
     if (s_finished || !acOnline)
-        return;
+        return false;
 
     s_wait -= acDelta;
     if (s_wait > 0.0)
-        return;
+        return false;
 
     char mode[16]{};
     char path[MAX_PATH]{};
@@ -222,23 +265,48 @@ void UpdateFigure(const bool acOnline, const double acDelta)
         !GetEnvironmentVariableA("TP_FIGURE_FILE", path, static_cast<DWORD>(std::size(path))))
     {
         s_finished = true;
-        return;
+        return false;
     }
 
     PlayerCharacter* pPlayer = PlayerCharacter::Get();
     if (!pPlayer)
-        return;
+        return false;
 
     if (strcmp(mode, "apply") == 0)
     {
         s_finished = true;
         ApplyFigure(pPlayer, path);
+        return true;
     }
-    else
+
+    s_wait = 60.0;
+    SaveFigure(pPlayer, path);
+    return false;
+}
+
+// Only for sessions started by the launcher, where nobody could reconnect by hand.
+void UpdateHostLost(const bool acOnline, bool& arExpected)
+{
+    static bool s_wasOnline = false;
+    if (acOnline)
     {
-        s_wait = 60.0;
-        SaveFigure(pPlayer, path);
+        s_wasOnline = true;
+        return;
     }
+    if (!s_wasOnline)
+        return;
+    s_wasOnline = false;
+
+    char address[8]{};
+    if (arExpected || !GetEnvironmentVariableA("TP_AUTOCONNECT", address, static_cast<DWORD>(std::size(address))))
+    {
+        arExpected = false;
+        return;
+    }
+
+    HWND window = reinterpret_cast<HWND>(BSGraphics::GetMainWindow()->hWnd);
+    MessageBoxW(window, L"Die Verbindung zum Host wurde getrennt.\nDas Spiel wird jetzt beendet.", L"Fallout Together Reborn", MB_OK | MB_ICONINFORMATION | MB_TOPMOST);
+    PostMessageW(window, WM_CLOSE, 0, 0);
 }
 } // namespace
 
@@ -265,7 +333,15 @@ void DebugService::OnUpdate(const UpdateEvent& acUpdateEvent) noexcept
         }
     }
 
-    UpdateFigure(m_transport.IsOnline(), acUpdateEvent.Delta);
+    // the look only reaches the others with the spawn request, so join again with the new one
+    static bool s_reconnecting = false;
+    if (UpdateFigure(m_transport.IsOnline(), acUpdateEvent.Delta))
+    {
+        s_reconnecting = true;
+        m_transport.Close();
+        s_autoConnectChecked = false;
+    }
+    UpdateHostLost(m_transport.IsOnline(), s_reconnecting);
 
     if (!BSGraphics::GetMainWindow()->IsForeground())
         return;

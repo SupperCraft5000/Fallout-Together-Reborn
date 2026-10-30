@@ -57,6 +57,27 @@ void HookMainShutdown()
     TerminateProcess(GetCurrentProcess(), 0);
 }
 
+// Lets the launcher open a save right after the main menu. The game runs this setting as a console command and
+// stays in the menu if the load fails, which is why no engine address is needed for this.
+using TGetPrivateProfileStringA = decltype(&GetPrivateProfileStringA);
+static TGetPrivateProfileStringA RealGetPrivateProfileStringA = nullptr;
+
+DWORD WINAPI HookGetPrivateProfileStringA(LPCSTR apSection, LPCSTR apKey, LPCSTR apDefault, LPSTR apResult, DWORD aSize, LPCSTR apFile)
+{
+    char save[MAX_PATH]{};
+    if (apKey && _stricmp(apKey, "sStartingConsoleCommand") == 0 && GetEnvironmentVariableA("TP_AUTOLOAD", save, static_cast<DWORD>(std::size(save))))
+    {
+        const int cWritten = snprintf(apResult, aSize, "LoadGame \"%s\"", save);
+        if (cWritten > 0 && static_cast<DWORD>(cWritten) < aSize)
+        {
+            spdlog::info("Loading save on start: {}", save);
+            return static_cast<DWORD>(cWritten);
+        }
+    }
+
+    return RealGetPrivateProfileStringA(apSection, apKey, apDefault, apResult, aSize, apFile);
+}
+
 static TiltedPhoques::Initializer s_mainHooks(
     []()
     {
@@ -72,6 +93,8 @@ static TiltedPhoques::Initializer s_mainHooks(
         TP_HOOK(&VMUpdate, HookVMUpdate);
         TP_HOOK(&MainLoop, HookMainLoop);
         TP_HOOK(&VMDestructor, HookVMDestructor);
+
+        TP_HOOK_IAT(GetPrivateProfileStringA, "kernel32.dll");
 
         static TMainShutdown* s_mainShutdown = cMainShutdown.Get();
         TP_HOOK(&s_mainShutdown, HookMainShutdown);
