@@ -32,6 +32,11 @@ uintptr_t CrackCEGInPlace(const CEGLocationInfo& acInfo)
     SteamXor(reinterpret_cast<uint8_t*>(&stub), sizeof(SteamStubHeaderV31), stub.XorKey);
     assert(stub.Signature == 0xC0DEC0DF);
 
+    // Newer Fallout 4 builds keep the stub but ship the code section unencrypted (SteamStub flag NoEncryption)
+    constexpr uint32_t kFlagNoEncryption = 4;
+    if (stub.Flags & kFlagNoEncryption)
+        return stub.OriginalEntryPoint;
+
     // decrypt IV in place
     ECB_Mode<AES>::Decryption ecbDec(stub.AES_Key, sizeof(stub.AES_Key));
     ecbDec.ProcessData(stub.AES_IV, stub.AES_IV, sizeof(stub.AES_IV));

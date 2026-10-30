@@ -22,16 +22,19 @@ std::string SerializeTimePoint(const time_point& time, const std::string& format
 
 LONG WINAPI VectoredExceptionHandler(PEXCEPTION_POINTERS pExceptionInfo)
 {
-    static int alreadyCrashed = 0;
+    static std::atomic<int> alreadyCrashed = 0;
     auto retval = EXCEPTION_CONTINUE_SEARCH;
+
+    // Leave before taking the lock: exceptions raised while we handle a crash land here again on the same
+    // thread, and locking there throws, which recursed until the stack overflowed and no dump was written.
+    if (pExceptionInfo->ExceptionRecord->ExceptionCode != EXCEPTION_ACCESS_VIOLATION || alreadyCrashed.fetch_add(1) != 0)
+        return retval;
 
     // Serialize 
     static std::mutex singleThreaded;
     const std::lock_guard lock{singleThreaded};
 
     // Check for severe, not continuable and not software-originated exception
-    if (pExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION &&
-        alreadyCrashed++ == 0)
     {
         spdlog::critical (__FUNCTION__ ": crash occurred!"); 
         
