@@ -38,6 +38,7 @@ Fallout Together Reborn ist ein Fork von [TiltedEvolution / Tilted Online](https
 | [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) | Umgebungsvariablen |
 | [docs/HISTORY.md](docs/HISTORY.md) | Alte Patch-Nummern und Commits |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Bugs melden, mitmachen |
+| [docs/REPOSITORIES.md](docs/REPOSITORIES.md) | Gitea, GitHub, Branches und Synchronisation |
 | [AGENTS.md](AGENTS.md) | Einstieg für Mitwirkende und KI-Agenten |
 
 ## Lizenz

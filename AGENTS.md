@@ -45,4 +45,5 @@ Lies zuerst [docs/STATUS.md](docs/STATUS.md) (was geht, was offen ist), dann je 
 
 ## Konventionen
 - Code-Kommentare im TiltedEvolution-Code auf Englisch (wie upstream), Doku und Skripte auf Deutsch.
+- Entwicklung auf `dev`, `main` ist der getestete Stand. Gitea und GitHub bleiben gleich, siehe [docs/REPOSITORIES.md](docs/REPOSITORIES.md).
 - Commits mit aussagekräftiger Nachricht. `patches/` enthält nur den Patch für das Submodul TiltedHooks.

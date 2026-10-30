@@ -13,6 +13,7 @@ Bitte angeben:
 Prüfe die Logs vor dem Hochladen. Spielstandnamen enthalten den Namen deiner Figur.
 
 ## Code beitragen
+- Pull Requests bitte nach `dev`, nicht nach `main`, siehe [docs/REPOSITORIES.md](docs/REPOSITORIES.md)
 - Regeln und Fallstricke stehen in [AGENTS.md](AGENTS.md)
 - Code-Kommentare auf Englisch, Doku und Skripte auf Deutsch
 - Keine Spieldateien, exe, davon abgeleitete Dateien oder Address-Library-Dateien committen
