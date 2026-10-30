@@ -14,7 +14,6 @@
 #include <Events/EquipmentChangeEvent.h>
 
 #include <World.h>
-#include <Games/Skyrim/Interface/UI.h>
 #include <PlayerCharacter.h>
 #include <Forms/TESObjectCELL.h>
 #include <Actor.h>

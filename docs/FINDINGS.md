@@ -118,3 +118,6 @@ Nachtrag zu 19: Nur `realloc` zu hooken reichte nicht. Das Spiel gibt auch Blöc
 Bit 18 von `Actor+0x43C` wird von `0xD71E60` (OG, ID 1085880) / `0xC5B2B0` (NG) neu berechnet. Vorrang hat ein Wert an der Referenz, dann die Basisform, dann Aliase. `HookUpdateEssential` setzt es für den Spieler danach neu.
 Der Lebenszustand (`actorState`, Bits 17 bis 20) darf nicht direkt geschrieben werden. `Actor::SetLifeState` (OG `0xD98580`, ID 1300465, NG `0xC83990`) legt beim Wechsel nach 7/8 für den Spieler eine `ExtraInputEnableLayer` mit Maske `0x424` und einen Kamerazustand an und führt die Bleedout-Aktion aus, der Rückweg entfernt das. Die Spieler-Überschreibung liegt in Slot 0x105 (OG `0xE9C0C0`, NG `0xD57980`). Beide Versionen sind hier im Dekompilat gleich.
 `Resurrect` beim Spieler (NG `0xD5E2E0`) löscht `currentProcess` und legt ihn neu an, für den Respawn ungeeignet.
+
+## 21. Server meldete sich bei der Server-Liste von Upstream
+`ServerListService` sendete pro Minute und bei jedem Beitritt Name, Beschreibung, Port, Spielerzahl, Tickrate und Version an `fallout-reborn-list.skyrim-together.com`, auch mit `bAnnounceServer=false`. Der Empfänger sieht dabei die öffentliche IP. Eine Antwort `403` beendete den Server (`GameServer::Kill`). Der Dienst ist entfernt. Ob die Adresse erreichbar war, ist nicht geprüft.

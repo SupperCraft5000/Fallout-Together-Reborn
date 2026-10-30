@@ -26,5 +26,4 @@ target(name)
     add_packages("hopscotch-map", "glm", "tiltedcore")
 end
 
-build_encoding("SkyrimEncoding", "TP_SKYRIM=1")
 build_encoding("FalloutEncoding", "TP_FALLOUT=1")

@@ -23,7 +23,7 @@ static void ShowAddressLibraryError(const wchar_t* apGamePath)
     Base::TaskDialog dia(g_SharedWindowIcon, L"Error", L"Failed to load Fallout 4 Address Library", L"", errorDetail.c_str());
 #endif
 
-    dia.AppendButton(0xBEED, L"Visit troubleshooting page on wiki.tiltedphoques.com");
+    dia.AppendButton(0xBEED, L"Open the troubleshooting guide");
     dia.AppendButton(0xBEEF, L"Visit Address Library modpage on nexusmods.com");
     const int result = dia.Show();
     if (result == 0xBEEF)
@@ -36,7 +36,7 @@ static void ShowAddressLibraryError(const wchar_t* apGamePath)
     }
     else if (result == 0xBEED)
     {
-        ShellExecuteW(nullptr, L"open", LR"(https://wiki.tiltedphoques.com/tilted-online/guides/troubleshooting/address-library-error)", nullptr, nullptr, SW_SHOWNORMAL);
+        ShellExecuteW(nullptr, L"open", LR"(https://github.com/SupperCraft5000/Fallout-Together-Reborn/blob/main/docs/DEBUGGING.md)", nullptr, nullptr, SW_SHOWNORMAL);
     }
 
     exit(4);

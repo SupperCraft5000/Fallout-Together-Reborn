@@ -38,14 +38,14 @@ void SentryLogHandler(sentry_level_t aLogLevel, const char* aFormat, va_list aAr
 
         Base::TaskDialog dia(GetModuleHandleW(nullptr), L"SkyrimTogether Crash", L"SkyrimTogether has crashed!",
                              L"Crash information has been collected", L"SkyrimTogether.exe+0x4FEAFF");
-        dia.AppendButton(100, L"Send crash report");
-        dia.AppendButton(101, L"Ask for help on discord");
+        dia.AppendButton(100, L"Close");
+        dia.AppendButton(101, L"Report the bug on GitHub");
         dia.SetDefaultButton(100);
 
         const int result = dia.Show();
         if (result == 101)
         {
-            ShellExecuteW(nullptr, L"open", LR"(https://discord.com/invite/SkyrimTogether)",
+            ShellExecuteW(nullptr, L"open", LR"(https://github.com/SupperCraft5000/Fallout-Together-Reborn/issues)",
                           nullptr, nullptr, SW_SHOWNORMAL);
         }
 

@@ -1,16 +1,12 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Idee vorschlagen
+about: Neue Funktion für Fallout Together Reborn vorschlagen
 title: ''
-labels: Feature
+labels: enhancement
 assignees: ''
 
 ---
 
-## Description
+**Worum geht es?**
 
-A short description about your feature request.
-
-## Additional context
-
-Add any other context or screenshots about the feature request here.
+**Warum wäre das hilfreich?**

@@ -69,15 +69,6 @@ local function build_launcher()
         "sentry-native")
 end
 
-target("SkyrimImmersiveLauncher")
-    set_basename("SkyrimTogether")
-    add_defines(
-        "TARGET_ST",
-        "TARGET_PREFIX=\"st\"")
-    add_deps("SkyrimTogetherClient")
-    add_ldflags("/WHOLEARCHIVE:SkyrimTogetherClient", { force = true })
-    build_launcher()
-
 target("FalloutImmersiveLauncher")
     set_basename("FalloutTogether")
     add_defines(

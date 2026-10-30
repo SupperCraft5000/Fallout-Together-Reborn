@@ -35,17 +35,6 @@ local function build_runner()
     add_defines("SPDLOG_HEADER_ONLY")
 end
 
-target("SkyrimServerRunner")
-    set_basename("SkyrimTogetherServer")
-    add_defines(
-        "TARGET_ST",
-        "TARGET_PREFIX=\"st\"")
-    -- we want uniform names for both runner and dll under windows for
-    -- scripting/ux reasons
-    build_runner()
-    -- core dll
-    add_deps("SkyrimTogetherServer")
-
 target("FalloutServerRunner")
     set_basename("FalloutTogetherServer")
     add_defines(

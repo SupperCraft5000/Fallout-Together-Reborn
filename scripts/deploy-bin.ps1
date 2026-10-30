@@ -16,7 +16,7 @@ if ($sentry) { Copy-Item "$($sentry.FullName)\*" $Bin -Recurse -Force }
 
 $img = Join-Path $Bin 'assets\images'
 New-Item -ItemType Directory -Force $img | Out-Null
-Copy-Item "$Repo\Code\skyrim_ui\src\assets\images\cursor.dds", "$Repo\Code\skyrim_ui\src\assets\images\cursor.png" $img -Force
+Copy-Item "$Repo\Code\client\assets\cursor.dds", "$Repo\Code\client\assets\cursor.png" $img -Force
 
 foreach ($f in 'FalloutTogether.exe', 'EarlyLoad.dll', 'TPProcess.exe', 'libcef.dll', 'd3dcompiler_47.dll', 'resources.pak', 'locales') {
     if (-not (Test-Path (Join-Path $Bin $f))) { throw "Fehlt in ${Bin}: $f" }

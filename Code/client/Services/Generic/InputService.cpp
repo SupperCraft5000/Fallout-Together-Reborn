@@ -13,8 +13,6 @@
 #include <Services/DiscordService.h>
 #include <World.h>
 
-#include "Games/Skyrim/Interface/MenuControls.h"
-
 static OverlayService* s_pOverlay = nullptr;
 static UINT s_currentACP = CP_ACP;
 

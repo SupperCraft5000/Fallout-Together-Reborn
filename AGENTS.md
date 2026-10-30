@@ -21,7 +21,7 @@ Lies zuerst [docs/STATUS.md](docs/STATUS.md) (was geht, was offen ist), dann je 
    die Portierung erzeugt die Offsets pro Version.
 4. Jede neue Adress-Zuordnungsheuristik mit `Tools/port/validate.py` (Kreuzvalidierung) prüfen.
    Falsche Adressen sind schlimmer als fehlende: lieber verwerfen als raten.
-5. Fallout-Build kompiliert **nicht** `Code/client/Games/Skyrim/**`. IDs dort sind für Fallout irrelevant.
+5. Skyrim-Ziele und der Skyrim-Client sind entfernt. Die `#if TP_SKYRIM`-Blöcke im gemeinsamen Code werden nicht übersetzt und sind Altlast. `Code/encoding/Structs/Skyrim` enthält nur noch vier Header mit Animations-Kennungen, die der Fallout-Code einbindet.
 
 ## Fallstricke (kosten sonst Stunden)
 - xmake **2.9.5** benutzen (wie CI des Projekts) und das Paket-Repo auf `978015f8b` pinnen; neuere Pakete brechen

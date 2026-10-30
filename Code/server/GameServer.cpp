@@ -1,4 +1,4 @@
-﻿#include <Components.h>
+#include <Components.h>
 #include <GameServer.h>
 #include <Packet.hpp>
 
@@ -116,7 +116,7 @@ constexpr char kBypassMoPoWarning[]{"ModCheck is disabled. This can lead to desy
 
 constexpr char kMopoRecordsMissing[]{"Failed to start: ModPolicy's ModCheck is enabled, but no mods are installed. Players won't be able "
                                      "to join! Please create a Data/ directory, and put a \"loadorder.txt\" file in there."
-                                     "Check the wiki, which can be found on skyrim-together.com, for more details."};
+                                     "See docs/DEBUGGING.md in the project repository for more details."};
 
 constexpr char kCalendarSyncWarning[]{"Calendar sync is enabled. We generally do not recommend that you use this feature."
                                       "Calendar sync can cause the calendar to jump ahead or behind, which might mess up the timing of quests."

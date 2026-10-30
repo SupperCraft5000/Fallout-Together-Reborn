@@ -70,6 +70,10 @@ Spieltest mit Patch 0026 bestanden: zweimal `Player is down`, Respawn laut Nutze
 
 Client-Log des LAN-Tests: Figur eingesetzt und neu verbunden, dann Neuladen um 20:34:26 ohne Trennung und ohne Respawn-Eintrag. Die Figur starb also vermutlich regulär, statt über `RunRespawnUpdates` auszubluten. Der Schutz (`SetPlayerRespawnMode`) wird nur mit den Servereinstellungen beim Verbinden gesetzt, Neuladen und `TESNPC::Load` können ihn zurücksetzen. `RunRespawnUpdates` prüft ihn jetzt jede Sekunde und setzt ihn neu. Logzeilen: `Respawn mode was lost`, `Player is down`, `Player died outside of the respawn system`. Warum das Spiel ins Hauptmenü statt zum letzten Spielstand ging, ist offen.
 
+## Stand 2026-10-30 nachts: Bereinigung auf `dev` (Spieltest steht aus)
+Entfernt: Skyrim-Ziele und Skyrim-Client, `Code/skyrim_ui`, `Code/one_ui`, `Code/admin`, semantic-release, Docker, Upstream-Issue-Vorlagen und die Sentry-Upload-Aufgabe. Die Mauszeiger liegen jetzt in `Code/client/assets`.
+Offen: `#if TP_SKYRIM` in rund 50 Dateien, Discord-Anbindung mit der Anwendungs-ID von Upstream, Konventionen und Namen im Code wie `TP_`, `Tilted`.
+
 ## Nicht getestet
 - Regressionstest 1.10.163 mit den Next-Gen-Änderungen und dem Shutdown-Hook.
 

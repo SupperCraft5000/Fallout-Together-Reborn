@@ -34,7 +34,7 @@ static constexpr TargetConfig CurrentTarget{
     L"Fallout4", 
     377160, 0x70000000, std::numeric_limits<std::uint32_t>::max()};
 #define TARGET_NAME L"Fallout4"
-#define PRODUCT_NAME L"Fallout Together"
+#define PRODUCT_NAME L"Fallout Together Reborn"
 #define SHORT_NAME L"Fallout4"
 #endif
 

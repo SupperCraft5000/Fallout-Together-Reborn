@@ -16,7 +16,7 @@ static RenderSystemD3D11* g_sRs = nullptr;
 static WNDPROC RealWndProc = nullptr;
 static RendererWindow* g_RenderWindow = nullptr;
 
-static constexpr char kTogetherWindowName[]{"Fallout Together"};
+static constexpr char kTogetherWindowName[]{"Fallout Together Reborn"};
 } // namespace
 
 RendererWindow* GetMainWindow()
