@@ -30,12 +30,13 @@ static TiltedPhoques::Initializer s_initInputDeviceManager(
         TP_HOOK_IMMEDIATE(&BSInputDeviceManager_PollInputDevices, &Hook_BSInputDeviceManager_PollInputDevices);
 
         // TODO: move to a proper place.
+        const bool nextGen = VersionDb::Get().IsFallout4NextGen();
         const VersionDbPtr<uint8_t> updateGameCursor(847266);
         // disable the game being able to force the OS cursor
-        TiltedPhoques::Put<uint8_t>(updateGameCursor.Get() + 0xB1, 0xEB);
+        TiltedPhoques::Put<uint8_t>(updateGameCursor.Get() + (nextGen ? 0xB5 : 0xB1), 0xEB);
 
         // no game scaled window bounds.
-        TiltedPhoques::Put<uint16_t>(updateGameCursor.Get() + 0xE1, 0xE990);
+        TiltedPhoques::Put<uint16_t>(updateGameCursor.Get() + (nextGen ? 0xE5 : 0xE1), 0xE990);
 
         // proper coords.
         TiltedPhoques::PutCall(updateGameCursor.Get() + 0x27A, ClipCursor_H);

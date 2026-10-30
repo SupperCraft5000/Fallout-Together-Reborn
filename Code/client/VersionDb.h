@@ -195,6 +195,9 @@ public:
         return file.good();
     }
 
+    // Next-gen builds moved some code, offsets into functions differ from 1.10.163.
+    bool IsFallout4NextGen() const { return !(_ver[0] == 1 && _ver[1] == 10 && _ver[2] == 163); }
+
     // IDs requested by VersionDbPtr instances, used to report gaps before anything is hooked.
     static std::vector<uint32_t>& RequestedIds()
     {

@@ -300,15 +300,18 @@ void UI_AddToMenuStack(UI* apSelf, UI::UIMenuEntry* menuEntry)
 static TiltedPhoques::Initializer s_uiHooks(
     []()
     {
+        const bool nextGen = VersionDb::Get().IsFallout4NextGen();
+
         const VersionDbPtr<uint8_t> mainMenuCtor(1079380);
-        TiltedPhoques::Put<uint16_t>(mainMenuCtor.Get() + 0x2DC, 0xE990);
+        TiltedPhoques::Put<uint16_t>(mainMenuCtor.Get() + (nextGen ? 0x2E8 : 0x2DC), 0xE990);
 
         // Remove engagement check, jump directly into main state.
-        TiltedPhoques::Nop(mainMenuCtor.Get() + 0x279, 14); // 0x1412A01A9
+        TiltedPhoques::Nop(mainMenuCtor.Get() + (nextGen ? 0x280 : 0x279), 14); // 0x1412A01A9
 
         // nuke entire isinputallowed stuff
         const VersionDbPtr<uint8_t> mainMenuLoop(1512371);
-        TiltedPhoques::Nop(mainMenuLoop.Get() + (0x2D - 5), 0x29); // 0x1412A0E48
+        TiltedPhoques::Nop(mainMenuLoop.Get() + (nextGen ? 0x42 : (0x2D - 5)), 0x29); // 0x1412A0E48
+        const size_t promptOffset = nextGen ? 0x6B : 0x51;
 
         struct C : TiltedPhoques::CodeGenerator
         {
@@ -317,13 +320,13 @@ static TiltedPhoques::Initializer s_uiHooks(
                 mov(r8d, 0); // hide the prompt
                 jmp_S(loc + 8);
             }
-        } gen(mainMenuLoop.Get() + 0x51);
-        TiltedPhoques::Jump(mainMenuLoop.Get() + 0x51, gen.getCode());
-        TiltedPhoques::Nop(mainMenuLoop.Get() + 0x51 + 5, 3);
+        } gen(mainMenuLoop.Get() + promptOffset);
+        TiltedPhoques::Jump(mainMenuLoop.Get() + promptOffset, gen.getCode());
+        TiltedPhoques::Nop(mainMenuLoop.Get() + promptOffset + 5, 3);
 
         const VersionDbPtr<uint8_t> handleInput(1001403);
-        TiltedPhoques::Nop(handleInput.Get() + 0x56, 10); // 0x1412A1B76
+        TiltedPhoques::Nop(handleInput.Get() + (nextGen ? 0x5A : 0x56), 10); // 0x1412A1B76
 
         const VersionDbPtr<uint8_t> processMenus(239710); // 0x142042F08
-        TiltedPhoques::SwapCall(processMenus.Get() + 0xAD8, UI_AddToMenuStack_Real, &UI_AddToMenuStack);
+        TiltedPhoques::SwapCall(processMenus.Get() + (nextGen ? 0xBA2 : 0xAD8), UI_AddToMenuStack_Real, &UI_AddToMenuStack);
     });

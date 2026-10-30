@@ -91,6 +91,8 @@ static TiltedPhoques::Initializer s_viewportHooks(
         RealRenderPresent = s_realRenderPresent.Get();
         TP_HOOK(&RealRenderPresent, HookPresent);
 
-        TiltedPhoques::Put(0x140000000 + (0x1D17EE7 + 1), WS_OVERLAPPEDWINDOW);
+        // next-gen patches this in BSGraphicsRenderer.cpp, this address only exists in 1.10.163
+        if (!VersionDb::Get().IsFallout4NextGen())
+            TiltedPhoques::Put(0x140000000 + (0x1D17EE7 + 1), WS_OVERLAPPEDWINDOW);
 #endif
     });

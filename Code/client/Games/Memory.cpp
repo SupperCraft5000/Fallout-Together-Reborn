@@ -133,7 +133,7 @@ static TiltedPhoques::Initializer s_memoryHooks(
         T_aligned_free Real_aligned_free = nullptr;
 
 #if TP_FALLOUT4
-        const char* cModuleName = "MSVCR110.dll";
+        const char* cModuleName = VersionDb::Get().IsFallout4NextGen() ? "api-ms-win-crt-heap-l1-1-0.dll" : "MSVCR110.dll";
 #else
         const char* cModuleName = "api-ms-win-crt-heap-l1-1-0.dll";
 #endif

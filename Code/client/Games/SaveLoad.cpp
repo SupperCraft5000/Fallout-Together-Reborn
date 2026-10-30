@@ -56,10 +56,26 @@ BGSLoadFormBuffer::BGSLoadFormBuffer(const uint32_t aChangeFlags)
 {
     TP_THIS_FUNCTION(CtorT, BGSLoadFormBuffer*, BGSLoadFormBuffer);
 
-    POINTER_SKYRIMSE(CtorT, ctor, 35993);
-    POINTER_FALLOUT4(CtorT, ctor, 994875);
+#if TP_FALLOUT4
+    if (VersionDb::Get().IsFallout4NextGen())
+    {
+        // The constructor was inlined in next-gen. These IDs only exist in the offset tables, see port\README.md
+        using TSubCtor = void(void*);
+        POINTER_FALLOUT4(TSubCtor, baseCtor, 0xF0000001);
+        POINTER_FALLOUT4(TSubCtor, memberCtor, 0xF0000002);
+        POINTER_FALLOUT4(void, vtable, 0xF0000003);
 
-    TiltedPhoques::ThisCall(ctor, this);
+        baseCtor.Get()(this);
+        memberCtor.Get()(reinterpret_cast<uint8_t*>(this) + 0x28);
+        *reinterpret_cast<void**>(this) = vtable.Get();
+    }
+    else
+#endif
+    {
+        POINTER_FALLOUT4(CtorT, ctor, 994875);
+        POINTER_SKYRIMSE(CtorT, ctor, 35993);
+        TiltedPhoques::ThisCall(ctor, this);
+    }
 
     changeFlags = aChangeFlags;
     loadFlag = 0x40;

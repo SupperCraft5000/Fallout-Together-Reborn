@@ -76,11 +76,14 @@ static TiltedPhoques::Initializer s_viewportHooks(
     []()
     {
         const VersionDbPtr<void> initWindowLoc(193854);
-        // patch dwStyle in BSGraphics::InitWindows
-        TiltedPhoques::Put(mem::pointer(initWindowLoc.GetPtr()) + 0xD7 + 1, WS_OVERLAPPEDWINDOW);
-
         const VersionDbPtr<void> timerLoc(700869);
         const VersionDbPtr<void> renderInit(564405);
+
+        // patch dwStyle in BSGraphics::InitWindows, next-gen inlined it into renderInit
+        if (VersionDb::Get().IsFallout4NextGen())
+            TiltedPhoques::Put(mem::pointer(renderInit.GetPtr()) + 0x1D7 + 1, WS_OVERLAPPEDWINDOW);
+        else
+            TiltedPhoques::Put(mem::pointer(initWindowLoc.GetPtr()) + 0xD7 + 1, WS_OVERLAPPEDWINDOW);
 
         TiltedPhoques::SwapCall(mem::pointer(timerLoc.GetPtr()) + 0xE, StopTimer, &Hook_StopTimer);
 

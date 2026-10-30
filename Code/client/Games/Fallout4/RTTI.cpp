@@ -2214,7 +2214,6 @@ internal::RttiLocator<ButtonEvent> registerRtti_ButtonEvent(1452395);
 template struct internal::RttiLocator<LooksMenu>;
 internal::RttiLocator<LooksMenu> registerRtti_LooksMenu(1312333);
 template struct internal::RttiLocator<CreationClubMenu>;
-internal::RttiLocator<CreationClubMenu> registerRtti_CreationClubMenu(963824);
 template struct internal::RttiLocator<IMultiActivateUser>;
 internal::RttiLocator<IMultiActivateUser> registerRtti_IMultiActivateUser(746385);
 template struct internal::RttiLocator<MultiActivateManager>;
@@ -4348,7 +4347,6 @@ internal::RttiLocator<BSPCGamepadDeviceHandler> registerRtti_BSPCGamepadDeviceHa
 template struct internal::RttiLocator<BSPCGamepadDevice>;
 internal::RttiLocator<BSPCGamepadDevice> registerRtti_BSPCGamepadDevice(1442670);
 template struct internal::RttiLocator<BSPCOrbisGamepadDevice>;
-internal::RttiLocator<BSPCOrbisGamepadDevice> registerRtti_BSPCOrbisGamepadDevice(957306);
 template struct internal::RttiLocator<NiFile>;
 internal::RttiLocator<NiFile> registerRtti_NiFile(1569056);
 template struct internal::RttiLocator<NiAllocator>;
