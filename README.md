@@ -1,43 +1,39 @@
-# Tilted Online
-![Build status](https://github.com/tiltedphoques/TiltedEvolution/workflows/Build%20windows/badge.svg?branch=master) [![Build linux](https://github.com/tiltedphoques/TiltedEvolution/actions/workflows/linux.yml/badge.svg)](https://github.com/tiltedphoques/TiltedEvolution/actions/workflows/linux.yml)  [![Discord](https://img.shields.io/discord/247835175860305931.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/skyrimtogether)
+# Fallout Together Reborn
 
-<img src="https://avatars.githubusercontent.com/u/52131158?s=200&v=4" align="right"
-     alt="Size Limit logo by Anton Lovchikov" width="110" height="100">
+Inoffizieller Co-op für Fallout 4. Spielbar im LAN mit zwei Spielern auf **Fallout 4 1.11.240**.
 
-Tilted Online is a framework created to enable multiplayer in Bethesda games, currently supporting **Skyrim Special Edition** and eventually **Fallout 4**.
+*Unofficial co-op for Fallout 4, based on Tilted Online. Documentation is currently German only.*
 
-## Getting started
-To play Tilted Online, go to the [nexus page](https://www.nexusmods.com/skyrimspecialedition/mods/69993).
+> Dieses Projekt ist ein Fanprojekt. Es steht in keiner Verbindung zu Bethesda Softworks, ZeniMax, Microsoft oder Tilted Phoques.
+> Fallout ist eine Marke ihrer jeweiligen Inhaber. Du brauchst eine eigene, gekaufte Kopie des Spiels. Dieses Repo enthält keine Spieldateien.
 
-For general information, go to the [Tilted Online Wiki](https://wiki.tiltedphoques.com/tilted-online/).
+## Herkunft
+Fallout Together Reborn ist ein Fork von [TiltedEvolution / Tilted Online](https://github.com/tiltedphoques/TiltedEvolution) von Tilted Phoques und baut auf deren letztem Stand mit Fallout-Unterstützung auf (`d6ce567b`). Die Upstream-Historie ist erhalten, die ursprüngliche README steht in [README-UPSTREAM.md](README-UPSTREAM.md). Upstream-Fragen gehören nicht zu Tilted Phoques, sondern hierher.
 
-Check out the [build guide](https://wiki.tiltedphoques.com/tilted-online/technical-documentation/build-guide) for setup and development info on the project. When writing code, check the CODE_GUIDELINES.md and make sure to run clang-format!
+## Was geht
+- Zwei Spieler sehen sich, Figuren, Quests, Gegner, Ausrüstung
+- Einzel-exe mit eingebautem Server, Terminal-Oberfläche und Statusanzeige
+- Spielstand des Hosts übernehmen, dabei die eigene Figur mit Aussehen, Inventar und SPECIAL mitnehmen
+- Automatisches Laden des Spielstands, Versionsabgleich zwischen Host und Mitspieler
+- Tod und Respawn mit echten Spielständen
 
-## Reporting bugs
-If you would like to report a bug please report them in the "Issues" tab on this page. Detailed and reproducible bug reports are of great importance for the development of the project.
+## Bekannte Grenzen
+- Getestet nur im LAN mit zwei Spielern auf 1.11.240
+- 1.10.163 ist seit vielen Änderungen nicht mehr getestet
+- Spiel über das Internet und längere Sitzungen sind nicht getestet
+- Stufe und Perks der eigenen Figur werden nicht übernommen
+- Nach einem Fallout-Update läuft es erst wieder, wenn die Adressen portiert sind, siehe [docs/PORTING.md](docs/PORTING.md)
 
-## Contributing
-Have some experience in C++, and want to help advance the project faster? Contribute!
-- Check the issues, it's a good place to start when you don't know what to do.
-- Fork the repository and create pull requests to this repository.
-- Create pull requests to the "dev" branch, not to master or prerel.
-- Try to keep your code clean, following the code guidelines.
+## Dokumentation
+| Datei | Inhalt |
+|---|---|
+| [docs/MITSPIELER.md](docs/MITSPIELER.md) | Spielen |
+| [docs/BUILD.md](docs/BUILD.md) | Bauen unter Windows |
+| [docs/STATUS.md](docs/STATUS.md) | Stand, offene Aufgaben, Bugs |
+| [docs/TESTING.md](docs/TESTING.md) | Tests |
+| [docs/PORTING.md](docs/PORTING.md) | Neue Fallout-Versionen |
+| [docs/FINDINGS.md](docs/FINDINGS.md) | Erkenntnisse zur Engine |
+| [AGENTS.md](AGENTS.md) | Einstieg für Mitwirkende und KI-Agenten |
 
-## Main project source tree
-
-* [**client/**](./Code/client): Sources for the SkyrimSE and FO4 clients.
-* [**immersive_launcher/**](./Code/immersive_launcher): Game starter/updater.
-* [**common/**](./Code/common): Common code shared between plugin and server.
-* [**encoding/**](./Code/encoding): Net-message definitions.
-* [**server/**](./Code/server): GameServer implementation.
-* [**skyrim_ui/**](./Code/skyrim_ui): Source code for the ui, written in typescript. 
-* [**tests/**](./Code/tests): Tests for the encoding and serialization code.
-* [**tp_process/**](./Code/tp_process): Worker for CEF (Chromium Embedded Framework) overlay.
-
-## License
-[![GNU GPLv3 Image](https://www.gnu.org/graphics/gplv3-127x51.png)](http://www.gnu.org/licenses/gpl-3.0.en.html)
-
-Tilted Online is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+## Lizenz
+GPL-3.0-or-later, siehe [LICENSE](LICENSE) und [COPYING](COPYING). Änderungen gegenüber Upstream stehen in der Commit-Historie ab `d6ce567b`.
