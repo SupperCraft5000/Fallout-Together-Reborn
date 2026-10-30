@@ -812,8 +812,12 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
     char remoteAddress[48]{};
     info.m_addrRemote.ToString(remoteAddress, 48, false);
 
+    // BUILD_COMMIT stays the same across our builds, the launcher passes the id of its package instead.
+    const char* pBuild = std::getenv("TP_BUILD");
+    const String cVersion = pBuild && *pBuild ? pBuild : BUILD_COMMIT;
+
     AuthenticationResponse serverResponse;
-    serverResponse.Version = BUILD_COMMIT;
+    serverResponse.Version = cVersion;
 
     using RT = AuthenticationResponse::ResponseType;
     auto sendKick = [&](const RT type)
@@ -825,7 +829,7 @@ void GameServer::HandleAuthenticationRequest(const ConnectionId_t aConnectionId,
     };
 #if 1
     // to make our testing life a bit easier.
-    if (acRequest->Version != BUILD_COMMIT)
+    if (acRequest->Version != cVersion)
     {
         spdlog::info("New player {:x} '{}' tried to connect with client {} - Version mismatch", aConnectionId, remoteAddress, acRequest->Version.c_str());
         sendKick(RT::kWrongVersion);

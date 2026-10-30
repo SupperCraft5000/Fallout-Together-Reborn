@@ -24,6 +24,7 @@
 
 #include <ScriptExtender.h>
 #include <Services/DiscordService.h>
+#include <BSGraphics/BSGraphicsRenderer.h>
 
 // #include <imgui_internal.h>
 
@@ -109,10 +110,45 @@ void TransportService::OnConsume(const void* apData, uint32_t aSize)
     m_messageHandlers[pMessage->GetOpcode()](pMessage);
 }
 
+namespace
+{
+// BUILD_COMMIT stays the same across our builds, the launcher passes the id of its package instead.
+String GetBuildVersion()
+{
+    char build[128]{};
+    return GetEnvironmentVariableA("TP_BUILD", build, static_cast<DWORD>(std::size(build))) ? String(build) : String(BUILD_COMMIT);
+}
+
+// Launcher sessions have no overlay, and without this a refused player would stand around without a word.
+void ShowRefusal(const AuthenticationResponse::ResponseType aType)
+{
+    using AR = AuthenticationResponse::ResponseType;
+
+    const wchar_t* pText = nullptr;
+    switch (aType)
+    {
+    case AR::kWrongVersion: pText = L"Der Server hat die Verbindung abgelehnt:\nHost und Mitspieler nutzen verschiedene Versionen von Fallout Together Reborn."; break;
+    case AR::kModsMismatch: pText = L"Der Server hat die Verbindung abgelehnt:\nDie Mods passen nicht zu denen des Hosts."; break;
+    case AR::kClientModsDisallowed: pText = L"Der Server hat die Verbindung abgelehnt:\nDer Host erlaubt keine Client-Mods."; break;
+    case AR::kWrongPassword: pText = L"Der Server hat die Verbindung abgelehnt:\nDas Passwort ist falsch."; break;
+    case AR::kServerFull: pText = L"Der Server hat die Verbindung abgelehnt:\nDer Server ist voll."; break;
+    default: return;
+    }
+
+    char address[8]{};
+    if (!GetEnvironmentVariableA("TP_AUTOCONNECT", address, static_cast<DWORD>(std::size(address))))
+        return;
+
+    HWND window = reinterpret_cast<HWND>(BSGraphics::GetMainWindow()->hWnd);
+    MessageBoxW(window, pText, L"Fallout Together Reborn", MB_OK | MB_ICONWARNING | MB_TOPMOST);
+    PostMessageW(window, WM_CLOSE, 0, 0);
+}
+} // namespace
+
 void TransportService::OnConnected()
 {
     AuthenticationRequest request{};
-    request.Version = BUILD_COMMIT;
+    request.Version = GetBuildVersion();
     request.SKSEActive = IsScriptExtenderLoaded();
     request.MO2Active = GetModuleHandleW(kMO2DllName);
 
@@ -210,6 +246,9 @@ void TransportService::HandleAuthenticationResponse(const AuthenticationResponse
     }
 
     // error finding
+
+    spdlog::warn("Server refused the connection, type {}", static_cast<int>(acMessage.Type));
+    ShowRefusal(acMessage.Type);
 
     TiltedPhoques::String ErrorInfo;
 
