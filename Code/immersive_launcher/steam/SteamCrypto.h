@@ -32,7 +32,8 @@ struct SteamStubHeaderV31
     uint32_t Unknown0001;          // [Cyanic: This field is most likely an offset to a string table.]
     uint32_t PayloadSize;
     uint32_t DRMPDllOffset;              // The offset to the SteamDrmp.dll file.
-    uint32_t DRMPDllSize;                // The size of the SteamDrmp.dll file. uint32_tSteamAppId; // The Steam application id of this
+    uint32_t DRMPDllSize;                // The size of the SteamDrmp.dll file.
+    uint32_t SteamAppId;                 // The Steam application id of this
     uint32_t Flags;                      // The DRM flags used while protecting this program.
     uint32_t BindSectionVirtualSize;     // The .bind section virtual size.
     uint32_t Unknown0002;                // [Cyanic: This field is most likely a hash of some sort.]

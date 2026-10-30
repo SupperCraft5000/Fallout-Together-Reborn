@@ -39,6 +39,12 @@ void InstallStartHook()
         Real_ismbbled = reinterpret_cast<decltype(Real_ismbbled)>(GetProcAddress(hCrt, "_ismbblead"));
         TP_HOOK_IAT2("MSVCR110.dll", "_ismbblead", TP_ismbblead);
     }
+    else
+    {
+        // Next-gen builds use the regular UCRT startup
+        TP_HOOK_IAT2("Kernel32.dll", "GetStartupInfoW", TP_GetStartupInfoW);
+        TP_HOOK_IAT2("Kernel32.dll", "RaiseException", TP_RaiseException);
+    }
 #elif defined(TARGET_ST)
     TP_HOOK_IAT2("Kernel32.dll", "GetStartupInfoW", TP_GetStartupInfoW);
     TP_HOOK_IAT2("Kernel32.dll", "RaiseException", TP_RaiseException);
