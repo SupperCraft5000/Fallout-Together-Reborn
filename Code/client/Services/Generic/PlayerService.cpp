@@ -1,4 +1,5 @@
 #include <Services/PlayerService.h>
+#include <Forms/TESNPC.h>
 
 #include <World.h>
 
@@ -227,8 +228,31 @@ void PlayerService::RunRespawnUpdates(const double acDeltaTime) noexcept
 
     static bool s_startTimer = false;
     static bool s_respawned = false;
+    static double s_guardTimer = 0.0;
+    static bool s_deathLogged = false;
 
     PlayerCharacter* pPlayer = PlayerCharacter::Get();
+
+    // Loading a save or replacing the base form drops the respawn mode, and the player would die for real:
+    // the game then reloads a save or falls back to the main menu.
+    s_guardTimer -= acDeltaTime;
+    if (s_guardTimer <= 0.0)
+    {
+        s_guardTimer = 1.0;
+
+        auto* pNpc = Cast<TESNPC>(pPlayer->baseForm);
+        if (!pPlayer->IsEssential() || (pNpc && !pNpc->actorData.IsEssential()))
+        {
+            spdlog::warn("Respawn mode was lost, setting it again");
+            pPlayer->SetPlayerRespawnMode(true);
+        }
+
+        const bool cDead = pPlayer->IsDead();
+        if (cDead && !s_deathLogged)
+            spdlog::error("Player died outside of the respawn system, essential: {}", pPlayer->IsEssential());
+        s_deathLogged = cDead;
+    }
+
     if (!pPlayer->actorState.IsBleedingOut())
     {
 #if TP_SKYRIM64
@@ -250,6 +274,7 @@ void PlayerService::RunRespawnUpdates(const double acDeltaTime) noexcept
     {
         s_startTimer = true;
         m_respawnTimer = 5.0;
+        spdlog::info("Player is down, respawning in {} seconds", m_respawnTimer);
         FadeOutGame(true, true, 3.0f, true, 2.0f);
 
         // If a player dies not by its health reaching 0, getting it up from its bleedout state isn't possible
