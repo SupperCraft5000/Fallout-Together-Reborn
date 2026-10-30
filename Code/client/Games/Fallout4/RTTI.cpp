@@ -1,6 +1,6 @@
 #include <RTTI.h>
 
-const VersionDbPtr<internal::TDynamicCast> internal::DynamicCast(84113);
+const VersionDbPtr<internal::TDynamicCast> internal::DynamicCast(84112);
 
 namespace internal
 {

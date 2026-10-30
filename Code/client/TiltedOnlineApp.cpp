@@ -39,6 +39,9 @@ TiltedOnlineApp::TiltedOnlineApp()
 
     auto logger = std::make_shared<spdlog::logger>("", spdlog::sinks_init_list{console, rotatingLogger});
     set_default_logger(logger);
+    // Crashes and hard exits must not lose the last lines
+    spdlog::flush_on(spdlog::level::info);
+    spdlog::info("Client {} attached", BUILD_COMMIT);
 }
 
 TiltedOnlineApp::~TiltedOnlineApp() = default;

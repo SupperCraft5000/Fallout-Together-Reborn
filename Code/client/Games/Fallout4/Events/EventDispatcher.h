@@ -87,8 +87,8 @@ struct BGSInventoryListEvent
         return s_getEventDispatcher.Get()();                        \
     };
 
-DECLARE_DISPATCHER(TESQuestStartStopEvent, 1404316);
-DECLARE_DISPATCHER(TESQuestStageItemDoneEvent, 181652);
-DECLARE_DISPATCHER(TESQuestStageEvent, 540906);
-DECLARE_DISPATCHER(TESActivateEvent, 166231);
-DECLARE_DISPATCHER(TESLoadGameEvent, 823571);
+DECLARE_DISPATCHER(TESQuestStartStopEvent, 1404315);
+DECLARE_DISPATCHER(TESQuestStageItemDoneEvent, 181651);
+DECLARE_DISPATCHER(TESQuestStageEvent, 540905);
+DECLARE_DISPATCHER(TESActivateEvent, 166230);
+DECLARE_DISPATCHER(TESLoadGameEvent, 823570);
