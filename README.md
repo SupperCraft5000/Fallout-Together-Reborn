@@ -42,4 +42,4 @@ Fallout Together Reborn ist ein Fork von [TiltedEvolution / Tilted Online](https
 | [AGENTS.md](AGENTS.md) | Einstieg für Mitwirkende und KI-Agenten |
 
 ## Lizenz
-GPL-3.0-or-later, siehe [LICENSE](LICENSE) und [COPYING](COPYING). Änderungen gegenüber Upstream stehen in der Commit-Historie ab `d6ce567b`.
+GPL-3.0-or-later, siehe [LICENSE](LICENSE) und [COPYING](COPYING). Komponenten von Dritten: [THIRD-PARTY.md](THIRD-PARTY.md). Änderungen gegenüber Upstream stehen in der Commit-Historie ab `d6ce567b`.
