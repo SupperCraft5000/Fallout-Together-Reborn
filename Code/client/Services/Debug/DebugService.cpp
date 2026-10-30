@@ -279,8 +279,15 @@ bool UpdateFigure(const bool acOnline, const double acDelta)
         return true;
     }
 
-    s_wait = 60.0;
     SaveFigure(pPlayer, path);
+
+    // the launcher starts the game a second time with the host's save
+    if (strcmp(mode, "capture") == 0)
+    {
+        s_finished = true;
+        PostMessageW(reinterpret_cast<HWND>(BSGraphics::GetMainWindow()->hWnd), WM_CLOSE, 0, 0);
+    }
+    s_wait = 60.0;
     return false;
 }
 
