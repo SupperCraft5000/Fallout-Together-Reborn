@@ -96,6 +96,11 @@ void* Hookmalloc(size_t aSize)
     return mi_malloc(aSize);
 }
 
+void* Hookrealloc(void* apData, size_t aSize)
+{
+    return mi_realloc(apData, aSize);
+}
+
 void Hook_aligned_free(void* apData)
 {
     mi_free(apData);
@@ -123,12 +128,14 @@ static TiltedPhoques::Initializer s_memoryHooks(
         using Tfree = decltype(&Hookfree);
         using Tcalloc = decltype(&Hookcalloc);
         using Tmalloc = decltype(&Hookmalloc);
+        using Trealloc = decltype(&Hookrealloc);
         using T_aligned_malloc = decltype(&Hook_aligned_malloc);
         using T_aligned_free = decltype(&Hook_aligned_free);
         T_msize Real_msize = nullptr;
         Tfree Realfree = nullptr;
         Tcalloc Realcalloc = nullptr;
         Tmalloc Realmalloc = nullptr;
+        Trealloc Realrealloc = nullptr;
         T_aligned_malloc Real_aligned_malloc = nullptr;
         T_aligned_free Real_aligned_free = nullptr;
 
@@ -142,6 +149,7 @@ static TiltedPhoques::Initializer s_memoryHooks(
         TP_HOOK_IAT(free, cModuleName);
         TP_HOOK_IAT(calloc, cModuleName);
         TP_HOOK_IAT(malloc, cModuleName);
+        TP_HOOK_IAT(realloc, cModuleName);
         TP_HOOK_IAT(_aligned_malloc, cModuleName);
         TP_HOOK_IAT(_aligned_free, cModuleName);
 #endif
