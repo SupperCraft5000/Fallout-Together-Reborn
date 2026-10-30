@@ -175,8 +175,18 @@ public:
 
         const auto plugins = acGamePath / "Data" / "F4SE" / "Plugins";
         const bool isOldGen = _ver[0] == 1 && _ver[1] == 10 && _ver[2] == 163;
-        const auto path = isOldGen ? plugins / (std::string("version-") + verName + ".bin")
-                                   : plugins / "FalloutTogether" / (std::string("offsets-") + verName + ".bin");
+        auto path = isOldGen ? plugins / (std::string("version-") + verName + ".bin")
+                             : plugins / "FalloutTogether" / (std::string("offsets-") + verName + ".bin");
+
+        // Packaged builds ship the table next to the launcher, so the game folder stays untouched
+        if (!isOldGen)
+        {
+            wchar_t modulePath[MAX_PATH]{};
+            GetModuleFileNameW(nullptr, modulePath, MAX_PATH);
+            const auto localPath = std::filesystem::path(modulePath).parent_path() / (std::string("offsets-") + verName + ".bin");
+            if (std::filesystem::exists(localPath))
+                path = localPath;
+        }
 
         std::ifstream file(path, std::ios::binary);
         if (!file.good())
