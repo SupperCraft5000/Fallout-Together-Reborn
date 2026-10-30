@@ -56,6 +56,11 @@ void RenderSystemD3D11::OnDeviceCreation(IDXGISwapChain* apSwapChain)
 
 void RenderSystemD3D11::OnRender()
 {
+    // Diagnostic switch to rule out our overlay when hunting rendering artifacts
+    static const bool s_skipRender = std::getenv("TP_NO_OVERLAY_RENDER") != nullptr;
+    if (s_skipRender)
+        return;
+
     m_imguiService.Render();
     m_overlay.Render();
 }
