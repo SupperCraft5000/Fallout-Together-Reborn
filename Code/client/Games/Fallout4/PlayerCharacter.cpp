@@ -37,28 +37,11 @@ NiPoint3 PlayerCharacter::RespawnPlayer() noexcept
     // Health alone doesn't end the essential down state in Fallout 4
     actorState.ResetLifeState();
 
-    TESObjectCELL* pCell = nullptr;
-
-    if (GetWorldSpace())
-    {
-        // TP to Whiterun temple when killed in world space
-        TES* pTes = TES::Get();
-        pCell = ModManager::Get()->GetCellFromCoordinates(pTes->centerGridX, pTes->centerGridY, GetWorldSpace(), false);
-    }
-    else
-    {
-        // TP to start of cell when killed in an interior
-        pCell = GetParentCell();
-    }
-
-    NiPoint3 pos{};
-    NiPoint3 rot{};
-    pCell->GetCOCPlacementInfo(&pos, &rot, true);
-
-    MoveTo(pCell, pos);
+    // Stay where the player went down: the placement of an exterior cell can be below the ground, which dropped players
+    // through the world, and in an interior it means walking back from the entrance.
 
     // Make bleedout state unrecoverable again for when the player goes down the next time
     SetNoBleedoutRecovery(true);
 
-    return pos;
+    return position;
 }
