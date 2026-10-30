@@ -273,7 +273,7 @@ void Actor::Reset() noexcept
 
 void Actor::Respawn() noexcept
 {
-    Resurrect(false);
+    Resurrect(false, true);
     Reset();
 }
 

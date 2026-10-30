@@ -34,6 +34,9 @@ NiPoint3 PlayerCharacter::RespawnPlayer() noexcept
     // TODO(cosideci): there's a cleaner way to do this
     ForceActorValue(ActorValueOwner::ForceMode::DAMAGE, ActorValueInfo::kHealth, 1000000);
 
+    // Clearing the life state alone leaves the player downed for the rest of the game: no jumping, no AP or ammo display.
+    Resurrect(false, false);
+
     // Health alone doesn't end the essential down state in Fallout 4
     actorState.ResetLifeState();
 
