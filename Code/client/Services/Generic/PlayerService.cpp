@@ -233,24 +233,24 @@ void PlayerService::RunRespawnUpdates(const double acDeltaTime) noexcept
 
     PlayerCharacter* pPlayer = PlayerCharacter::Get();
 
-    // Loading a save or replacing the base form drops the respawn mode, and the player would die for real:
-    // the game then reloads a save or falls back to the main menu.
     s_guardTimer -= acDeltaTime;
-    if (s_guardTimer <= 0.0)
+    if (s_guardTimer <= 0.0 && m_transport.IsOnline())
     {
         s_guardTimer = 1.0;
 
-        auto* pNpc = Cast<TESNPC>(pPlayer->baseForm);
-        if (!pPlayer->IsEssential() || (pNpc && !pNpc->actorData.IsEssential()))
+        // Read this first, setting the bit below would hide what the game did with it
+        const bool cEssential = pPlayer->IsEssential();
+        const bool cDead = pPlayer->IsDead();
+        if (cDead && !s_deathLogged)
+            spdlog::error("Player died outside of the respawn system, essential: {}", cEssential);
+        s_deathLogged = cDead;
+
+        // HookUpdateEssential covers the game's own updates, a load can still drop the bit
+        if (!cEssential)
         {
             spdlog::warn("Respawn mode was lost, setting it again");
             pPlayer->SetPlayerRespawnMode(true);
         }
-
-        const bool cDead = pPlayer->IsDead();
-        if (cDead && !s_deathLogged)
-            spdlog::error("Player died outside of the respawn system, essential: {}", pPlayer->IsEssential());
-        s_deathLogged = cDead;
     }
 
     if (!pPlayer->actorState.IsBleedingOut())
@@ -416,9 +416,12 @@ void PlayerService::RunBeastFormDetection() const noexcept
 #endif
 }
 
+extern bool g_keepPlayerEssential;
+
 void PlayerService::ToggleDeathSystem(bool aSet) noexcept
 {
     m_isDeathSystemEnabled = aSet;
+    g_keepPlayerEssential = aSet;
 
     PlayerCharacter::Get()->SetPlayerRespawnMode(aSet);
 }
