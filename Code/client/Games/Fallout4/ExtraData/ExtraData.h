@@ -11,6 +11,8 @@ enum class ExtraDataType : uint8_t
     LeveledCreature = 0x2D,
     Faction = 0x5B,
     Soul = 0x9C,
+    BendableSplineParams = 0xB4,
+    PowerLinks = 0xD0,
 };
 
 struct BSExtraData

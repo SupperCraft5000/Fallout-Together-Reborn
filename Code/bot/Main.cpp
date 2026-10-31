@@ -43,6 +43,9 @@ constexpr float kRedRocketWorkbenchX = -70384.328125f;
 constexpr float kRedRocketWorkbenchY = 79519.953125f;
 constexpr float kRedRocketWorkbenchZ = 7360.030273f;
 constexpr uint32_t kTestFloor = 0x1C501C;
+constexpr uint32_t kTestGenerator = 0x30386;
+constexpr uint32_t kTestPylon = 0x15D76F;
+constexpr uint32_t kTestWire = 0x1D971;
 
 const char* ResponseName(AuthenticationResponse::ResponseType aType)
 {
@@ -110,6 +113,31 @@ struct Bot final : TiltedPhoques::Client
         // Die Werkbank selbst steht schon da, sie darf nicht noch einmal entstehen
         SendGameChange(WorkshopChange::kPlaced, 0xFF00A003, kRedRocketWorkbenchBase, workbench, true);
         SendGameChange(WorkshopChange::kDestroyed, 0xFF00A002, kTestFloor, spotB, false);
+
+        // Generator und Mast mit Kabel, das Kabel kommt wie beim Bauen nach seinen Enden
+        const glm::vec3 generator = workbench + glm::vec3(-300.f, 0.f, 0.f);
+        const glm::vec3 pylon = workbench + glm::vec3(-300.f, 300.f, 0.f);
+        SendGameChange(WorkshopChange::kPlaced, 0xFF00A004, kTestGenerator, generator, false);
+        SendGameChange(WorkshopChange::kPlaced, 0xFF00A005, kTestPylon, pylon, false);
+
+        RequestWorkshopChange wire;
+        wire.Change.Kind = WorkshopChange::kWired;
+        wire.Change.OwnerId = 99;
+        wire.Change.ObjectId = 0xFF00A006;
+        wire.Change.WorkshopId = GameId(0, kRedRocketWorkbench);
+        wire.Change.BaseId = GameId(0, kTestWire);
+        wire.Change.Position = (generator + pylon) * 0.5f;
+        wire.Change.OriginalPosition = wire.Change.Position;
+        wire.Change.HalfExtents = glm::vec3(0.f, 150.f, 0.f);
+        wire.Change.Slack = 0.05f;
+        wire.Change.Thickness = 1.5f;
+        wire.Change.EndA.OwnerId = 99;
+        wire.Change.EndA.ObjectId = 0xFF00A004;
+        wire.Change.EndA.BaseId = GameId(0, kTestGenerator);
+        wire.Change.EndB.OwnerId = 99;
+        wire.Change.EndB.ObjectId = 0xFF00A005;
+        wire.Change.EndB.BaseId = GameId(0, kTestPylon);
+        SendMessage(wire);
     }
 
     // A wird verschoben, B verschrottet, C stammt aus einem Plugin

@@ -76,16 +76,20 @@ finally {
 $log = @(Get-Content $ClientLog -ErrorAction SilentlyContinue)
 $log | Where-Object { $_ -match 'Workshop' } | Write-Host
 # Nachgeholt wird der zusammengefasste Stand: das verschrottete Teil entsteht gar nicht erst
-$placed = if ($Late) { 1 } else { 2 }
+$placed = if ($Late) { 3 } else { 4 }
 if (@($log -match 'Workshop sync: placed').Count -ne $placed) { $failed += "Es hätten $placed Objekte entstehen müssen" }
 if (-not $Late -and -not ($log -match 'Workshop sync: moved')) { $failed += 'Verschieben fehlt' }
 if (-not $Late -and -not ($log -match 'Workshop sync: removed')) { $failed += 'Entfernen fehlt' }
 if (-not ($log -match 'Workshop sync: .* is already here')) { $failed += 'Vorhandenes Objekt nicht erkannt' }
-if ($log -match 'Workshop sync: .*(missing|not found|could not)') { $failed += 'Fehlerzeile im Log' }
+if ($log -match 'Workshop sync: .*(missing|not found|could not|is not here)') { $failed += 'Fehlerzeile im Log' }
+if (-not ($log -match 'Workshop sync: wired ')) { $failed += 'Kabel fehlt' }
+if (@($log -match 'Workshop sync: [0-9A-F]+ powered ').Count -ne 2) { $failed += 'Stromzustand fehlt im Log' }
 
 if ($failed) {
     Write-Host "FEHLGESCHLAGEN:`n - $($failed -join "`n - ")" -ForegroundColor Red
     exit 1
 }
 Write-Host 'Bau-Sync im Spiel bestanden.' -ForegroundColor Green
+# Red Rocket gehört im Testprofil niemandem, Strom ist hier also kein Pflichtergebnis
+if (-not ($log -match 'Workshop sync: [0-9A-F]+ powered true')) { Write-Host 'Warnung: Kabel steht, aber kein Objekt meldet Strom.' -ForegroundColor Yellow }
 exit 0

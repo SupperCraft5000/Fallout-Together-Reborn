@@ -24,6 +24,8 @@ Der Build-Ordner aus dem Quellcode schreibt nach `build\windows\x64\releasedbg\l
 | `Workshop event` | Dieser PC hat etwas gebaut, verschoben oder verschrottet |
 | `Workshop sync: placed` / `moved` / `removed` | Änderung eines anderen Spielers wurde übernommen |
 | `Workshop sync: ... is already here as ...` | Nachgeholtes Objekt ist schon da, nichts wurde doppelt gebaut |
+| `Workshop event wire` / `Workshop sync: wired` | Kabel gesendet / beim Empfänger gebaut |
+| `Workshop sync: ... powered true/false` | Stromzustand eines Kabel-Endes, 3 s nach dem Verbinden |
 
 `Game is shutting down` erscheint bei jedem Ende und ist kein Beleg für ein gewolltes Beenden.
 

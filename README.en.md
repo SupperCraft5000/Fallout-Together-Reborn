@@ -41,7 +41,7 @@ Fallout Together Reborn is a fork of [TiltedEvolution / Tilted Online](https://g
 - 1.10.163 has not been tested for many changes
 - Longer sessions are not tested
 - Level and perks of your own character are not carried over
-- Power, wires, beds, generators and settlers in settlements are not synced
+- Power wires are transferred, but power does not flow for the other player yet. Settler jobs and switches are not synced
 - After a Fallout update it only runs again once the addresses are ported, see [docs/en/PORTING.md](docs/en/PORTING.md)
 
 ## Documentation

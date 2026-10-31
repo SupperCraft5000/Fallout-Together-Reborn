@@ -172,3 +172,8 @@ id,name,type,real_id,rva_1_10_163,file,line
 725214,s_workshopMoved,TWorkshopSink,725213,0x145DB70,client/Services/Generic/WorkshopService.cpp,0
 313585,s_workshopDestroyed,TWorkshopSink,313584,0x145D920,client/Services/Generic/WorkshopService.cpp,0
 1459242,s_findClosest,TFindClosest,1459241,0x13C0490,client/Services/Generic/WorkshopService.cpp,0
+59312,s_connectSpline,TConnectSpline,59311,0x200E50,client/Services/Generic/WorkshopService.cpp,0
+750683,s_disconnectSpline,TDisconnectSpline,750682,0x200F50,client/Services/Generic/WorkshopService.cpp,0
+198420,s_queueRebuildSpline,TQueueRebuildSpline,198419,0xD5F120,client/Services/Generic/WorkshopService.cpp,0
+894307,s_setSplineInfo,TSetSplineInfo,894306,0x9A800,client/Services/Generic/WorkshopService.cpp,0
+1546241,s_isPowered,TIsPowered,1546240,0x1F2F60,client/Services/Generic/WorkshopService.cpp,0

@@ -216,7 +216,7 @@ void ObjectService::RememberWorkshopChange(const WorkshopChange& acChange) noexc
         return;
     }
 
-    if (acChange.Kind == WorkshopChange::kPlaced || itor->Kind == WorkshopChange::kMoved)
+    if (acChange.Kind == WorkshopChange::kPlaced || acChange.Kind == WorkshopChange::kWired || itor->Kind == WorkshopChange::kMoved)
     {
         *itor = acChange;
         return;

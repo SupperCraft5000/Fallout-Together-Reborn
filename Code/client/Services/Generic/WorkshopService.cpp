@@ -13,6 +13,7 @@
 
 #include <Actor.h>
 #include <PlayerCharacter.h>
+#include <ExtraData/ExtraDataList.h>
 
 #include <mutex>
 
@@ -24,6 +25,10 @@ constexpr float kRadToDeg = 57.2957795f;
 constexpr float kSameSpotRadius = 2.f;
 // Spreads a burst of incoming pieces over a few frames
 constexpr size_t kMaxAppliedPerFrame = 8;
+constexpr uint8_t kBendableSplineFormType = 35;
+constexpr double kWireSettleSeconds = 0.5;
+constexpr double kPowerLogSeconds = 3.0;
+constexpr float kWireMoveTolerance = 1.f;
 
 struct WorkshopEventData
 {
@@ -44,8 +49,61 @@ struct WorkshopEvent
     NiPoint3 Rotation;
 };
 
+// A wire's data is only complete once it settled, so just its id is kept
+struct WireEvent
+{
+    uint32_t WireId;
+    bool Removed;
+};
+
+struct PowerLink
+{
+    uint32_t FormId;
+    uint32_t LinkType;
+};
+
+struct ExtraPowerLinks : BSExtraData
+{
+    GameArray<PowerLink> links;
+};
+
+struct ExtraBendableSplineParams : BSExtraData
+{
+    float slack;
+    float thickness;
+    NiPoint3 halfExtents;
+    bool detachedEnd;
+};
+
+static_assert(offsetof(ExtraPowerLinks, links) == 0x18);
+static_assert(offsetof(ExtraBendableSplineParams, slack) == 0x18);
+
 std::mutex s_eventLock;
 Vector<WorkshopEvent> s_events;
+Vector<WireEvent> s_wireEvents;
+// Our own wire work is not a player's edit
+bool s_applyingWire = false;
+
+bool IsWire(const TESObjectREFR* apRefr) noexcept
+{
+    return apRefr && apRefr->baseForm && static_cast<uint8_t>(apRefr->baseForm->formType) == kBendableSplineFormType;
+}
+
+ExtraPowerLinks* GetPowerLinks(const TESObjectREFR* apRefr) noexcept
+{
+    if (!apRefr || !apRefr->extraData)
+        return nullptr;
+
+    return static_cast<ExtraPowerLinks*>(apRefr->extraData->GetByType(ExtraDataType::PowerLinks));
+}
+
+const ExtraBendableSplineParams* GetSplineParams(const TESObjectREFR* apRefr) noexcept
+{
+    if (!apRefr || !apRefr->extraData)
+        return nullptr;
+
+    return static_cast<const ExtraBendableSplineParams*>(apRefr->extraData->GetByType(ExtraDataType::BendableSplineParams));
+}
 
 void QueueWorkshopEvent(WorkshopChange::Action aAction, const WorkshopEventData* apEvent) noexcept
 {
@@ -59,7 +117,8 @@ void QueueWorkshopEvent(WorkshopChange::Action aAction, const WorkshopEventData*
     if (pWorkshop->IsTemporary() && !pItem->IsTemporary())
         std::swap(pWorkshop, pItem);
 
-    if (!pItem->baseForm)
+    // Wires have their own path, a plain copy would hang in the air unconnected
+    if (!pItem->baseForm || IsWire(pItem))
         return;
 
     WorkshopEvent event{};
@@ -97,6 +156,113 @@ uint64_t TP_MAKE_THISCALL(HookWorkshopDestroyed, void, const WorkshopEventData* 
 {
     QueueWorkshopEvent(WorkshopChange::kDestroyed, apEvent);
     return TiltedPhoques::ThisCall(RealWorkshopDestroyed, apThis, apEvent, apSource);
+}
+
+TP_THIS_FUNCTION(TQueueRebuildSpline, void, void, TESObjectREFR*, bool, void*);
+TP_THIS_FUNCTION(TDisconnectSpline, void, TESObjectREFR);
+
+TQueueRebuildSpline* RealQueueRebuildSpline = nullptr;
+TDisconnectSpline* RealDisconnectSpline = nullptr;
+
+void QueueWireEvent(const TESObjectREFR* apWire, bool aRemoved) noexcept
+{
+    if (s_applyingWire || !IsWire(apWire) || !apWire->IsTemporary())
+        return;
+
+    std::scoped_lock lock(s_eventLock);
+    s_wireEvents.push_back({apWire->formID, aRemoved});
+}
+
+// The workshop rebuilds a wire whenever it gets strung or an end moves
+void TP_MAKE_THISCALL(HookQueueRebuildSpline, void, TESObjectREFR* apWire, bool aCreatePhysics, void* apChildNode)
+{
+    QueueWireEvent(apWire, false);
+    TiltedPhoques::ThisCall(RealQueueRebuildSpline, apThis, apWire, aCreatePhysics, apChildNode);
+}
+
+void TP_MAKE_THISCALL(HookDisconnectSpline, TESObjectREFR)
+{
+    QueueWireEvent(apThis, true);
+    TiltedPhoques::ThisCall(RealDisconnectSpline, apThis);
+}
+
+bool SetSplineShape(TESObjectREFR* apWire, float aThickness, float aSlack, const glm::vec3& acHalfExtents) noexcept
+{
+    using TSetSplineInfo = bool(__fastcall)(ExtraDataList*, float*, float*, NiPoint3*, bool*);
+
+    POINTER_FALLOUT4(TSetSplineInfo, s_setSplineInfo, 894306);
+
+    NiPoint3 halfExtents;
+    halfExtents.x = acHalfExtents.x;
+    halfExtents.y = acHalfExtents.y;
+    halfExtents.z = acHalfExtents.z;
+
+    return apWire->extraData && s_setSplineInfo.Get()(apWire->extraData, &aThickness, &aSlack, &halfExtents, nullptr);
+}
+
+void ConnectSpline(TESObjectREFR* apA, int32_t aLinkA, TESObjectREFR* apB, int32_t aLinkB, TESObjectREFR* apWire) noexcept
+{
+    using TConnectSpline = void(__fastcall)(TESObjectREFR*, int32_t, TESObjectREFR*, int32_t, TESObjectREFR*);
+
+    POINTER_FALLOUT4(TConnectSpline, s_connectSpline, 59311);
+
+    s_connectSpline.Get()(apA, aLinkA, apB, aLinkB, apWire);
+}
+
+void RebuildSpline(TESObjectREFR* apWire) noexcept
+{
+    POINTER_FALLOUT4(void*, s_taskQueue, 7491);
+
+    TiltedPhoques::ThisCall(RealQueueRebuildSpline, *s_taskQueue.Get(), apWire, true, nullptr);
+}
+
+bool IsPowered(TESObjectREFR* apObject) noexcept
+{
+    using TIsPowered = bool(__fastcall)(TESObjectREFR*);
+
+    POINTER_FALLOUT4(TIsPowered, s_isPowered, 1546240);
+
+    return s_isPowered.Get()(apObject);
+}
+
+// Workbench an object belongs to
+TESObjectREFR* GetObjectWorkshop(TESObjectREFR* apObject) noexcept
+{
+    using ObjectReference = TESObjectREFR;
+
+    // Without it the caller falls back to the last workbench used, building goes on either way
+    if (!apObject || !World::Get().ctx().at<PapyrusService>().Get("ObjectReference", "GetLinkedRef"))
+        return nullptr;
+
+    PAPYRUS_FUNCTION(TESObjectREFR*, ObjectReference, GetLinkedRef, TESForm*);
+
+    TESForm* pKeyword = TESForm::GetById(kWorkshopItemKeyword);
+
+    return pKeyword ? s_pGetLinkedRef(apObject, pKeyword) : nullptr;
+}
+
+// An existing wire between the two, the save of somebody joining can hold it
+TESObjectREFR* FindWireBetween(const TESObjectREFR* apA, const TESObjectREFR* apB) noexcept
+{
+    auto* pLinks = GetPowerLinks(apA);
+    if (!pLinks)
+        return nullptr;
+
+    for (const PowerLink& link : pLinks->links)
+    {
+        auto* pWire = Cast<TESObjectREFR>(TESForm::GetById(link.FormId));
+        auto* pWireLinks = IsWire(pWire) ? GetPowerLinks(pWire) : nullptr;
+        if (!pWireLinks)
+            continue;
+
+        for (const PowerLink& wireLink : pWireLinks->links)
+        {
+            if (wireLink.FormId == apB->formID)
+                return pWire;
+        }
+    }
+
+    return nullptr;
 }
 
 bool HasPapyrusFunctions() noexcept
@@ -172,12 +338,16 @@ WorkshopService::WorkshopService(World& aWorld, entt::dispatcher& aDispatcher, T
     m_notifyConnection = aDispatcher.sink<NotifyWorkshopChange>().connect<&WorkshopService::OnNotifyWorkshopChange>(this);
 }
 
-void WorkshopService::OnUpdate(const UpdateEvent&) noexcept
+void WorkshopService::OnUpdate(const UpdateEvent& acEvent) noexcept
 {
     SendLocalChanges();
 
     if (m_transport.IsOnline())
+    {
         ApplyPendingChanges();
+        CheckLocalWires(acEvent.Delta);
+        LogPower(acEvent.Delta);
+    }
 }
 
 void WorkshopService::OnDisconnected(const DisconnectedEvent&) noexcept
@@ -185,6 +355,9 @@ void WorkshopService::OnDisconnected(const DisconnectedEvent&) noexcept
     m_pending.clear();
     m_keyToLocal.clear();
     m_localToKey.clear();
+    m_wires.clear();
+    m_wireChecks.clear();
+    m_powerChecks.clear();
 }
 
 void WorkshopService::OnNotifyWorkshopChange(const NotifyWorkshopChange& acMessage) noexcept
@@ -208,6 +381,8 @@ void WorkshopService::SendLocalChanges() noexcept
     for (const WorkshopEvent& event : events)
     {
         spdlog::info("Workshop event {}: item {:X} base {:X} workshop {:X}", static_cast<int>(event.Action), event.ItemId, event.BaseId, event.WorkshopId);
+
+        m_lastWorkshopId = event.WorkshopId;
 
         // Turrets and the like are actors, those go through the character sync
         if (event.IsActor)
@@ -303,6 +478,12 @@ void WorkshopService::ApplyPendingChanges() noexcept
 
 void WorkshopService::ApplyChange(const WorkshopChange& acChange, TESObjectREFR* apWorkshop) noexcept
 {
+    if (acChange.Kind == WorkshopChange::kWired)
+    {
+        ApplyWire(acChange, apWorkshop);
+        return;
+    }
+
     if (acChange.Kind == WorkshopChange::kPlaced)
     {
         const uint64_t key = MakeKey(acChange.OwnerId, acChange.ObjectId);
@@ -367,9 +548,19 @@ void WorkshopService::ApplyChange(const WorkshopChange& acChange, TESObjectREFR*
     const bool isTemporary = pObject->IsTemporary();
     const uint32_t formId = pObject->formID;
 
-    pObject->Disable();
-    if (isTemporary)
-        pObject->Delete();
+    if (IsWire(pObject))
+    {
+        RemoveWire(pObject);
+    }
+    else
+    {
+        // A deleted object left on a power grid gets its id reused by something else
+        RemoveWiresOf(pObject);
+
+        pObject->Disable();
+        if (isTemporary)
+            pObject->Delete();
+    }
 
     spdlog::info("Workshop sync: removed {:X}", formId);
 
@@ -421,6 +612,310 @@ TESObjectREFR* WorkshopService::FindObject(const WorkshopChange& acChange) const
     return pObject;
 }
 
+void WorkshopService::Arm(Vector<DelayedCheck>& aChecks, uint32_t aFormId, double aSeconds) noexcept
+{
+    for (DelayedCheck& check : aChecks)
+    {
+        if (check.FormId == aFormId)
+        {
+            check.Remaining = aSeconds;
+            return;
+        }
+    }
+
+    aChecks.push_back({aFormId, aSeconds});
+}
+
+Vector<uint32_t> WorkshopService::TakeDue(Vector<DelayedCheck>& aChecks, double aDelta) noexcept
+{
+    Vector<uint32_t> due;
+    Vector<DelayedCheck> waiting;
+
+    for (DelayedCheck check : aChecks)
+    {
+        check.Remaining -= aDelta;
+        if (check.Remaining > 0.0)
+            waiting.push_back(check);
+        else
+            due.push_back(check.FormId);
+    }
+
+    aChecks = std::move(waiting);
+    return due;
+}
+
+void WorkshopService::CheckLocalWires(double aDelta) noexcept
+{
+    Vector<WireEvent> events;
+    {
+        std::scoped_lock lock(s_eventLock);
+        events.swap(s_wireEvents);
+    }
+
+    for (const WireEvent& event : events)
+    {
+        if (event.Removed)
+        {
+            std::erase_if(m_wireChecks, [&event](const DelayedCheck& acCheck) { return acCheck.FormId == event.WireId; });
+            SendWireRemoved(event.WireId);
+        }
+        else
+        {
+            Arm(m_wireChecks, event.WireId, kWireSettleSeconds);
+        }
+    }
+
+    for (const uint32_t wireId : TakeDue(m_wireChecks, aDelta))
+        SendWire(wireId);
+}
+
+bool WorkshopService::FillWireEnd(uint32_t aFormId, uint32_t aLinkType, WorkshopChange::WireEnd& aEnd) const noexcept
+{
+    const auto* pObject = Cast<TESObjectREFR>(TESForm::GetById(aFormId));
+    if (!pObject || !pObject->baseForm || pObject->baseForm->IsTemporary())
+        return false;
+
+    const auto& modSystem = m_world.GetModSystem();
+
+    aEnd.LinkType = aLinkType;
+    if (!modSystem.GetServerModId(pObject->baseForm->formID, aEnd.BaseId))
+        return false;
+
+    if (const auto itor = m_localToKey.find(aFormId); itor != std::end(m_localToKey))
+    {
+        aEnd.OwnerId = static_cast<uint32_t>(itor->second >> 32);
+        aEnd.ObjectId = static_cast<uint32_t>(itor->second);
+        return true;
+    }
+
+    if (pObject->IsTemporary())
+    {
+        aEnd.OwnerId = m_transport.GetLocalPlayerId();
+        aEnd.ObjectId = aFormId;
+        return true;
+    }
+
+    return modSystem.GetServerModId(aFormId, aEnd.ObjectServerId);
+}
+
+void WorkshopService::SendWire(uint32_t aWireId) noexcept
+{
+    auto* pWire = Cast<TESObjectREFR>(TESForm::GetById(aWireId));
+    auto* pLinks = GetPowerLinks(pWire);
+    const auto* pParams = GetSplineParams(pWire);
+
+    // One end is still in the player's hands
+    if (!IsWire(pWire) || !pLinks || !pParams || pLinks->links.length != 2 || pParams->detachedEnd)
+        return;
+
+    const PowerLink linkA = pLinks->links[0];
+    const PowerLink linkB = pLinks->links[1];
+
+    RequestWorkshopChange request;
+    WorkshopChange& change = request.Change;
+    change.Kind = WorkshopChange::kWired;
+    change.Position = pWire->position;
+    change.Rotation = pWire->rotation;
+    change.OriginalPosition = pWire->position;
+    change.HalfExtents = pParams->halfExtents;
+    change.Slack = pParams->slack;
+    change.Thickness = pParams->thickness;
+
+    if (!FillWireEnd(linkA.FormId, linkA.LinkType, change.EndA) || !FillWireEnd(linkB.FormId, linkB.LinkType, change.EndB))
+    {
+        spdlog::warn("Workshop sync: wire {:X} has an end nobody else knows", aWireId);
+        return;
+    }
+
+    auto* pWorkshop = GetObjectWorkshop(Cast<TESObjectREFR>(TESForm::GetById(linkA.FormId)));
+    if (!pWorkshop)
+        pWorkshop = GetObjectWorkshop(Cast<TESObjectREFR>(TESForm::GetById(linkB.FormId)));
+    const uint32_t workshopId = pWorkshop ? pWorkshop->formID : m_lastWorkshopId;
+
+    const auto& modSystem = m_world.GetModSystem();
+    if (workshopId == 0 || (workshopId >> 24) == 0xFF || !modSystem.GetServerModId(workshopId, change.WorkshopId) ||
+        !modSystem.GetServerModId(pWire->baseForm->formID, change.BaseId))
+    {
+        spdlog::warn("Workshop sync: no workbench for wire {:X}", aWireId);
+        return;
+    }
+
+    if (const auto itor = m_localToKey.find(aWireId); itor != std::end(m_localToKey))
+    {
+        change.OwnerId = static_cast<uint32_t>(itor->second >> 32);
+        change.ObjectId = static_cast<uint32_t>(itor->second);
+    }
+    else
+    {
+        change.OwnerId = m_transport.GetLocalPlayerId();
+        change.ObjectId = aWireId;
+    }
+
+    // Rebuilt without any real change, for example when it came into view
+    if (const auto itor = m_wires.find(aWireId); itor != std::end(m_wires))
+    {
+        const WorkshopChange& last = itor->second;
+        if (last.EndA == change.EndA && last.EndB == change.EndB && glm::distance(last.Position, change.Position) < kWireMoveTolerance)
+            return;
+    }
+
+    m_wires[aWireId] = change;
+    m_transport.Send(request);
+
+    spdlog::info("Workshop event wire: {:X} between {:X} and {:X}", aWireId, linkA.FormId, linkB.FormId);
+}
+
+void WorkshopService::SendWireRemoved(uint32_t aWireId) noexcept
+{
+    const auto itor = m_wires.find(aWireId);
+    if (itor == std::end(m_wires))
+        return;
+
+    RequestWorkshopChange request;
+    request.Change = itor->second;
+    request.Change.Kind = WorkshopChange::kDestroyed;
+    request.Change.Replay = false;
+
+    m_transport.Send(request);
+    m_wires.erase(itor);
+
+    if (const auto localItor = m_localToKey.find(aWireId); localItor != std::end(m_localToKey))
+    {
+        m_keyToLocal.erase(localItor->second);
+        m_localToKey.erase(localItor);
+    }
+
+    spdlog::info("Workshop event wire removed: {:X}", aWireId);
+}
+
+TESObjectREFR* WorkshopService::FindWireEnd(const WorkshopChange::WireEnd& acEnd) const noexcept
+{
+    const auto& modSystem = m_world.GetModSystem();
+
+    uint32_t formId = 0;
+    if (acEnd.ObjectId == 0)
+        formId = modSystem.GetGameId(acEnd.ObjectServerId);
+    else if (const auto itor = m_keyToLocal.find(MakeKey(acEnd.OwnerId, acEnd.ObjectId)); itor != std::end(m_keyToLocal))
+        formId = itor->second;
+    else
+        formId = acEnd.ObjectId;
+
+    auto* pObject = Cast<TESObjectREFR>(TESForm::GetById(formId));
+    if (!pObject || !pObject->baseForm || pObject->baseForm->formID != modSystem.GetGameId(acEnd.BaseId))
+        return nullptr;
+
+    return pObject;
+}
+
+void WorkshopService::ApplyWire(const WorkshopChange& acChange, TESObjectREFR* apWorkshop) noexcept
+{
+    TESObjectREFR* pEndA = FindWireEnd(acChange.EndA);
+    TESObjectREFR* pEndB = FindWireEnd(acChange.EndB);
+    if (!pEndA || !pEndB)
+    {
+        spdlog::warn("Workshop sync: an end of wire {:X} is not here", acChange.ObjectId);
+        return;
+    }
+
+    const uint64_t key = MakeKey(acChange.OwnerId, acChange.ObjectId);
+
+    // An end moved, the wire is strung again
+    if (const auto itor = m_keyToLocal.find(key); itor != std::end(m_keyToLocal))
+    {
+        const uint32_t oldId = itor->second;
+        m_keyToLocal.erase(itor);
+        m_localToKey.erase(oldId);
+        m_wires.erase(oldId);
+
+        if (auto* pOld = Cast<TESObjectREFR>(TESForm::GetById(oldId)))
+            RemoveWire(pOld);
+    }
+
+    TESObjectREFR* pWire = FindWireBetween(pEndA, pEndB);
+    if (pWire)
+    {
+        spdlog::info("Workshop sync: wire is already here as {:X}", pWire->formID);
+    }
+    else
+    {
+        TESForm* pBase = TESForm::GetById(m_world.GetModSystem().GetGameId(acChange.BaseId));
+        pWire = pBase ? PlaceCopy(apWorkshop, pBase) : nullptr;
+        if (!pWire)
+        {
+            spdlog::warn("Workshop sync: could not make wire {:X}", acChange.ObjectId);
+            return;
+        }
+
+        SetTransform(pWire, acChange.Position, acChange.Rotation);
+
+        s_applyingWire = true;
+        SetSplineShape(pWire, acChange.Thickness, acChange.Slack, acChange.HalfExtents);
+        ConnectSpline(pEndA, static_cast<int32_t>(acChange.EndA.LinkType), pEndB, static_cast<int32_t>(acChange.EndB.LinkType), pWire);
+        RebuildSpline(pWire);
+        s_applyingWire = false;
+
+        spdlog::info("Workshop sync: wired {:X} and {:X} with {:X}", pEndA->formID, pEndB->formID, pWire->formID);
+    }
+
+    m_keyToLocal[key] = pWire->formID;
+    m_localToKey[pWire->formID] = key;
+    m_wires[pWire->formID] = acChange;
+
+    Arm(m_powerChecks, pEndA->formID, kPowerLogSeconds);
+    Arm(m_powerChecks, pEndB->formID, kPowerLogSeconds);
+}
+
+void WorkshopService::RemoveWire(TESObjectREFR* apWire) noexcept
+{
+    using TDisconnect = void(__fastcall)(TESObjectREFR*);
+
+    s_applyingWire = true;
+    reinterpret_cast<TDisconnect*>(RealDisconnectSpline)(apWire);
+    s_applyingWire = false;
+
+    apWire->Disable();
+    apWire->Delete();
+}
+
+void WorkshopService::RemoveWiresOf(TESObjectREFR* apObject) noexcept
+{
+    auto* pLinks = GetPowerLinks(apObject);
+    if (!pLinks)
+        return;
+
+    Vector<uint32_t> wires;
+    for (const PowerLink& link : pLinks->links)
+    {
+        if (IsWire(Cast<TESObjectREFR>(TESForm::GetById(link.FormId))))
+            wires.push_back(link.FormId);
+    }
+
+    for (const uint32_t wireId : wires)
+    {
+        auto* pWire = Cast<TESObjectREFR>(TESForm::GetById(wireId));
+        if (!pWire)
+            continue;
+
+        RemoveWire(pWire);
+        m_wires.erase(wireId);
+
+        if (const auto itor = m_localToKey.find(wireId); itor != std::end(m_localToKey))
+        {
+            m_keyToLocal.erase(itor->second);
+            m_localToKey.erase(itor);
+        }
+    }
+}
+
+void WorkshopService::LogPower(double aDelta) noexcept
+{
+    for (const uint32_t formId : TakeDue(m_powerChecks, aDelta))
+    {
+        if (auto* pObject = Cast<TESObjectREFR>(TESForm::GetById(formId)))
+            spdlog::info("Workshop sync: {:X} powered {}", formId, IsPowered(pObject));
+    }
+}
+
 static TiltedPhoques::Initializer s_workshopHooks(
     []()
     {
@@ -432,7 +927,15 @@ static TiltedPhoques::Initializer s_workshopHooks(
         RealWorkshopMoved = s_workshopMoved.Get();
         RealWorkshopDestroyed = s_workshopDestroyed.Get();
 
+        POINTER_FALLOUT4(TQueueRebuildSpline, s_queueRebuildSpline, 198419);
+        POINTER_FALLOUT4(TDisconnectSpline, s_disconnectSpline, 750682);
+
+        RealQueueRebuildSpline = s_queueRebuildSpline.Get();
+        RealDisconnectSpline = s_disconnectSpline.Get();
+
         TP_HOOK(&RealWorkshopPlaced, HookWorkshopPlaced);
         TP_HOOK(&RealWorkshopMoved, HookWorkshopMoved);
         TP_HOOK(&RealWorkshopDestroyed, HookWorkshopDestroyed);
+        TP_HOOK(&RealQueueRebuildSpline, HookQueueRebuildSpline);
+        TP_HOOK(&RealDisconnectSpline, HookDisconnectSpline);
     });

@@ -24,6 +24,8 @@ The build folder from source writes to `build\windows\x64\releasedbg\logs`.
 | `Workshop event` | this PC placed, moved or scrapped something |
 | `Workshop sync: placed` / `moved` / `removed` | a settlement edit from another player was applied |
 | `Workshop sync: ... is already here as ...` | a replayed object already exists, nothing was built twice |
+| `Workshop event wire` / `Workshop sync: wired` | wire sent / built on the receiving side |
+| `Workshop sync: ... powered true/false` | power state of a wire's end, 3 s after connecting |
 
 `Game is shutting down` appears at every end and does not prove an intentional exit.
 

@@ -11,7 +11,23 @@ struct WorkshopChange
     {
         kPlaced = 0,
         kMoved,
-        kDestroyed
+        kDestroyed,
+        kWired
+    };
+
+    //! One end of a power wire, named like the changed object itself.
+    struct WireEnd
+    {
+        bool operator==(const WireEnd& acRhs) const noexcept;
+
+        void Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noexcept;
+        void Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept;
+
+        uint32_t OwnerId{};
+        uint32_t ObjectId{};
+        GameId ObjectServerId{};
+        GameId BaseId{};
+        uint32_t LinkType{};
     };
 
     WorkshopChange() = default;
@@ -37,4 +53,10 @@ struct WorkshopChange
     glm::vec3 OriginalPosition{};
     // Sent from the server's memory to somebody joining
     bool Replay{};
+    // Only sent for kWired
+    WireEnd EndA{};
+    WireEnd EndB{};
+    glm::vec3 HalfExtents{};
+    float Slack{};
+    float Thickness{};
 };

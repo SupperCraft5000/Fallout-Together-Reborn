@@ -138,3 +138,18 @@ Belegt ist, dass jeder Empfänger das Skript-Ereignis an beide Referenzen schick
 Papyrus-Natives auf NG: `PlaceAtMe` `0x1159E80` liefert `TESObjectREFR*` und gibt die eigene Referenz wieder ab, `abDeleteWhenAble` muss `false` sein, sonst verschwindet das Objekt. `SetPosition` `0x115DED0` und `SetAngle` `0x115CEE0` nehmen `RefrOrInventoryObj` und drei floats, `SetAngle` in Grad. `SetLinkedRef` `0x11815D0` nimmt `(self, ziel, keyword)` als einfache Zeiger. `WorkshopItemKeyword` ist `0x54BA6`.
 
 `Game.FindClosestReferenceOfType` (OG-ID 1459241, OG `0x13C0490`, NG `0x1121840`) hat die Form `(vm, stack, nullptr, form, x, y, z, radius)` und durchsucht die geladenen Zellen. `PapyrusService::Get("Game", ...)` findet sie im Spiel nicht, daher der direkte Zeiger. Vermutlich kommt der Klassenname aus dem Stringpool in anderer Schreibweise, das ist nicht belegt.
+
+## 23. Kabel und Stromnetz
+Ein Kabel ist eine Referenz mit BNDS-Basis (Formtyp 35), `ExtraPowerLinks` (Typ `0xD0`, zwei Enden) und `ExtraBendableSplineParams` (Typ `0xB4`). Quellen waren die Doku von F4Multiplayer, der Code von FathersFallout und CommonLibF4, die Adressen sind in beiden Spielversionen im Listing zugeordnet.
+
+| Funktion | OG-ID | OG-RVA | NG-RVA |
+|---|---|---|---|
+| `SplineUtils::ConnectSpline` | 59311 | `0x200E50` | `0x38DFE0` |
+| `SplineUtils::DisconnectSpline` | 750682 | `0x200F50` | `0x38E0E0` |
+| `TaskQueueInterface::QueueRebuildBendableSpline` | 198419 | `0xD5F120` | `0xC4C090` |
+| `ExtraDataList::SetBendableSplineInfo` | 894306 | `0x9A800` | `0x2915A0` |
+| `Workshop::IsPowered` | 1546240 | `0x1F2F60` | `0x382530` |
+
+`ConnectSpline` hat keine direkten Aufrufer im Spiel und schreibt nur die `ExtraPowerLinks` an beide Enden und das Kabel. Das Stromnetz fasst es nicht an. `IsPowered` braucht an der Werkbank ein Extra vom Typ `0xBF` und findet das Objekt dann über `0x3881D0` im Netz. Kandidaten für das Eintragen ins Netz sind `0x3876D0` und `0x387BD0`, das ist nicht geprüft. Die Task-Queue liest das Spiel aus der Adresse von ID 7491, im Client heißt dieselbe ID `WeatherManager`, die Zuordnung dort wirkt falsch.
+
+`PapyrusService` fand `Game.FindClosestReferenceOfType` und `GetLinkedRef` im Spiel nicht, während andere Namen gingen. Die Schlüssel sind jetzt unabhängig von der Schreibweise, und `GetLinkedRef` wird damit gefunden. Das stützt die Vermutung aus Abschnitt 22 zum Stringpool, ohne sie direkt zu messen.

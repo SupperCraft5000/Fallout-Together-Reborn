@@ -138,3 +138,18 @@ It is proven that each sink sends the script event to both references. That `[0]
 Papyrus natives on NG: `PlaceAtMe` `0x1159E80` returns `TESObjectREFR*` and releases its own reference, `abDeleteWhenAble` must be `false`, otherwise the object vanishes. `SetPosition` `0x115DED0` and `SetAngle` `0x115CEE0` take `RefrOrInventoryObj` and three floats, `SetAngle` in degrees. `SetLinkedRef` `0x11815D0` takes `(self, target, keyword)` as plain pointers. `WorkshopItemKeyword` is `0x54BA6`.
 
 `Game.FindClosestReferenceOfType` (OG ID 1459241, OG `0x13C0490`, NG `0x1121840`) has the form `(vm, stack, nullptr, form, x, y, z, radius)` and searches the loaded cells. `PapyrusService::Get("Game", ...)` does not find it in the game, hence the direct pointer. The class name probably comes from the string pool in a different spelling, which is not proven.
+
+## 23. Wires and the power grid
+A wire is a reference with a BNDS base (form type 35), `ExtraPowerLinks` (type `0xD0`, two ends) and `ExtraBendableSplineParams` (type `0xB4`). Sources were the F4Multiplayer docs, the FathersFallout code and CommonLibF4, the addresses are matched in the listings of both game versions.
+
+| Function | OG ID | OG RVA | NG RVA |
+|---|---|---|---|
+| `SplineUtils::ConnectSpline` | 59311 | `0x200E50` | `0x38DFE0` |
+| `SplineUtils::DisconnectSpline` | 750682 | `0x200F50` | `0x38E0E0` |
+| `TaskQueueInterface::QueueRebuildBendableSpline` | 198419 | `0xD5F120` | `0xC4C090` |
+| `ExtraDataList::SetBendableSplineInfo` | 894306 | `0x9A800` | `0x2915A0` |
+| `Workshop::IsPowered` | 1546240 | `0x1F2F60` | `0x382530` |
+
+`ConnectSpline` has no direct callers in the game and only writes `ExtraPowerLinks` on both ends and the wire. It does not touch the power grid. `IsPowered` needs an extra of type `0xBF` on the workbench and then finds the object in the grid through `0x3881D0`. Candidates for adding to the grid are `0x3876D0` and `0x387BD0`, this is not checked. The game reads the task queue from the address of ID 7491, the client calls the same ID `WeatherManager`, that mapping looks wrong.
+
+`PapyrusService` did not find `Game.FindClosestReferenceOfType` and `GetLinkedRef` in the game, while other names worked. The keys now ignore case, and `GetLinkedRef` is found that way. This supports the string pool assumption from section 22 without measuring it directly.
