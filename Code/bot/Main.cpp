@@ -1,6 +1,7 @@
 // FalloutBot: verbindet sich wie ein Spieler, aber ohne Spiel, und prüft die Antworten des Servers.
 // Aufruf: FalloutBot <host:port> <name> <sekunden> [passwort] [bauen]
 // Mit "bauen" schickt der Bot nach der Anmeldung feste Siedlungs-Änderungen.
+// Mit "spieltest" schickt er echte Formen für die Werkbank von Red Rocket, siehe scripts/test-workshop-ingame.ps1.
 // Exit-Code: 0 = angenommen, 2 = abgewiesen, 3 = keine Verbindung oder Zeitüberschreitung
 // Was der Encoding-Code sonst über EncodingPch.h bekommt
 #include <chrono>
@@ -35,6 +36,14 @@ using TiltedPhoques::Buffer;
 
 namespace
 {
+// Aus Fallout4.esm: Referenz RedRocketWorkshopREF, ihre Basisform und Position, dazu ein Bodenteil
+constexpr uint32_t kRedRocketWorkbench = 0x54BAE;
+constexpr uint32_t kRedRocketWorkbenchBase = 0xC1AEB;
+constexpr float kRedRocketWorkbenchX = -70384.328125f;
+constexpr float kRedRocketWorkbenchY = 79519.953125f;
+constexpr float kRedRocketWorkbenchZ = 7360.030273f;
+constexpr uint32_t kTestFloor = 0x1C501C;
+
 const char* ResponseName(AuthenticationResponse::ResponseType aType)
 {
     using RT = AuthenticationResponse::ResponseType;
@@ -57,6 +66,7 @@ struct Bot final : TiltedPhoques::Client
     int Result = 3;
     bool Finished = false;
     bool Build = false;
+    bool GameTest = false;
     uint32_t PlayerId = 0;
 
     void SendChange(uint8_t aKind, uint32_t aObjectId, float aX)
@@ -71,6 +81,35 @@ struct Bot final : TiltedPhoques::Client
         if (aKind == WorkshopChange::kPlaced)
             request.Change.OriginalPosition = request.Change.Position;
         SendMessage(request);
+    }
+
+    void SendGameChange(uint8_t aKind, uint32_t aObjectId, uint32_t aBaseId, const glm::vec3& acPosition, bool aReplay)
+    {
+        RequestWorkshopChange request;
+        request.Change.Kind = aKind;
+        request.Change.OwnerId = 99;
+        request.Change.ObjectId = aObjectId;
+        request.Change.WorkshopId = GameId(0, kRedRocketWorkbench);
+        request.Change.BaseId = GameId(0, aBaseId);
+        request.Change.Position = acPosition;
+        request.Change.OriginalPosition = acPosition;
+        request.Change.Replay = aReplay;
+        SendMessage(request);
+    }
+
+    // Prüft im Spiel: bauen, verschieben, entfernen, und ob Nachholen vorhandene Objekte erkennt
+    void SendGameTest()
+    {
+        const glm::vec3 workbench(kRedRocketWorkbenchX, kRedRocketWorkbenchY, kRedRocketWorkbenchZ);
+        const glm::vec3 spotA = workbench + glm::vec3(300.f, 0.f, 0.f);
+        const glm::vec3 spotB = workbench + glm::vec3(0.f, 300.f, 0.f);
+
+        SendGameChange(WorkshopChange::kPlaced, 0xFF00A001, kTestFloor, spotA, false);
+        SendGameChange(WorkshopChange::kMoved, 0xFF00A001, kTestFloor, spotA + glm::vec3(100.f, 0.f, 0.f), false);
+        SendGameChange(WorkshopChange::kPlaced, 0xFF00A002, kTestFloor, spotB, true);
+        // Die Werkbank selbst steht schon da, sie darf nicht noch einmal entstehen
+        SendGameChange(WorkshopChange::kPlaced, 0xFF00A003, kRedRocketWorkbenchBase, workbench, true);
+        SendGameChange(WorkshopChange::kDestroyed, 0xFF00A002, kTestFloor, spotB, false);
     }
 
     // A wird verschoben, B verschrottet, C stammt aus einem Plugin
@@ -142,6 +181,8 @@ struct Bot final : TiltedPhoques::Client
             PlayerId = pResponse->PlayerId;
             if (Result == 0 && Build)
                 SendBuildScript();
+            if (Result == 0 && GameTest)
+                SendGameTest();
         }
         else if (opcode == NotifyWorkshopChange::Opcode)
         {
@@ -186,6 +227,7 @@ int main(int argc, char** argv)
     bot.Name = argv[2];
     bot.Password = argc > 4 ? argv[4] : "";
     bot.Build = argc > 5 && std::string(argv[5]) == "bauen";
+    bot.GameTest = argc > 5 && std::string(argv[5]) == "spieltest";
     const auto seconds = std::atoi(argv[3]);
 
     if (!bot.ConnectByIp(argv[1]))

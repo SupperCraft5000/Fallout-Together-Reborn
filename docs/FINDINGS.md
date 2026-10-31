@@ -137,4 +137,4 @@ Belegt ist, dass jeder Empfänger das Skript-Ereignis an beide Referenzen schick
 
 Papyrus-Natives auf NG: `PlaceAtMe` `0x1159E80` liefert `TESObjectREFR*` und gibt die eigene Referenz wieder ab, `abDeleteWhenAble` muss `false` sein, sonst verschwindet das Objekt. `SetPosition` `0x115DED0` und `SetAngle` `0x115CEE0` nehmen `RefrOrInventoryObj` und drei floats, `SetAngle` in Grad. `SetLinkedRef` `0x11815D0` nimmt `(self, ziel, keyword)` als einfache Zeiger. `WorkshopItemKeyword` ist `0x54BA6`.
 
-`Game.FindClosestReferenceOfType` (NG `0x1121840`) hat die Form `(vm, stack, nullptr, form, x, y, z, radius)` und durchsucht die geladenen Zellen.
+`Game.FindClosestReferenceOfType` (OG-ID 1459241, OG `0x13C0490`, NG `0x1121840`) hat die Form `(vm, stack, nullptr, form, x, y, z, radius)` und durchsucht die geladenen Zellen. `PapyrusService::Get("Game", ...)` findet sie im Spiel nicht, daher der direkte Zeiger. Vermutlich kommt der Klassenname aus dem Stringpool in anderer Schreibweise, das ist nicht belegt.

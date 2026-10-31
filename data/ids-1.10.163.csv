@@ -171,3 +171,4 @@ id,name,type,real_id,rva_1_10_163,file,line
 697787,s_workshopPlaced,TWorkshopSink,697786,0x145DDB0,client/Services/Generic/WorkshopService.cpp,0
 725214,s_workshopMoved,TWorkshopSink,725213,0x145DB70,client/Services/Generic/WorkshopService.cpp,0
 313585,s_workshopDestroyed,TWorkshopSink,313584,0x145D920,client/Services/Generic/WorkshopService.cpp,0
+1459242,s_findClosest,TFindClosest,1459241,0x13C0490,client/Services/Generic/WorkshopService.cpp,0

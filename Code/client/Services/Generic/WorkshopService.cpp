@@ -111,12 +111,6 @@ bool HasPapyrusFunctions() noexcept
         }
     }
 
-    if (!papyrus.Get("Game", "FindClosestReferenceOfType"))
-    {
-        spdlog::error("Workshop sync: papyrus function FindClosestReferenceOfType is missing");
-        return false;
-    }
-
     return true;
 }
 
@@ -155,9 +149,12 @@ void LinkToWorkshop(TESObjectREFR* apObject, TESObjectREFR* apWorkshop) noexcept
 // Only looks through the loaded cells, which holds as the workbench is loaded
 TESObjectREFR* FindAtSpot(TESForm* apBase, const glm::vec3& acPosition) noexcept
 {
-    GLOBAL_PAPYRUS_FUNCTION(TESObjectREFR*, Game, FindClosestReferenceOfType, uint32_t, void*, TESForm*, float, float, float, float);
+    // Game functions do not show up in PapyrusService, this is the native behind Game.FindClosestReferenceOfType
+    using TFindClosest = TESObjectREFR*(__fastcall)(BSScript::IVirtualMachine*, uint32_t, void*, TESForm*, float, float, float, float);
 
-    return s_pFindClosestReferenceOfType(0, nullptr, apBase, acPosition.x, acPosition.y, acPosition.z, kSameSpotRadius);
+    POINTER_FALLOUT4(TFindClosest, s_findClosest, 1459241);
+
+    return s_findClosest.Get()(GameVM::Get()->virtualMachine, 0, nullptr, apBase, acPosition.x, acPosition.y, acPosition.z, kSameSpotRadius);
 }
 
 uint64_t MakeKey(uint32_t aOwnerId, uint32_t aObjectId) noexcept
@@ -354,13 +351,16 @@ void WorkshopService::ApplyChange(const WorkshopChange& acChange, TESObjectREFR*
     TESObjectREFR* pObject = FindObject(acChange);
     if (!pObject)
     {
-        spdlog::warn("Workshop sync: object {:X} of player {} not found", acChange.ObjectId, acChange.OwnerId);
+        // Normal for replays, what got scrapped may never have been here
+        if (!acChange.Replay)
+            spdlog::warn("Workshop sync: object {:X} of player {} not found", acChange.ObjectId, acChange.OwnerId);
         return;
     }
 
     if (acChange.Kind == WorkshopChange::kMoved)
     {
         SetTransform(pObject, acChange.Position, acChange.Rotation);
+        spdlog::info("Workshop sync: moved {:X}", pObject->formID);
         return;
     }
 
@@ -370,6 +370,8 @@ void WorkshopService::ApplyChange(const WorkshopChange& acChange, TESObjectREFR*
     pObject->Disable();
     if (isTemporary)
         pObject->Delete();
+
+    spdlog::info("Workshop sync: removed {:X}", formId);
 
     const auto localItor = m_localToKey.find(formId);
     if (localItor != std::end(m_localToKey))
