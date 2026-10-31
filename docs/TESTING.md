@@ -7,10 +7,11 @@ scripts\test-server-bots.ps1 -Bots 3 -Port 10601
 ```
 Startet den Server mit Passwort, prüft:
 - falsches Passwort → `wrong_password`, Exit 2,
-- N Bots → `accepted`, jeder sieht die anderen (`NotifyPlayerJoined`).
+- N Bots → `accepted`, jeder sieht die anderen (`NotifyPlayerJoined`),
+- Siedlungs-Änderungen gehen live durch und kommen bei einem späten Bot zusammengefasst an.
 Logs unter `$env:FTR_WORK\server-test\` (Pfad im Skript).
 
-`FalloutBot <host:port> <name> <sekunden> [passwort]` – Exit 0 angenommen, 2 abgewiesen, 3 keine Verbindung.
+`FalloutBot <host:port> <name> <sekunden> [passwort] [bauen|spieltest]` – Exit 0 angenommen, 2 abgewiesen, 3 keine Verbindung.
 Er schickt Version (`BUILD_COMMIT`), Name, Passwort und die offiziellen Masters. Neue Prüfungen: `Code/bot/Main.cpp`.
 
 ## 2. Testkopie des Spiels
@@ -39,9 +40,17 @@ python -I Tools\port\validate.py --clib <CommonLibF4> --og-bin version-1-10-163-
 Siehe docs/PORTING.md für Kreuzvalidierung und Ergebnisse.
 
 ## 5. Verbindung über das Steam-Netz (`Tools/steamtest`)
-Prüft ohne Spiel, ob zwei PCs über Steam P2P und das Relay-Netz von Valve zueinander finden. Grundlage für einen möglichen Tunnel statt Portfreigabe, im Mod ist das noch nicht eingebaut.
+Prüft ohne Spiel, ob zwei PCs über Steam P2P und das Relay-Netz von Valve zueinander finden. Darauf baut der Tunnel im Starter auf.
 ```powershell
 Tools\steamtest\build.ps1
 dist\SteamTest.exe
 ```
 Beide starten die exe gleichzeitig und tragen die Steam-ID der Gegenseite ein. Sie nutzt die `steam_api64.dll` aus dem Fallout-Ordner unter App-ID 377160, Steam zeigt dabei „spielt Fallout 4“. Andere App-ID: `--appid <id>`. Direkte Verbindungen (ICE) sind aus, weil `steamwebrtc64.dll` dabei abstürzte, `--ice` schaltet sie zum Vergleich wieder ein. Das Ergebnis steht in `steam-test-ergebnis.txt` neben der exe. Meldungen wie `Assertion Failed` im Konsolenfenster stammen aus der Steam-Bibliothek und sind allein kein Fehler.
+
+## 6. Bau-Sync im Spiel (`scripts/test-workshop-ingame.ps1`)
+Startet die Testkopie in Red Rocket, ein Bot schickt echte Bauteile für die Werkbank von Red Rocket, das Skript wertet das Client-Log aus. Es wechselt selbst ins Testprofil und zurück.
+```powershell
+scripts\test-workshop-ingame.ps1         # Spieler ist da, Änderungen kommen live
+scripts\test-workshop-ingame.ps1 -Late   # erst bauen, dann tritt der Spieler bei
+```
+Aus einer normalen Benutzer-Shell starten und währenddessen kein Fallout 4 starten. Geprüft wird nur die Empfängerseite, die Senderseite braucht einen echten Spieler.

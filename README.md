@@ -1,8 +1,8 @@
 # Fallout Together Reborn
 
-Inoffizieller Co-op für Fallout 4. Spielbar im LAN mit zwei Spielern auf **Fallout 4 1.11.240**.
+[English](README.en.md) | **Deutsch**
 
-*Unofficial co-op for Fallout 4, based on Tilted Online. Documentation is currently German only.*
+Inoffizieller Co-op für Fallout 4. Spielbar mit zwei Spielern auf **Fallout 4 1.11.240**.
 
 > Dieses Projekt ist ein Fanprojekt. Es steht in keiner Verbindung zu Bethesda Softworks, ZeniMax, Microsoft oder Tilted Phoques.
 > Fallout ist eine Marke ihrer jeweiligen Inhaber. Du brauchst eine eigene, gekaufte Kopie des Spiels. Dieses Repo enthält keine Spieldateien.
@@ -13,15 +13,18 @@ Fallout Together Reborn ist ein Fork von [TiltedEvolution / Tilted Online](https
 ## Was geht
 - Zwei Spieler sehen sich, Figuren, Quests, Gegner, Ausrüstung
 - Einzel-exe mit eingebautem Server, Terminal-Oberfläche und Statusanzeige
+- Verbindung per Adresse oder über das Steam-Netz ohne Portfreigabe
 - Spielstand des Hosts übernehmen, dabei die eigene Figur mit Aussehen, Inventar und SPECIAL mitnehmen
 - Automatisches Laden des Spielstands, Versionsabgleich zwischen Host und Mitspieler
 - Tod und Respawn mit echten Spielständen
+- Siedlungsbau: Bauen, Verschieben und Verschrotten erscheinen live und werden später Beitretenden nachgeliefert
 
 ## Bekannte Grenzen
-- Getestet nur im LAN mit zwei Spielern auf 1.11.240
+- Getestet nur mit zwei Spielern auf 1.11.240
 - 1.10.163 ist seit vielen Änderungen nicht mehr getestet
-- Spiel über das Internet und längere Sitzungen sind nicht getestet
+- Längere Sitzungen sind nicht getestet
 - Stufe und Perks der eigenen Figur werden nicht übernommen
+- Strom, Kabel, Betten, Generatoren und Siedler in Siedlungen werden nicht synchronisiert
 - Nach einem Fallout-Update läuft es erst wieder, wenn die Adressen portiert sind, siehe [docs/PORTING.md](docs/PORTING.md)
 
 ## Dokumentation

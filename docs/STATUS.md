@@ -1,6 +1,6 @@
-# Stand (2026-10-30)
+# Stand (2026-10-31)
 
-Spielbar im LAN über zwei PCs auf Fallout 4 1.11.240 mit echten Spielständen. Die Patchnummern unten beziehen sich auf die Commit-Historie, Commits tragen dieselbe Reihenfolge.
+Spielbar über zwei PCs auf Fallout 4 1.11.240 mit echten Spielständen. Die Patchnummern unten beziehen sich auf die Commit-Historie, Commits tragen dieselbe Reihenfolge.
 
 ## Funktioniert (verifiziert)
 | Was | Nachweis |
@@ -77,15 +77,15 @@ Offen: `#if TP_SKYRIM` in rund 50 Dateien, Discord-Anbindung mit der Anwendungs-
 ## Stand 2026-10-31: Steam-Netz getestet (`Tools/steamtest`)
 Zwei PCs verbanden sich unter App-ID 377160 über `P2P SDR`, Relay `fra`. Aufbau rund 2 s, Median 30 bis 33 ms, solange beide liefen kein Paketverlust. Das waren 2 Pakete pro Sekunde, kein Spielverkehr. Direkte Verbindungen (ICE) sind aus, weil `steamwebrtc64.dll` im Test abstürzte. Offen: ob Valve diese Nutzung erlaubt.
 
-Der Tunnel im Starter (`package/Tunnel.cs`) ist auf `dev`. Getestet über eine künstliche Leitung mit 30 ms und 3 % Verlust: Bots mit echtem Server, zwei Spieler, harter Abbruch mit sofortigem Neustart, falsches Passwort, Versionsabgleich, 20 MB Spielstand. Nicht getestet: über das echte Steam-Netz zwischen zwei PCs, Spielverkehr, Annehmen der Sitzung beim Host, Betrieb neben dem Spiel unter derselben App-ID.
+Der Tunnel im Starter (`package/Tunnel.cs`) ist enthalten. Getestet über eine künstliche Leitung mit 30 ms und 3 % Verlust: Bots mit echtem Server, zwei Spieler, harter Abbruch mit sofortigem Neustart, falsches Passwort, Versionsabgleich, 20 MB Spielstand. Laut Nutzer lief die Verbindung danach auch über das echte Steam-Netz zwischen zwei PCs in einer Spielsitzung.
 
-## Stand 2026-10-31: Bau-Sync Stufe 1 (im Spiel ungetestet)
+## Stand 2026-10-31: Bau-Sync Stufe 1
 Bauen, Verschieben und Verschrotten laufen über `WorkshopService` und die Nachrichten `RequestWorkshopChange`/`NotifyWorkshopChange`. Änderungen warten beim Empfänger, bis die Werkbank geladen ist. Vom Nutzer auf zwei PCs bestätigt. Logzeilen: `Workshop event` beim Bauenden, `Workshop sync: placed` beim Empfänger.
 
 ## Stand 2026-10-31: Bau-Sync Stufe 2 (Empfängerseite im Spiel getestet)
 Der Server merkt sich pro Objekt den letzten Stand und schickt ihn jedem Beitretenden mit `Replay`. Der Speicher lebt nur im Arbeitsspeicher und endet mit dem Server, Bauten überdauern über den Spielstand des Hosts. Beim Nachholen sucht der Client erst ein gleiches Objekt an aktueller und ursprünglicher Stelle (`FindClosestReferenceOfType`), damit nichts doppelt entsteht, wenn der Spielstand es schon enthält oder ein Client neu verbindet. Logzeile dafür: `Workshop sync: ... is already here as ...`. `scripts/test-server-bots.ps1` prüft Weiterleitung und Zusammenfassung.
 
-`scripts/test-workshop-ingame.ps1` startet die Testkopie in Red Rocket und lässt einen Bot echte Bauteile schicken, mit `-Late` tritt der Spieler erst danach bei. Beide Läufe bestanden am 2026-10-31. Nicht geprüft: das Wiedererkennen von Bauten im Spielstand des Hosts mit zwei echten Spielern.
+`scripts/test-workshop-ingame.ps1` startet die Testkopie in Red Rocket und lässt einen Bot echte Bauteile schicken, mit `-Late` tritt der Spieler erst danach bei. Beide Läufe bestanden am 2026-10-31. Das Client-Log einer Sitzung auf zwei PCs bestätigt Nachholen, Live-Verschieben und das Erkennen beim Neuverbinden. Nicht geprüft: das Wiedererkennen von Bauten im Spielstand des Hosts mit zwei echten Spielern.
 
 Noch nicht enthalten: Strom, Kabel, Betten, Generatoren, Siedler (Stufe 3). Geschütze sind Actors und werden nicht als Bauteil übertragen.
 

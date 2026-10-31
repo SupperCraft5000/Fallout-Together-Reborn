@@ -15,6 +15,6 @@ Prüfe die Logs vor dem Hochladen. Spielstandnamen enthalten den Namen deiner Fi
 ## Code beitragen
 - Pull Requests bitte nach `dev`, nicht nach `main`, siehe [docs/REPOSITORIES.md](docs/REPOSITORIES.md)
 - Regeln und Fallstricke stehen in [AGENTS.md](AGENTS.md)
-- Code-Kommentare auf Englisch, Doku und Skripte auf Deutsch
+- Code-Kommentare auf Englisch, Doku und Skripte auf Deutsch. Die englische Doku in `docs/en` spiegelt die deutsche, also beide pflegen
 - Keine Spieldateien, exe, davon abgeleitete Dateien oder Address-Library-Dateien committen
 - Bei Änderungen an Spieladressen den Bericht aus [docs/PORTING.md](docs/PORTING.md) beachten

@@ -44,6 +44,6 @@ Lies zuerst [docs/STATUS.md](docs/STATUS.md) (was geht, was offen ist), dann je 
 | Neue Nachricht im Protokoll | `Code/encoding/Messages`, Opcodes in `Code/encoding/Opcodes.h`, Bot erweitern (`Code/bot`) |
 
 ## Konventionen
-- Code-Kommentare im TiltedEvolution-Code auf Englisch (wie upstream), Doku und Skripte auf Deutsch.
+- Code-Kommentare im TiltedEvolution-Code auf Englisch (wie upstream), Doku und Skripte auf Deutsch. `docs/en` spiegelt die deutsche Doku, also beide pflegen.
 - Entwicklung auf `dev`, `main` ist der getestete Stand. Gitea und GitHub bleiben gleich, siehe [docs/REPOSITORIES.md](docs/REPOSITORIES.md).
 - Commits mit aussagekräftiger Nachricht. `patches/` enthält nur den Patch für das Submodul TiltedHooks.

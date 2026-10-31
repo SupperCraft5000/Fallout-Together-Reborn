@@ -21,6 +21,9 @@ Der Build-Ordner aus dem Quellcode schreibt nach `build\windows\x64\releasedbg\l
 | `Player is down` | Respawn-System läuft |
 | `Player died outside of the respawn system` | echter Tod, der Schutz hat nicht gegriffen |
 | `Window close command` | Fenster wurde geschlossen. Ohne diese Zeile vor `Game is shutting down` kam das Ende aus dem Spiel selbst |
+| `Workshop event` | Dieser PC hat etwas gebaut, verschoben oder verschrottet |
+| `Workshop sync: placed` / `moved` / `removed` | Änderung eines anderen Spielers wurde übernommen |
+| `Workshop sync: ... is already here as ...` | Nachgeholtes Objekt ist schon da, nichts wurde doppelt gebaut |
 
 `Game is shutting down` erscheint bei jedem Ende und ist kein Beleg für ein gewolltes Beenden.
 
