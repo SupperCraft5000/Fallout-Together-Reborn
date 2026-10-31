@@ -1,7 +1,7 @@
 // Prüft ohne Spiel, ob zwei PCs über das Steam-Netz miteinander reden können.
 // Nutzt die steam_api64.dll aus dem Fallout-Ordner und ändert dort nichts. Bauen mit build.ps1.
 //
-//   SteamTest.exe [<SteamID64 der Gegenseite>] [--game <Ordner>] [--appid <id>] [--seconds <n>]
+//   SteamTest.exe [<SteamID64 der Gegenseite>] [--game <Ordner>] [--appid <id>] [--seconds <n>] [--ice]
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,6 +30,7 @@ static class Steam
     [DllImport(Dll)] public static extern IntPtr SteamAPI_SteamNetworkingUtils_SteamAPI_v004();
     [DllImport(Dll)] public static extern void SteamAPI_ISteamNetworkingUtils_InitRelayNetworkAccess(IntPtr aUtils);
     [DllImport(Dll)] public static extern int SteamAPI_ISteamNetworkingUtils_GetRelayNetworkStatus(IntPtr aUtils, IntPtr aDetails);
+    [DllImport(Dll)] [return: MarshalAs(UnmanagedType.I1)] public static extern bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueInt32(IntPtr aUtils, int aValue, int aData);
 
     [DllImport(Dll)] public static extern IntPtr SteamAPI_SteamNetworkingMessages_SteamAPI_v002();
     [DllImport(Dll)] public static extern int SteamAPI_ISteamNetworkingMessages_SendMessageToUser(IntPtr aMessages, byte[] aIdentity, byte[] aData, uint aSize, int aFlags, int aChannel);
@@ -43,6 +44,7 @@ static class Steam
 static class Program
 {
     const int FlagAutoRestart = 32;
+    const int ConfigIceEnable = 104;
     const int InfoSize = 696;
     const int InfoRelayPop = 172;
     const int InfoEndReason = 180;
@@ -168,6 +170,10 @@ static class Program
             Log("Deine Steam-ID: " + own + (Steam.SteamAPI_ISteamUser_BLoggedOn(user) ? "" : "  (nicht angemeldet)"));
 
             var utils = Steam.SteamAPI_SteamNetworkingUtils_SteamAPI_v004();
+            // Direkte Verbindungen laufen über steamwebrtc64.dll, die in unseren Tests abstürzte. Das Relay braucht sie nicht.
+            bool ice = Array.IndexOf(aArgs, "--ice") >= 0;
+            if (!ice)
+                Log("Direktverbindung (ICE) aus, nur Relay: " + Steam.SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueInt32(utils, ConfigIceEnable, 0));
             Steam.SteamAPI_ISteamNetworkingUtils_InitRelayNetworkAccess(utils);
             Log("Relay-Netz wird vorbereitet ...");
 

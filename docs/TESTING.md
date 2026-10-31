@@ -44,4 +44,4 @@ Prüft ohne Spiel, ob zwei PCs über Steam P2P und das Relay-Netz von Valve zuei
 Tools\steamtest\build.ps1
 dist\SteamTest.exe
 ```
-Beide starten die exe gleichzeitig und tragen die Steam-ID der Gegenseite ein. Sie nutzt die `steam_api64.dll` aus dem Fallout-Ordner unter App-ID 377160, Steam zeigt dabei „spielt Fallout 4“. Andere App-ID: `--appid <id>`. Das Ergebnis steht in `steam-test-ergebnis.txt` neben der exe. Meldungen wie `Assertion Failed` im Konsolenfenster stammen aus der Steam-Bibliothek und sind allein kein Fehler.
+Beide starten die exe gleichzeitig und tragen die Steam-ID der Gegenseite ein. Sie nutzt die `steam_api64.dll` aus dem Fallout-Ordner unter App-ID 377160, Steam zeigt dabei „spielt Fallout 4“. Andere App-ID: `--appid <id>`. Direkte Verbindungen (ICE) sind aus, weil `steamwebrtc64.dll` dabei abstürzte, `--ice` schaltet sie zum Vergleich wieder ein. Das Ergebnis steht in `steam-test-ergebnis.txt` neben der exe. Meldungen wie `Assertion Failed` im Konsolenfenster stammen aus der Steam-Bibliothek und sind allein kein Fehler.
