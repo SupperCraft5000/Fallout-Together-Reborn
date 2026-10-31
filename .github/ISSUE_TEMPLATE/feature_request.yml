@@ -1,0 +1,41 @@
+name: "Idee vorschlagen / Request a feature"
+description: "Neue Funktion für Fallout Together Reborn vorschlagen / Suggest a new feature for Fallout Together Reborn"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **DE:** Danke für deine Idee! Du kannst auf Deutsch oder Englisch schreiben. Was schon geplant ist, steht im [Stand](https://github.com/SupperCraft5000/Fallout-Together-Reborn/blob/main/docs/STATUS.md).
+
+        **EN:** Thanks for your idea! You can write in English or German. What is already planned is in the [status](https://github.com/SupperCraft5000/Fallout-Together-Reborn/blob/main/docs/en/STATUS.md).
+  - type: dropdown
+    id: area
+    attributes:
+      label: "Bereich / Area"
+      options:
+        - "Spieler und Figuren / Players and characters"
+        - "Quests"
+        - "Kampf / Combat"
+        - "Siedlungen / Settlements"
+        - "Verbindung / Connection"
+        - "Starter"
+        - "Anderes / Other"
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: "Worum geht es? / What is your idea?"
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: "Warum wäre das hilfreich? / Why would it help?"
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: "Beispiel oder Alternativen / Example or alternatives"
+      description: "Wie sollte es im Spiel ablaufen, gibt es andere Wege? / How should it work in the game, are there other ways?"

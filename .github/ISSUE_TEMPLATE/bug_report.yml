@@ -1,0 +1,87 @@
+name: "Bug melden / Report a bug"
+description: "Fehler in Fallout Together Reborn melden / Report a problem with Fallout Together Reborn"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **DE:** Danke fürs Melden! Du kannst auf Deutsch oder Englisch schreiben. Bitte sieh vorher in die [bekannten Probleme](https://github.com/SupperCraft5000/Fallout-Together-Reborn/blob/main/docs/STATUS.md).
+
+        **EN:** Thanks for reporting! You can write in English or German. Please check the [known problems](https://github.com/SupperCraft5000/Fallout-Together-Reborn/blob/main/docs/en/STATUS.md) first.
+  - type: input
+    id: build
+    attributes:
+      label: "Build-ID / Build ID"
+      description: "Steht oben im Starter, zum Beispiel f0255687-96F3056D / Shown at the top of the starter, for example f0255687-96F3056D"
+      placeholder: "f0255687-96F3056D"
+    validations:
+      required: true
+  - type: input
+    id: game
+    attributes:
+      label: "Fallout-4-Version / Fallout 4 version"
+      description: "Steht im Starter unter System / Shown in the starter under System"
+      placeholder: "1.11.240.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: "Rolle / Role"
+      options:
+        - "Host"
+        - "Mitspieler / Other player"
+        - "Beide / Both"
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: "Verbindung / Connection"
+      options:
+        - "Steam"
+        - "IP (LAN)"
+        - "IP (Internet oder VPN / Internet or VPN)"
+    validations:
+      required: true
+  - type: checkboxes
+    id: options
+    attributes:
+      label: "Gewählte Optionen / Chosen options"
+      options:
+        - label: "Spielstand vom Host übernehmen / Take over the host's save"
+        - label: "Eigene Figur mitnehmen / Bring your own character"
+        - label: "Hauptmenü anzeigen / Show main menu"
+        - label: "Andere Mods aktiv / Other mods active"
+  - type: textarea
+    id: what
+    attributes:
+      label: "Was ist passiert? / What happened?"
+      description: "Mit Uhrzeit, falls möglich / With the time, if you can"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Was sollte passieren? / What should have happened?"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Schritte zum Nachstellen / Steps to reproduce"
+      placeholder: |
+        1.
+        2.
+        3.
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs"
+      description: |
+        DE: `tp_client.log` von dem PC anhängen, auf dem es passiert ist, möglichst auch vom anderen PC. Sie liegen unter `%LOCALAPPDATA%\FalloutTogetherReborn\<build>\logs`. Bitte vorher durchsehen, Spielstandnamen enthalten den Namen deiner Figur. Dumps nicht öffentlich anhängen.
+
+        EN: Attach `tp_client.log` from the PC where it happened, ideally also from the other PC. They are in `%LOCALAPPDATA%\FalloutTogetherReborn\<build>\logs`. Check them first, save names contain your character's name. Do not attach dumps publicly.
+      placeholder: "Dateien hierher ziehen / Drag files here"
+    validations:
+      required: true

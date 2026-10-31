@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Anleitung für Spieler"
+    url: https://github.com/SupperCraft5000/Fallout-Together-Reborn/blob/main/docs/MITSPIELER.md
+    about: "Installieren, hosten, verbinden"
+  - name: "Guide for players"
+    url: https://github.com/SupperCraft5000/Fallout-Together-Reborn/blob/main/docs/en/PLAYING.md
+    about: "Installing, hosting, connecting"

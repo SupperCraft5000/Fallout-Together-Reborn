@@ -3,6 +3,7 @@
 Einstieg: [AGENTS.md](AGENTS.md), [docs/BUILD.md](docs/BUILD.md), [docs/STATUS.md](docs/STATUS.md).
 
 ## Bug melden
+Am schnellsten über [Issue eröffnen](https://github.com/SupperCraft5000/Fallout-Together-Reborn/issues/new/choose), die Vorlage fragt alles Nötige ab, auf Deutsch und Englisch.
 Bitte angeben:
 - Build-ID, sie steht oben im Starter
 - Fallout-4-Version, Host oder Mitspieler, gewählte Optionen

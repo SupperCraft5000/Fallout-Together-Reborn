@@ -3,6 +3,7 @@
 Getting started: [AGENTS.md](AGENTS.md), [BUILD.md](BUILD.md), [STATUS.md](STATUS.md).
 
 ## Reporting a bug
+The quickest way is to [open an issue](https://github.com/SupperCraft5000/Fallout-Together-Reborn/issues/new/choose). The template asks for everything needed, in English and German.
 Please include:
 - Build ID, shown at the top of the starter
 - Fallout 4 version, host or player, chosen options
