@@ -41,7 +41,7 @@ Fallout Together Reborn ist ein Fork von [TiltedEvolution / Tilted Online](https
 - 1.10.163 ist seit vielen Änderungen nicht mehr getestet
 - Längere Sitzungen sind nicht getestet
 - Stufe und Perks der eigenen Figur werden nicht übernommen
-- Stromkabel werden übertragen, Strom fließt beim anderen Spieler aber noch nicht. Siedler-Aufgaben und Schalter werden nicht synchronisiert
+- Stromkabel sind neu und nur mit Testdaten geprüft. Siedler-Aufgaben und Schalter werden nicht synchronisiert
 - Nach einem Fallout-Update läuft es erst wieder, wenn die Adressen portiert sind, siehe [docs/PORTING.md](docs/PORTING.md)
 
 ## Dokumentation

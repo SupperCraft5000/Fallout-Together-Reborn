@@ -225,6 +225,93 @@ bool IsPowered(TESObjectREFR* apObject) noexcept
     return s_isPowered.Get()(apObject);
 }
 
+// The settlement's power data, a workbench nobody worked at yet has none
+BSExtraData* GetWorkshopData(const TESObjectREFR* apWorkshop) noexcept
+{
+    if (!apWorkshop || !apWorkshop->extraData)
+        return nullptr;
+
+    return apWorkshop->extraData->GetByType(ExtraDataType::Workshop);
+}
+
+// A settlement nobody here worked at has no power data yet, the game makes it the same way
+BSExtraData* EnsureWorkshopData(TESObjectREFR* apWorkshop) noexcept
+{
+    using TAllocate = void*(__fastcall)(size_t);
+    using TConstruct = BSExtraData*(__fastcall)(void*);
+    using TAddExtra = void(__fastcall)(ExtraDataList*, BSExtraData*);
+
+    POINTER_FALLOUT4(TAllocate, s_allocateExtra, 898179);
+    POINTER_FALLOUT4(TConstruct, s_constructWorkshopData, 1290994);
+    POINTER_FALLOUT4(TAddExtra, s_addExtra, 787248);
+
+    if (BSExtraData* pData = GetWorkshopData(apWorkshop))
+        return pData;
+
+    if (!apWorkshop || !apWorkshop->extraData)
+        return nullptr;
+
+    void* pMemory = s_allocateExtra.Get()(0x58);
+    if (!pMemory)
+        return nullptr;
+
+    BSExtraData* pData = s_constructWorkshopData.Get()(pMemory);
+    s_addExtra.Get()(apWorkshop->extraData, pData);
+
+    spdlog::info("Workshop sync: made power data for workbench {:X}", apWorkshop->formID);
+    return pData;
+}
+
+// What the workshop does once a wire is strung, the links alone leave it dead
+void AddWireToGrid(TESObjectREFR* apWorkshop, TESObjectREFR* apA, TESObjectREFR* apB, TESObjectREFR* apWire) noexcept
+{
+    using TAddConnection = void(__fastcall)(BSExtraData*, TESObjectREFR*, TESObjectREFR*, TESObjectREFR*);
+    using TUpdateItem = void(__fastcall)(TESObjectREFR*, BSExtraData*);
+    using TUpdateWorkshop = void(__fastcall)(TESObjectREFR*);
+
+    POINTER_FALLOUT4(TAddConnection, s_addConnection, 523652);
+    POINTER_FALLOUT4(TUpdateItem, s_updateItem, 958345);
+    POINTER_FALLOUT4(TUpdateWorkshop, s_updatePower, 63358);
+    POINTER_FALLOUT4(TUpdateWorkshop, s_updateResources, 730242);
+
+    BSExtraData* pData = EnsureWorkshopData(apWorkshop);
+    if (!pData)
+    {
+        spdlog::warn("Workshop sync: workbench {:X} has no power data", apWorkshop->formID);
+        return;
+    }
+
+    s_addConnection.Get()(pData, apA, apB, apWire);
+    s_updateItem.Get()(apB, pData);
+    s_updateItem.Get()(apA, pData);
+    s_updatePower.Get()(apWorkshop);
+    s_updateResources.Get()(apWorkshop);
+}
+
+void RemoveWireFromGrid(TESObjectREFR* apWorkshop, TESObjectREFR* apA, TESObjectREFR* apB, TESObjectREFR* apWire) noexcept
+{
+    using TRemoveConnection = void(__fastcall)(BSExtraData*, TESObjectREFR*, TESObjectREFR*, TESObjectREFR*, bool);
+
+    POINTER_FALLOUT4(TRemoveConnection, s_removeConnection, 800489);
+
+    if (BSExtraData* pData = GetWorkshopData(apWorkshop); pData && apA && apB)
+        s_removeConnection.Get()(pData, apA, apB, apWire, true);
+}
+
+// A deleted object left on a grid gets its id reused by something else
+void RemoveFromGrid(TESObjectREFR* apWorkshop, TESObjectREFR* apObject) noexcept
+{
+    using TFindGrid = void*(__fastcall)(BSExtraData*, TESObjectREFR*);
+    using TRemoveItem = void(__fastcall)(BSExtraData*, TESObjectREFR*);
+
+    POINTER_FALLOUT4(TFindGrid, s_findGrid, 1529707);
+    POINTER_FALLOUT4(TRemoveItem, s_removeItem, 1456203);
+
+    BSExtraData* pData = GetWorkshopData(apWorkshop);
+    if (pData && s_findGrid.Get()(pData, apObject))
+        s_removeItem.Get()(pData, apObject);
+}
+
 // Workbench an object belongs to
 TESObjectREFR* GetObjectWorkshop(TESObjectREFR* apObject) noexcept
 {
@@ -550,12 +637,12 @@ void WorkshopService::ApplyChange(const WorkshopChange& acChange, TESObjectREFR*
 
     if (IsWire(pObject))
     {
-        RemoveWire(pObject);
+        RemoveWire(pObject, apWorkshop);
     }
     else
     {
-        // A deleted object left on a power grid gets its id reused by something else
-        RemoveWiresOf(pObject);
+        RemoveWiresOf(pObject, apWorkshop);
+        RemoveFromGrid(apWorkshop, pObject);
 
         pObject->Disable();
         if (isTemporary)
@@ -828,7 +915,7 @@ void WorkshopService::ApplyWire(const WorkshopChange& acChange, TESObjectREFR* a
         m_wires.erase(oldId);
 
         if (auto* pOld = Cast<TESObjectREFR>(TESForm::GetById(oldId)))
-            RemoveWire(pOld);
+            RemoveWire(pOld, apWorkshop);
     }
 
     TESObjectREFR* pWire = FindWireBetween(pEndA, pEndB);
@@ -852,6 +939,7 @@ void WorkshopService::ApplyWire(const WorkshopChange& acChange, TESObjectREFR* a
         SetSplineShape(pWire, acChange.Thickness, acChange.Slack, acChange.HalfExtents);
         ConnectSpline(pEndA, static_cast<int32_t>(acChange.EndA.LinkType), pEndB, static_cast<int32_t>(acChange.EndB.LinkType), pWire);
         RebuildSpline(pWire);
+        AddWireToGrid(apWorkshop, pEndA, pEndB, pWire);
         s_applyingWire = false;
 
         spdlog::info("Workshop sync: wired {:X} and {:X} with {:X}", pEndA->formID, pEndB->formID, pWire->formID);
@@ -865,11 +953,19 @@ void WorkshopService::ApplyWire(const WorkshopChange& acChange, TESObjectREFR* a
     Arm(m_powerChecks, pEndB->formID, kPowerLogSeconds);
 }
 
-void WorkshopService::RemoveWire(TESObjectREFR* apWire) noexcept
+void WorkshopService::RemoveWire(TESObjectREFR* apWire, TESObjectREFR* apWorkshop) noexcept
 {
     using TDisconnect = void(__fastcall)(TESObjectREFR*);
 
     s_applyingWire = true;
+
+    if (auto* pLinks = GetPowerLinks(apWire); pLinks && pLinks->links.length == 2)
+    {
+        auto* pEndA = Cast<TESObjectREFR>(TESForm::GetById(pLinks->links[0].FormId));
+        auto* pEndB = Cast<TESObjectREFR>(TESForm::GetById(pLinks->links[1].FormId));
+        RemoveWireFromGrid(apWorkshop, pEndA, pEndB, apWire);
+    }
+
     reinterpret_cast<TDisconnect*>(RealDisconnectSpline)(apWire);
     s_applyingWire = false;
 
@@ -877,7 +973,7 @@ void WorkshopService::RemoveWire(TESObjectREFR* apWire) noexcept
     apWire->Delete();
 }
 
-void WorkshopService::RemoveWiresOf(TESObjectREFR* apObject) noexcept
+void WorkshopService::RemoveWiresOf(TESObjectREFR* apObject, TESObjectREFR* apWorkshop) noexcept
 {
     auto* pLinks = GetPowerLinks(apObject);
     if (!pLinks)
@@ -896,7 +992,7 @@ void WorkshopService::RemoveWiresOf(TESObjectREFR* apObject) noexcept
         if (!pWire)
             continue;
 
-        RemoveWire(pWire);
+        RemoveWire(pWire, apWorkshop);
         m_wires.erase(wireId);
 
         if (const auto itor = m_localToKey.find(wireId); itor != std::end(m_localToKey))

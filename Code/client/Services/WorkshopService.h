@@ -47,8 +47,8 @@ private:
     void SendWire(uint32_t aWireId) noexcept;
     void SendWireRemoved(uint32_t aWireId) noexcept;
     void ApplyWire(const WorkshopChange& acChange, TESObjectREFR* apWorkshop) noexcept;
-    void RemoveWire(TESObjectREFR* apWire) noexcept;
-    void RemoveWiresOf(TESObjectREFR* apObject) noexcept;
+    void RemoveWire(TESObjectREFR* apWire, TESObjectREFR* apWorkshop) noexcept;
+    void RemoveWiresOf(TESObjectREFR* apObject, TESObjectREFR* apWorkshop) noexcept;
     void LogPower(double aDelta) noexcept;
     bool FillWireEnd(uint32_t aFormId, uint32_t aLinkType, WorkshopChange::WireEnd& aEnd) const noexcept;
     TESObjectREFR* FindWireEnd(const WorkshopChange::WireEnd& acEnd) const noexcept;

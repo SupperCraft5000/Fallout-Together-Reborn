@@ -150,6 +150,23 @@ A wire is a reference with a BNDS base (form type 35), `ExtraPowerLinks` (type `
 | `ExtraDataList::SetBendableSplineInfo` | 894306 | `0x9A800` | `0x2915A0` |
 | `Workshop::IsPowered` | 1546240 | `0x1F2F60` | `0x382530` |
 
-`ConnectSpline` has no direct callers in the game and only writes `ExtraPowerLinks` on both ends and the wire. It does not touch the power grid. `IsPowered` needs an extra of type `0xBF` on the workbench and then finds the object in the grid through `0x3881D0`. Candidates for adding to the grid are `0x3876D0` and `0x387BD0`, this is not checked. The game reads the task queue from the address of ID 7491, the client calls the same ID `WeatherManager`, that mapping looks wrong.
+`ConnectSpline` has no direct callers in the game and only writes `ExtraPowerLinks` on both ends and the wire. It does not touch the power grid. The grid lives in `Workshop::ExtraData` (type `0xBF`) on the workbench. A workbench nobody worked at does not have this extra, it was missing in the Red Rocket test.
+
+The game's way, as seen at `0x39982C`, confirmed in the test:
+
+| Step | OG ID | OG RVA | NG RVA |
+|---|---|---|---|
+| Make power data: `0x58` bytes of memory | 898179 | `0x30D0` | `0x1E0320` |
+| Make power data: constructor | 1290994 | `0xA9190` | `0x29C7E0` |
+| Make power data: add to the extra list | 787248 | `0x42FA0` | `0x29F910` |
+| Add connection `(data, a, b, wire)` | 523652 | `0x1F6E20` | `0x3876D0` |
+| Update end `(end, data)`, for both | 958345 | `0x201B10` | `0x38ECB0` |
+| Recalculate the workbench | 63358 | `0x1F6170` | `0x3867B0` |
+| Recalculate the workbench, second part | 730242 | `0x1F5D40` | `0x386240` |
+| Remove connection `(data, a, b, wire, true)` | 800489 | `0x1F7440` | `0x387BD0` |
+| Find an object's grid `(data, object)` | 1529707 | `0x1F7950` | `0x3881D0` |
+| Take an object off the grid `(data, object)` | 1456203 | `0x1F69C0` | `0x3871C0` |
+
+Without this extra `IsPowered` is always false. The OG mappings come from matching call sites and are not tested on 1.10.163. The game reads the task queue from the address of ID 7491, the client calls the same ID `WeatherManager`, that mapping looks wrong.
 
 `PapyrusService` did not find `Game.FindClosestReferenceOfType` and `GetLinkedRef` in the game, while other names worked. The keys now ignore case, and `GetLinkedRef` is found that way. This supports the string pool assumption from section 22 without measuring it directly.

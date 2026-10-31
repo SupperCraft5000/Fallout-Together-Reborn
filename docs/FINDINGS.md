@@ -150,6 +150,23 @@ Ein Kabel ist eine Referenz mit BNDS-Basis (Formtyp 35), `ExtraPowerLinks` (Typ 
 | `ExtraDataList::SetBendableSplineInfo` | 894306 | `0x9A800` | `0x2915A0` |
 | `Workshop::IsPowered` | 1546240 | `0x1F2F60` | `0x382530` |
 
-`ConnectSpline` hat keine direkten Aufrufer im Spiel und schreibt nur die `ExtraPowerLinks` an beide Enden und das Kabel. Das Stromnetz fasst es nicht an. `IsPowered` braucht an der Werkbank ein Extra vom Typ `0xBF` und findet das Objekt dann über `0x3881D0` im Netz. Kandidaten für das Eintragen ins Netz sind `0x3876D0` und `0x387BD0`, das ist nicht geprüft. Die Task-Queue liest das Spiel aus der Adresse von ID 7491, im Client heißt dieselbe ID `WeatherManager`, die Zuordnung dort wirkt falsch.
+`ConnectSpline` hat keine direkten Aufrufer im Spiel und schreibt nur die `ExtraPowerLinks` an beide Enden und das Kabel. Das Stromnetz fasst es nicht an. Das Netz liegt in `Workshop::ExtraData` (Typ `0xBF`) an der Werkbank. Eine Werkbank, an der nie gearbeitet wurde, hat dieses Extra nicht, im Test in Red Rocket fehlte es.
+
+Der Weg des Spiels, wie an `0x39982C` zu sehen, im Test bestätigt:
+
+| Schritt | OG-ID | OG-RVA | NG-RVA |
+|---|---|---|---|
+| Stromdaten anlegen: Speicher `0x58` | 898179 | `0x30D0` | `0x1E0320` |
+| Stromdaten anlegen: Konstruktor | 1290994 | `0xA9190` | `0x29C7E0` |
+| Stromdaten anlegen: an die Extra-Liste | 787248 | `0x42FA0` | `0x29F910` |
+| Verbindung eintragen `(daten, a, b, kabel)` | 523652 | `0x1F6E20` | `0x3876D0` |
+| Ende aktualisieren `(ende, daten)`, für beide | 958345 | `0x201B10` | `0x38ECB0` |
+| Werkbank neu berechnen | 63358 | `0x1F6170` | `0x3867B0` |
+| Werkbank neu berechnen, zweiter Teil | 730242 | `0x1F5D40` | `0x386240` |
+| Verbindung entfernen `(daten, a, b, kabel, true)` | 800489 | `0x1F7440` | `0x387BD0` |
+| Netz eines Objekts suchen `(daten, objekt)` | 1529707 | `0x1F7950` | `0x3881D0` |
+| Objekt aus dem Netz nehmen `(daten, objekt)` | 1456203 | `0x1F69C0` | `0x3871C0` |
+
+`IsPowered` ohne dieses Extra ist immer falsch. Die OG-Zuordnungen stammen aus gleichen Aufrufstellen, auf 1.10.163 sind sie nicht getestet. Die Task-Queue liest das Spiel aus der Adresse von ID 7491, im Client heißt dieselbe ID `WeatherManager`, die Zuordnung dort wirkt falsch.
 
 `PapyrusService` fand `Game.FindClosestReferenceOfType` und `GetLinkedRef` im Spiel nicht, während andere Namen gingen. Die Schlüssel sind jetzt unabhängig von der Schreibweise, und `GetLinkedRef` wird damit gefunden. Das stützt die Vermutung aus Abschnitt 22 zum Stringpool, ohne sie direkt zu messen.

@@ -177,3 +177,13 @@ id,name,type,real_id,rva_1_10_163,file,line
 198420,s_queueRebuildSpline,TQueueRebuildSpline,198419,0xD5F120,client/Services/Generic/WorkshopService.cpp,0
 894307,s_setSplineInfo,TSetSplineInfo,894306,0x9A800,client/Services/Generic/WorkshopService.cpp,0
 1546241,s_isPowered,TIsPowered,1546240,0x1F2F60,client/Services/Generic/WorkshopService.cpp,0
+523653,s_addConnection,TAddConnection,523652,0x1F6E20,client/Services/Generic/WorkshopService.cpp,0
+958346,s_updateItem,TUpdateItem,958345,0x201B10,client/Services/Generic/WorkshopService.cpp,0
+63359,s_updatePower,TUpdateWorkshop,63358,0x1F6170,client/Services/Generic/WorkshopService.cpp,0
+730243,s_updateResources,TUpdateWorkshop,730242,0x1F5D40,client/Services/Generic/WorkshopService.cpp,0
+800490,s_removeConnection,TRemoveConnection,800489,0x1F7440,client/Services/Generic/WorkshopService.cpp,0
+1529708,s_findGrid,TFindGrid,1529707,0x1F7950,client/Services/Generic/WorkshopService.cpp,0
+1456204,s_removeItem,TRemoveItem,1456203,0x1F69C0,client/Services/Generic/WorkshopService.cpp,0
+898180,s_allocateExtra,TAllocate,898179,0x30D0,client/Services/Generic/WorkshopService.cpp,0
+1290995,s_constructWorkshopData,TConstruct,1290994,0xA9190,client/Services/Generic/WorkshopService.cpp,0
+787249,s_addExtra,TAddExtra,787248,0x42FA0,client/Services/Generic/WorkshopService.cpp,0

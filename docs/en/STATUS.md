@@ -87,12 +87,12 @@ The server remembers the latest state per object and sends it to everyone joinin
 
 `scripts/test-workshop-ingame.ps1` starts the test copy in Red Rocket and has a bot send real parts, with `-Late` the player only joins afterwards. Both runs passed on 2026-10-31. Client log of a two-PC session confirms replay, live moving and recognition on reconnect. Not checked: recognising buildings in the host's save with two real players.
 
-## Status 2026-10-31: settlement sync stage 3, wires (power still missing)
+## Status 2026-10-31: settlement sync stage 3, wires and power
 Power wires are transferred and built on the receiving side, also for late joiners. They are detected through `QueueRebuildBendableSpline` and removed through `DisconnectSpline`. Before a copy is deleted, its wires are disconnected. `scripts/test-workshop-ingame.ps1` and `-Late` pass on 1.11.240, the wire is created without a crash.
 
-**Power does not flow on the receiving side yet:** generator and pylon report `powered false`. `ConnectSpline` only writes `ExtraPowerLinks`, which does not put the object into the workbench's power grid, see [FINDINGS.md](FINDINGS.md), section 23. Red Rocket is also not an owned settlement in the test profile, so the result there is only a first hint.
+The receiving side also adds the wire to the workbench's power grid the way the game does and creates missing power data itself, see [FINDINGS.md](FINDINGS.md), section 23. In the test, generator and pylon report `powered true`. Removing wire and pylon works.
 
-Not checked: detection on the builder's side with a real player, wires in an owned settlement. Not included: switches on built objects, settler jobs. Turrets are actors and are not transferred as parts.
+Not checked: detection on the builder's side with a real player, wires in a settlement from a real save, whether visible consumers such as lamps turn on. Not included: switches on built objects, settler jobs. Turrets are actors and are not transferred as parts.
 
 ## Not tested
 - Regression test on 1.10.163 with the Next-Gen changes and the shutdown hook.

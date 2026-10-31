@@ -70,6 +70,7 @@ struct Bot final : TiltedPhoques::Client
     bool Finished = false;
     bool Build = false;
     bool GameTest = false;
+    bool GameTeardown = false;
     uint32_t PlayerId = 0;
 
     void SendChange(uint8_t aKind, uint32_t aObjectId, float aX)
@@ -138,6 +139,16 @@ struct Bot final : TiltedPhoques::Client
         wire.Change.EndB.ObjectId = 0xFF00A005;
         wire.Change.EndB.BaseId = GameId(0, kTestPylon);
         SendMessage(wire);
+    }
+
+    // Baut Kabel und Mast aus SendGameTest wieder ab, der Generator bleibt
+    void SendGameTeardown()
+    {
+        const glm::vec3 workbench(kRedRocketWorkbenchX, kRedRocketWorkbenchY, kRedRocketWorkbenchZ);
+        const glm::vec3 pylon = workbench + glm::vec3(-300.f, 300.f, 0.f);
+
+        SendGameChange(WorkshopChange::kDestroyed, 0xFF00A006, kTestWire, (workbench + glm::vec3(-300.f, 150.f, 0.f)), false);
+        SendGameChange(WorkshopChange::kDestroyed, 0xFF00A005, kTestPylon, pylon, false);
     }
 
     // A wird verschoben, B verschrottet, C stammt aus einem Plugin
@@ -211,6 +222,8 @@ struct Bot final : TiltedPhoques::Client
                 SendBuildScript();
             if (Result == 0 && GameTest)
                 SendGameTest();
+            if (Result == 0 && GameTeardown)
+                SendGameTeardown();
         }
         else if (opcode == NotifyWorkshopChange::Opcode)
         {
@@ -256,6 +269,7 @@ int main(int argc, char** argv)
     bot.Password = argc > 4 ? argv[4] : "";
     bot.Build = argc > 5 && std::string(argv[5]) == "bauen";
     bot.GameTest = argc > 5 && std::string(argv[5]) == "spieltest";
+    bot.GameTeardown = argc > 5 && std::string(argv[5]) == "abbau";
     const auto seconds = std::atoi(argv[3]);
 
     if (!bot.ConnectByIp(argv[1]))

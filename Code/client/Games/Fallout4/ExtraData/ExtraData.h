@@ -12,6 +12,7 @@ enum class ExtraDataType : uint8_t
     Faction = 0x5B,
     Soul = 0x9C,
     BendableSplineParams = 0xB4,
+    Workshop = 0xBF,
     PowerLinks = 0xD0,
 };
 

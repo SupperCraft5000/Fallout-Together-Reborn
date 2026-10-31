@@ -87,12 +87,12 @@ Der Server merkt sich pro Objekt den letzten Stand und schickt ihn jedem Beitret
 
 `scripts/test-workshop-ingame.ps1` startet die Testkopie in Red Rocket und lässt einen Bot echte Bauteile schicken, mit `-Late` tritt der Spieler erst danach bei. Beide Läufe bestanden am 2026-10-31. Das Client-Log einer Sitzung auf zwei PCs bestätigt Nachholen, Live-Verschieben und das Erkennen beim Neuverbinden. Nicht geprüft: das Wiedererkennen von Bauten im Spielstand des Hosts mit zwei echten Spielern.
 
-## Stand 2026-10-31: Bau-Sync Stufe 3, Kabel (Strom fehlt noch)
+## Stand 2026-10-31: Bau-Sync Stufe 3, Kabel und Strom
 Stromkabel werden übertragen und beim Empfänger gebaut, auch für Nachzügler. Erkannt werden sie über `QueueRebuildBendableSpline`, entfernt über `DisconnectSpline`. Vor dem Löschen einer Kopie werden ihre Kabel getrennt. `scripts/test-workshop-ingame.ps1` und `-Late` bestehen auf 1.11.240, das Kabel entsteht ohne Absturz.
 
-**Strom fließt beim Empfänger noch nicht:** Generator und Mast melden `powered false`. `ConnectSpline` schreibt nur `ExtraPowerLinks`, ins Stromnetz der Werkbank kommt das Objekt so nicht, siehe [FINDINGS.md](FINDINGS.md), Abschnitt 23. Red Rocket ist im Testprofil außerdem keine eigene Siedlung, das Ergebnis dort ist also nur ein erster Hinweis.
+Der Empfänger trägt das Kabel außerdem wie das Spiel ins Stromnetz der Werkbank ein und legt fehlende Stromdaten selbst an, siehe [FINDINGS.md](FINDINGS.md), Abschnitt 23. Im Test melden Generator und Mast `powered true`. Abbau von Kabel und Mast läuft durch.
 
-Nicht geprüft: das Erkennen beim Bauenden mit echtem Spieler, Kabel in einer eigenen Siedlung. Nicht enthalten: Schalter auf gebauten Objekten, Siedler-Aufgaben. Geschütze sind Actors und werden nicht als Bauteil übertragen.
+Nicht geprüft: das Erkennen beim Bauenden mit echtem Spieler, Kabel in einer Siedlung aus einem echten Spielstand, ob sichtbare Verbraucher wie Lampen angehen. Nicht enthalten: Schalter auf gebauten Objekten, Siedler-Aufgaben. Geschütze sind Actors und werden nicht als Bauteil übertragen.
 
 ## Nicht getestet
 - Regressionstest 1.10.163 mit den Next-Gen-Änderungen und dem Shutdown-Hook.

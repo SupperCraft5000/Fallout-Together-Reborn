@@ -63,6 +63,11 @@ try {
     if (-not $Late) { & (Join-Path $Bin 'FalloutBot.exe') "127.0.0.1:$Port" 'Baumeister' 5 $Password 'spieltest' | Write-Host }
     Start-Sleep -Seconds 20
 
+    if (-not $Late) {
+        & (Join-Path $Bin 'FalloutBot.exe') "127.0.0.1:$Port" 'Abrissbot' 3 $Password 'abbau' | Write-Host
+        Start-Sleep -Seconds 12
+    }
+
     if ($gameProcess.HasExited) { $failed += "Spiel beendet (Exit $($gameProcess.ExitCode))" }
 }
 finally {
@@ -79,17 +84,16 @@ $log | Where-Object { $_ -match 'Workshop' } | Write-Host
 $placed = if ($Late) { 3 } else { 4 }
 if (@($log -match 'Workshop sync: placed').Count -ne $placed) { $failed += "Es hätten $placed Objekte entstehen müssen" }
 if (-not $Late -and -not ($log -match 'Workshop sync: moved')) { $failed += 'Verschieben fehlt' }
-if (-not $Late -and -not ($log -match 'Workshop sync: removed')) { $failed += 'Entfernen fehlt' }
+# Teil, Kabel und Mast
+if (-not $Late -and @($log -match 'Workshop sync: removed').Count -ne 3) { $failed += 'Entfernen fehlt' }
 if (-not ($log -match 'Workshop sync: .* is already here')) { $failed += 'Vorhandenes Objekt nicht erkannt' }
 if ($log -match 'Workshop sync: .*(missing|not found|could not|is not here)') { $failed += 'Fehlerzeile im Log' }
 if (-not ($log -match 'Workshop sync: wired ')) { $failed += 'Kabel fehlt' }
-if (@($log -match 'Workshop sync: [0-9A-F]+ powered ').Count -ne 2) { $failed += 'Stromzustand fehlt im Log' }
+if (@($log -match 'Workshop sync: [0-9A-F]+ powered true').Count -ne 2) { $failed += 'Beide Kabel-Enden müssen Strom melden' }
 
 if ($failed) {
     Write-Host "FEHLGESCHLAGEN:`n - $($failed -join "`n - ")" -ForegroundColor Red
     exit 1
 }
 Write-Host 'Bau-Sync im Spiel bestanden.' -ForegroundColor Green
-# Red Rocket gehört im Testprofil niemandem, Strom ist hier also kein Pflichtergebnis
-if (-not ($log -match 'Workshop sync: [0-9A-F]+ powered true')) { Write-Host 'Warnung: Kabel steht, aber kein Objekt meldet Strom.' -ForegroundColor Yellow }
 exit 0
