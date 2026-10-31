@@ -37,9 +37,9 @@ $buildFile = Join-Path $Work 'build.txt'
 Set-Content -Encoding ascii $buildFile $build
 
 $exe = Join-Path $Dist 'FalloutTogetherReborn.exe'
-& $Csc /nologo /target:winexe /optimize+ "/out:$exe" "/win32icon:$Icon" `
+& $Csc /nologo /target:winexe /platform:x64 /optimize+ "/out:$exe" "/win32icon:$Icon" `
     /r:System.Windows.Forms.dll /r:System.Drawing.dll /r:System.IO.Compression.dll /r:System.IO.Compression.FileSystem.dll `
-    "/resource:$zip,payload.zip" "/resource:$buildFile,build.txt" (Join-Path $PSScriptRoot 'Starter.cs')
+    "/resource:$zip,payload.zip" "/resource:$buildFile,build.txt" (Join-Path $PSScriptRoot 'Starter.cs') (Join-Path $PSScriptRoot 'Tunnel.cs')
 if ($LASTEXITCODE) { throw 'csc fehlgeschlagen' }
 
 Remove-Item $Work -Recurse -Force

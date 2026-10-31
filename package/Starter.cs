@@ -25,8 +25,11 @@ static class Program
     public const int DefaultPort = 10578;
 
     [STAThread]
-    static void Main(string[] args)
+    static int Main(string[] args)
     {
+        if (args.Length > 0 && args[0] == "--tunnel")
+            return TunnelProcess.Run(args);
+
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         string game = null;
@@ -34,6 +37,7 @@ static class Program
             if (args[i] == "--game")
                 game = args[i + 1];
         Application.Run(new MainForm(game));
+        return 0;
     }
 }
 
@@ -343,7 +347,8 @@ static class SaveShare
         using (var client = Connect(aHost))
         using (var stream = client.GetStream())
         {
-            client.ReceiveTimeout = 10000;
+            // Über Steam braucht der erste Aufbau einige Sekunden
+            client.ReceiveTimeout = 30000;
             WriteLine(stream, Magic + " HELLO");
             var answer = ReadLine(stream).Split(' ');
             if (answer.Length != 2)
@@ -363,6 +368,7 @@ static class SaveShare
             string name;
             using (var client = Connect(aHost))
             {
+                client.ReceiveTimeout = 60000;
                 using (var stream = client.GetStream())
                 {
                     WriteLine(stream, Magic + " SAVE " + aPassword);
@@ -661,6 +667,7 @@ sealed class MainForm : Form
     readonly PipCheck m_takeSave = new PipCheck("Spielstand vom Host übernehmen");
     readonly PipCheck m_keepFigure = new PipCheck("Eigene Figur mitnehmen") { Enabled = false, Checked = true };
     readonly PipCheck m_mainMenu = new PipCheck("Hauptmenü anzeigen");
+    readonly PipCheck m_steam = new PipCheck("Über Steam erreichbar") { Enabled = false, Size = new Size(240, 22) };
     readonly PipButton m_pickSave = new PipButton("Wählen");
     readonly Label m_gameLabel = new Label { AutoEllipsis = true };
     readonly Label m_saveLabel = new Label { AutoEllipsis = true };
@@ -670,6 +677,7 @@ sealed class MainForm : Form
     string m_game;
     Process m_server;
     TcpListener m_shareListener;
+    Process m_tunnel;
     string m_sharedSave;
 
     public MainForm(string aGame)
@@ -709,13 +717,15 @@ sealed class MainForm : Form
         Controls.Add(m_gameLabel);
         Controls.Add(change);
 
-        Controls.Add(new Label { Text = "ADRESSE", Bounds = new Rectangle(18, 155, 96, 20) });
+        Controls.Add(new Label { Text = "IP/STEAM-ID", Bounds = new Rectangle(18, 155, 100, 20) });
         Controls.Add(Boxed(m_address, new Rectangle(118, 150, 426, 26)));
         Controls.Add(new Label { Text = "PASSWORT", Bounds = new Rectangle(18, 189, 96, 20) });
         Controls.Add(Boxed(m_password, new Rectangle(118, 184, 426, 26)));
 
         m_host.Location = new Point(18, 243);
         m_host.CheckedChanged += delegate { UpdateOptions(); };
+        m_steam.Location = new Point(300, 243);
+        Controls.Add(m_steam);
         m_share.Location = new Point(38, 265);
         m_share.CheckedChanged += delegate { UpdateOptions(); };
         m_takeSave.Location = new Point(18, 291);
@@ -745,7 +755,7 @@ sealed class MainForm : Form
         m_game = Game.IsGameDir(aGame) ? aGame : (Game.IsGameDir(m_game) ? m_game : Game.Find());
         ShowGame();
         UpdateOptions();
-        FormClosed += delegate { StopServer(); StopShare(); };
+        FormClosed += delegate { StopServer(); StopShare(); StopTunnel(); };
     }
 
     static Panel Boxed(TextBox aBox, Rectangle aBounds)
@@ -798,6 +808,7 @@ sealed class MainForm : Form
     {
         m_address.Enabled = !m_host.Checked;
         m_share.Enabled = m_host.Checked;
+        m_steam.Enabled = m_host.Checked;
         m_pickSave.Enabled = m_host.Checked || !m_takeSave.Checked || m_keepFigure.Checked;
         m_takeSave.Enabled = !m_host.Checked;
         m_keepFigure.Enabled = !m_host.Checked && m_takeSave.Checked;
@@ -875,7 +886,7 @@ sealed class MainForm : Form
         var address = m_address.Text.Trim();
         if (!m_host.Checked && address.Length == 0)
         {
-            MessageBox.Show(this, "Bitte die Server-Adresse eintragen, die du vom Gastgeber bekommen hast.", Program.Title);
+            MessageBox.Show(this, "Bitte die Adresse oder Steam-ID des Hosts eintragen.", Program.Title);
             return;
         }
 
@@ -890,6 +901,7 @@ sealed class MainForm : Form
         var game = m_game;
         var password = m_password.Text;
         var host = m_host.Checked;
+        var useSteam = host ? m_steam.Checked : Regex.IsMatch(address, "^[0-9]{17}$");
         var picked = m_sharedSave;
         var chosen = picked ?? SaveShare.Newest();
         var shared = host && m_share.Checked ? chosen : null;
@@ -907,7 +919,9 @@ sealed class MainForm : Form
         var steps = new List<string> { "setup|Dateien einrichten" };
         if (host)
             steps.Add("server|Server starten");
-        else
+        if (useSteam)
+            steps.Add("tunnel|Steam-Verbindung aufbauen");
+        if (!host)
             steps.Add("check|Host und Version prüfen");
         if (shared != null)
             steps.Add("share|Spielstand freigeben");
@@ -923,10 +937,10 @@ sealed class MainForm : Form
         steps.Add("play|Im Spiel");
         m_view.SetSteps(steps.ToArray());
 
-        new Thread(() => Run(game, address, password, host, shared, takeSave, keepFigure, autoLoad, skipMenu, picked)) { IsBackground = true }.Start();
+        new Thread(() => Run(game, address, password, host, shared, takeSave, keepFigure, autoLoad, skipMenu, picked, useSteam)) { IsBackground = true }.Start();
     }
 
-    void Run(string aGame, string aAddress, string aPassword, bool aHost, string aShared, bool aTakeSave, bool aKeepFigure, string aAutoLoad, bool aSkipMenu, string aPicked)
+    void Run(string aGame, string aAddress, string aPassword, bool aHost, string aShared, bool aTakeSave, bool aKeepFigure, string aAutoLoad, bool aSkipMenu, string aPicked, bool aSteam)
     {
         string received = null;
         try
@@ -955,11 +969,25 @@ sealed class MainForm : Form
                 StartServer(dir, aPassword);
                 aAddress = "127.0.0.1";
                 m_shareListener = SaveShare.Serve(aShared, aPassword, Payload.Build(), version);
+                if (aSteam)
+                {
+                    Step("tunnel", "Verbinde mit dem Steam-Netz.");
+                    var ownId = StartTunnel(aGame, "0")[1];
+                    Ui(delegate { Clipboard.SetText(ownId); });
+                    Detail("Deine Steam-ID steht in der Zwischenablage, gib sie deinem Mitspieler: " + ownId);
+                }
                 if (aShared != null)
                     Step("share", "Mitspieler können " + Path.GetFileName(aShared) + " abholen.");
             }
             else
             {
+                if (aSteam)
+                {
+                    Step("tunnel", "Verbinde mit dem Steam-Netz.");
+                    var ready = StartTunnel(aGame, aAddress);
+                    aAddress = "127.0.0.1:" + ready[2];
+                    SaveShare.Port = int.Parse(ready[3]);
+                }
                 Step("check", "Frage den Host nach seiner Version.");
                 var host = aAddress.Split(':')[0];
                 SaveShare.CheckHost(host, Payload.Build(), version);
@@ -1018,6 +1046,8 @@ sealed class MainForm : Form
         {
             StopServer();
             StopShare();
+            StopTunnel();
+            SaveShare.Port = Program.DefaultPort;
             try
             {
                 if (received != null)
@@ -1134,6 +1164,47 @@ sealed class MainForm : Form
         info.WorkingDirectory = run;
         info.EnvironmentVariables["TP_BUILD"] = Payload.Build();
         m_server = Process.Start(info);
+    }
+
+    // Startet den Tunnel und wartet auf seine Bereitmeldung
+    string[] StartTunnel(string aGame, string aRemote)
+    {
+        var info = new ProcessStartInfo(Application.ExecutablePath, string.Format("--tunnel \"{0}\" {1} {2} {3} {3}",
+            aGame.TrimEnd('\\'), Process.GetCurrentProcess().Id, aRemote, Program.DefaultPort));
+        info.UseShellExecute = false;
+        info.CreateNoWindow = true;
+        info.RedirectStandardOutput = true;
+        m_tunnel = Process.Start(info);
+
+        // Steam schreibt selbst auf die Ausgabe, darum bis zur eigenen Meldung lesen
+        string line = null;
+        var tunnel = m_tunnel;
+        var reader = new Thread(() =>
+        {
+            do
+            {
+                line = tunnel.StandardOutput.ReadLine();
+            } while (line != null && !line.StartsWith("READY ") && !line.StartsWith("ERROR "));
+        }) { IsBackground = true };
+        reader.Start();
+        if (!reader.Join(45000))
+            throw new IOException("Das Steam-Netz antwortet nicht.");
+        if (line == null || !line.StartsWith("READY "))
+            throw new IOException(line != null && line.StartsWith("ERROR ") ? line.Substring(6) : "Der Steam-Tunnel ist nicht gestartet, siehe tunnel.log.");
+        return line.Split(' ');
+    }
+
+    void StopTunnel()
+    {
+        if (m_tunnel == null)
+            return;
+        try
+        {
+            if (!m_tunnel.HasExited)
+                m_tunnel.Kill();
+        }
+        catch (Exception) { }
+        m_tunnel = null;
     }
 
     void StopShare()
