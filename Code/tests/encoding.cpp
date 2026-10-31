@@ -65,6 +65,35 @@ TEST_CASE("Encoding factory", "[encoding.factory]")
     }
 }
 
+TEST_CASE("Workshop change", "[encoding.workshop]")
+{
+    Buffer buff(1000);
+
+    NotifyWorkshopChange notify;
+    notify.Change.Kind = WorkshopChange::kMoved;
+    notify.Change.OwnerId = 2;
+    notify.Change.ObjectId = 0xFF001234;
+    notify.Change.ObjectServerId = GameId(1, 0x54BA6);
+    notify.Change.WorkshopId = GameId(3, 0x1234);
+    notify.Change.BaseId = GameId(4, 0xABCDE);
+    notify.Change.Position = glm::vec3(-54321.125f, 1234.5f, 0.0625f);
+    notify.Change.Rotation = glm::vec3(0.f, 1.5707964f, -3.1415927f);
+
+    Buffer::Writer writer(&buff);
+    notify.Serialize(writer);
+
+    Buffer::Reader reader(&buff);
+
+    const ServerMessageFactory factory;
+    auto pMessage = factory.Extract(reader);
+
+    REQUIRE(pMessage);
+    REQUIRE(pMessage->GetOpcode() == notify.GetOpcode());
+
+    auto pNotify = CastUnique<NotifyWorkshopChange>(std::move(pMessage));
+    REQUIRE(pNotify->Change == notify.Change);
+}
+
 TEST_CASE("Static structures", "[encoding.static]")
 {
     GIVEN("GameId")

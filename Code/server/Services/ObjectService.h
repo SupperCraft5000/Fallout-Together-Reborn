@@ -6,6 +6,7 @@ struct World;
 struct PlayerLeaveCellEvent;
 struct ActivateRequest;
 struct LockChangeRequest;
+struct RequestWorkshopChange;
 struct AssignObjectsRequest;
 struct ScriptAnimationRequest;
 
@@ -22,6 +23,7 @@ private:
     void OnAssignObjectsRequest(const PacketEvent<AssignObjectsRequest>&) noexcept;
     void OnActivate(const PacketEvent<ActivateRequest>&) const noexcept;
     void OnLockChange(const PacketEvent<LockChangeRequest>&) const noexcept;
+    void OnWorkshopChange(const PacketEvent<RequestWorkshopChange>&) const noexcept;
     void OnScriptAnimationRequest(const PacketEvent<ScriptAnimationRequest>&) noexcept;
 
     World& m_world;
@@ -30,5 +32,6 @@ private:
     entt::scoped_connection m_assignObjectConnection;
     entt::scoped_connection m_activateConnection;
     entt::scoped_connection m_lockChangeConnection;
+    entt::scoped_connection m_workshopChangeConnection;
     entt::scoped_connection m_scriptAnimationConnection;
 };

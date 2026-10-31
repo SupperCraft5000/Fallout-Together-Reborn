@@ -121,3 +121,18 @@ Der Lebenszustand (`actorState`, Bits 17 bis 20) darf nicht direkt geschrieben w
 
 ## 21. Server meldete sich bei der Server-Liste von Upstream
 `ServerListService` sendete pro Minute und bei jedem Beitritt Name, Beschreibung, Port, Spielerzahl, Tickrate und Version an `fallout-reborn-list.skyrim-together.com`, auch mit `bAnnounceServer=false`. Der Empfänger sieht dabei die öffentliche IP. Eine Antwort `403` beendete den Server (`GameServer::Kill`). Der Dienst ist entfernt. Ob die Adresse erreichbar war, ist nicht geprüft.
+
+## 22. Bau-Ereignisse der Werkstatt
+Die Empfänger, die Skript-Ereignisse wie `OnWorkshopObjectPlaced` auslösen, sind virtuelle `ProcessEvent` ohne direkte Aufrufer. Signatur `(this, event*)`, das Ereignis hält zwei `TESObjectREFR*`.
+
+| Ereignis | OG-ID | OG-RVA | NG-RVA |
+|---|---|---|---|
+| Destroyed | 313584 | `0x145D920` | `0x1195F90` |
+| Moved | 725213 | `0x145DB70` | `0x1196200` |
+| Placed | 697786 | `0x145DDB0` | `0x1196470` |
+| Repaired | 670087 | `0x145DFF0` | `0x11966E0` |
+| Grabbed | 642544 | `0x145E230` | `0x1196950` |
+
+Belegt ist, dass jeder Empfänger das Skript-Ereignis an beide Referenzen schickt. Dass `[0]` die Werkbank und `[1]` das Objekt ist, ist eine Annahme. `WorkshopService` tauscht beide, falls nur `[0]` temporär ist. `WorkshopReferenceEventSink` ist der falsche Ansatzpunkt, die Stat-Handler werten die Ereignisdaten nicht aus.
+
+Papyrus-Natives auf NG: `PlaceAtMe` `0x1159E80` liefert `TESObjectREFR*` und gibt die eigene Referenz wieder ab, `abDeleteWhenAble` muss `false` sein, sonst verschwindet das Objekt. `SetPosition` `0x115DED0` und `SetAngle` `0x115CEE0` nehmen `RefrOrInventoryObj` und drei floats, `SetAngle` in Grad. `SetLinkedRef` `0x11815D0` nimmt `(self, ziel, keyword)` als einfache Zeiger. `WorkshopItemKeyword` ist `0x54BA6`.

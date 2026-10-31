@@ -168,3 +168,6 @@ id,name,type,real_id,rva_1_10_163,file,line
 
 1085881,cUpdateEssential,TUpdateEssential,1085880,0xD71E60,client/FalloutVM.cpp,62
 776976,cSetLifeState,TSetLifeState,776975,0xE9C0C0,client/Games/Fallout4/PlayerCharacter.cpp,36
+697787,s_workshopPlaced,TWorkshopSink,697786,0x145DDB0,client/Services/Generic/WorkshopService.cpp,0
+725214,s_workshopMoved,TWorkshopSink,725213,0x145DB70,client/Services/Generic/WorkshopService.cpp,0
+313585,s_workshopDestroyed,TWorkshopSink,313584,0x145D920,client/Services/Generic/WorkshopService.cpp,0

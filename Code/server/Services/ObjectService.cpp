@@ -10,6 +10,8 @@
 #include <Messages/NotifyActivate.h>
 #include <Messages/LockChangeRequest.h>
 #include <Messages/NotifyLockChange.h>
+#include <Messages/RequestWorkshopChange.h>
+#include <Messages/NotifyWorkshopChange.h>
 #include <Messages/AssignObjectsRequest.h>
 #include <Messages/AssignObjectsResponse.h>
 #include <Messages/ScriptAnimationRequest.h>
@@ -22,6 +24,7 @@ ObjectService::ObjectService(World& aWorld, entt::dispatcher& aDispatcher)
     m_assignObjectConnection = aDispatcher.sink<PacketEvent<AssignObjectsRequest>>().connect<&ObjectService::OnAssignObjectsRequest>(this);
     m_activateConnection = aDispatcher.sink<PacketEvent<ActivateRequest>>().connect<&ObjectService::OnActivate>(this);
     m_lockChangeConnection = aDispatcher.sink<PacketEvent<LockChangeRequest>>().connect<&ObjectService::OnLockChange>(this);
+    m_workshopChangeConnection = aDispatcher.sink<PacketEvent<RequestWorkshopChange>>().connect<&ObjectService::OnWorkshopChange>(this);
     m_scriptAnimationConnection = aDispatcher.sink<PacketEvent<ScriptAnimationRequest>>().connect<&ObjectService::OnScriptAnimationRequest>(this);
 }
 
@@ -164,6 +167,19 @@ void ObjectService::OnLockChange(const PacketEvent<LockChangeRequest>& acMessage
 
         if (pPlayer->GetCellComponent().Cell == acMessage.Packet.CellId)
             pPlayer->Send(notifyLockChange);
+    }
+}
+
+void ObjectService::OnWorkshopChange(const PacketEvent<RequestWorkshopChange>& acMessage) const noexcept
+{
+    NotifyWorkshopChange notify;
+    notify.Change = acMessage.Packet.Change;
+
+    // Everyone gets it, the client waits until the settlement is loaded on its side
+    for (Player* pPlayer : m_world.GetPlayerManager())
+    {
+        if (pPlayer != acMessage.pPlayer)
+            pPlayer->Send(notify);
     }
 }
 
