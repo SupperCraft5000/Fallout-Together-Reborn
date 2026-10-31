@@ -21,6 +21,15 @@ Die Mitspieler brauchen deine Adresse (`IP` oder `IP:10578`). Entweder den UDP-P
 
 Host und Mitspieler brauchen dieselbe `FalloutTogetherReborn.exe` und dieselbe Fallout-4-Version. Der Starter prüft das vor dem Spielstart und bricht sonst mit einer Meldung ab. Dafür muss der Host zuerst auf **Spielen** klicken, und TCP-Port 10578 muss bei ihm frei sein, auch wenn kein Spielstand übertragen wird. Der Server prüft die Version beim Verbinden noch einmal.
 
+## Verbindung über Steam
+Über Steam braucht ihr keine Portfreigabe und kein VPN. Beide brauchen dafür laufendes Steam und Fallout 4 auf dem Konto.
+
+**Host:** „Server auf diesem PC starten“ und „Über Steam erreichbar“ anhaken, dann „Spielen“. Deine Steam-ID steht danach im Status und in der Zwischenablage. Gib sie deinem Mitspieler. Setze ein Passwort, denn wer deine Steam-ID kennt, erreicht sonst deinen Server.
+
+**Mitspieler:** Die Steam-ID des Hosts statt einer Adresse eintragen, dann „Spielen“. Der Starter erkennt die Steam-ID an den 17 Ziffern.
+
+Steam zeigt dabei Fallout 4 schon an, bevor das Spiel läuft. Die Verbindung per IP-Adresse funktioniert weiter. Probleme stehen in `%LOCALAPPDATA%\FalloutTogetherReborn\tunnel.log`.
+
 ## Neue Version
 
 Die neue exe einfach starten. Sie räumt die Ordner älterer Versionen von selbst auf. Deine Figur, Einstellungen und Spielstände bleiben erhalten, die letzten Logs liegen danach in `%LOCALAPPDATA%\FalloutTogetherReborn\logs-previous`.

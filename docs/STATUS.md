@@ -75,7 +75,9 @@ Entfernt: Skyrim-Ziele und Skyrim-Client, `Code/skyrim_ui`, `Code/one_ui`, `Code
 Offen: `#if TP_SKYRIM` in rund 50 Dateien, Discord-Anbindung mit der Anwendungs-ID von Upstream, Konventionen und Namen im Code wie `TP_`, `Tilted`.
 
 ## Stand 2026-10-31: Steam-Netz getestet (`Tools/steamtest`)
-Zwei PCs verbanden sich unter App-ID 377160 über `P2P SDR`, Relay `fra`. Aufbau rund 2 s, Median 30 bis 33 ms, solange beide liefen kein Paketverlust. Das waren 2 Pakete pro Sekunde, kein Spielverkehr. Direkte Verbindungen (ICE) sind aus, weil `steamwebrtc64.dll` im Test abstürzte. Offen: ob Valve diese Nutzung erlaubt, Tunnel für Spielverkehr und TCP, Betrieb neben dem Spiel unter derselben App-ID.
+Zwei PCs verbanden sich unter App-ID 377160 über `P2P SDR`, Relay `fra`. Aufbau rund 2 s, Median 30 bis 33 ms, solange beide liefen kein Paketverlust. Das waren 2 Pakete pro Sekunde, kein Spielverkehr. Direkte Verbindungen (ICE) sind aus, weil `steamwebrtc64.dll` im Test abstürzte. Offen: ob Valve diese Nutzung erlaubt.
+
+Der Tunnel im Starter (`package/Tunnel.cs`) ist auf `dev`. Getestet über eine künstliche Leitung mit 30 ms und 3 % Verlust: Bots mit echtem Server, zwei Spieler, harter Abbruch mit sofortigem Neustart, falsches Passwort, Versionsabgleich, 20 MB Spielstand. Nicht getestet: über das echte Steam-Netz zwischen zwei PCs, Spielverkehr, Annehmen der Sitzung beim Host, Betrieb neben dem Spiel unter derselben App-ID.
 
 ## Nicht getestet
 - Regressionstest 1.10.163 mit den Next-Gen-Änderungen und dem Shutdown-Hook.

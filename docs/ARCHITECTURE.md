@@ -47,6 +47,18 @@ Zeilenbasiert über TCP, eine Anfrage pro Verbindung:
 
 Warum zwei Starts: Das Laden zur Laufzeit ginge nur über nicht portierte Engine-Adressen. Warum 10 s Wartezeit: Die Figur enthält Server-Mod-IDs, die erst nach dem Verbinden gelten. Sie passt deshalb nur bei gleicher Mod-Liste.
 
+## Steam-Tunnel
+`package/Tunnel.cs`. Der Starter startet sich selbst mit `--tunnel` als eigenen Prozess, weil der Tunnel schon vor dem Spiel gebraucht wird. Spiel und Server sprechen weiter UDP mit einem Port auf 127.0.0.1, der Starter-Dienst TCP.
+
+| Kanal | Inhalt |
+|---|---|
+| 0, unzuverlässig | UDP-Datagramme mit 2 Byte Kennung, dem Quellport des Spiels |
+| 1, zuverlässig | TCP-Ströme als Rahmen: Typ (Öffnen, Daten, Ende), Strom-ID, Daten |
+
+Beim Host gehört zu jeder Kennung ein eigener UDP-Socket. Wäre es derselbe, hielte der Server ein neues Spiel für die alte Sitzung, wenn deren Ende nicht ankam, etwa nach dem Doppelstart mit eigener Figur.
+
+Nur das Relay wird genutzt (`P2P_Transport_ICE_Enable=0`), weil `steamwebrtc64.dll` im Test abstürzte. Der Host nimmt jede Sitzung an, Schutz ist das Passwort. Spiel läuft nur über `SteamLink`, `ITunnelLink` ersetzt Steam im Test durch eine künstliche Leitung.
+
 ## Autostart
 Der Hook auf `GetPrivateProfileStringA` in `Code/client/FalloutVM.cpp` liefert für `sStartingConsoleCommand` den Befehl `LoadGame "<name>"`. Schlägt das fehl, bleibt das Spiel im Hauptmenü.
 
