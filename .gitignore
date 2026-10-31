@@ -77,7 +77,8 @@ Artifacts/logs**
 **/obj/**
 /Setup.bat
 
-Package/
+/Package/
+!/package/
 
 distrib/
 distrib_debug/
