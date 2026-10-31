@@ -662,7 +662,7 @@ sealed class MainForm : Form
 
     readonly TextBox m_address = new TextBox();
     readonly TextBox m_password = new TextBox { UseSystemPasswordChar = true };
-    readonly PipCheck m_host = new PipCheck("Server auf diesem PC starten");
+    readonly PipCheck m_host = new PipCheck("Server auf diesem PC starten") { Size = new Size(275, 22) };
     readonly PipCheck m_share = new PipCheck("Meinen Spielstand freigeben") { Enabled = false };
     readonly PipCheck m_takeSave = new PipCheck("Spielstand vom Host übernehmen");
     readonly PipCheck m_keepFigure = new PipCheck("Eigene Figur mitnehmen") { Enabled = false, Checked = true };
