@@ -10,6 +10,7 @@
 #include <Messages/NotifyActivate.h>
 #include <Messages/LockChangeRequest.h>
 #include <Messages/NotifyLockChange.h>
+#include <Events/PlayerJoinEvent.h>
 #include <Messages/RequestWorkshopChange.h>
 #include <Messages/NotifyWorkshopChange.h>
 #include <Messages/AssignObjectsRequest.h>
@@ -25,6 +26,7 @@ ObjectService::ObjectService(World& aWorld, entt::dispatcher& aDispatcher)
     m_activateConnection = aDispatcher.sink<PacketEvent<ActivateRequest>>().connect<&ObjectService::OnActivate>(this);
     m_lockChangeConnection = aDispatcher.sink<PacketEvent<LockChangeRequest>>().connect<&ObjectService::OnLockChange>(this);
     m_workshopChangeConnection = aDispatcher.sink<PacketEvent<RequestWorkshopChange>>().connect<&ObjectService::OnWorkshopChange>(this);
+    m_playerJoinConnection = aDispatcher.sink<PlayerJoinEvent>().connect<&ObjectService::OnPlayerJoin>(this);
     m_scriptAnimationConnection = aDispatcher.sink<PacketEvent<ScriptAnimationRequest>>().connect<&ObjectService::OnScriptAnimationRequest>(this);
 }
 
@@ -170,8 +172,10 @@ void ObjectService::OnLockChange(const PacketEvent<LockChangeRequest>& acMessage
     }
 }
 
-void ObjectService::OnWorkshopChange(const PacketEvent<RequestWorkshopChange>& acMessage) const noexcept
+void ObjectService::OnWorkshopChange(const PacketEvent<RequestWorkshopChange>& acMessage) noexcept
 {
+    RememberWorkshopChange(acMessage.Packet.Change);
+
     NotifyWorkshopChange notify;
     notify.Change = acMessage.Packet.Change;
 
@@ -181,6 +185,53 @@ void ObjectService::OnWorkshopChange(const PacketEvent<RequestWorkshopChange>& a
         if (pPlayer != acMessage.pPlayer)
             pPlayer->Send(notify);
     }
+}
+
+void ObjectService::OnPlayerJoin(const PlayerJoinEvent& acEvent) const noexcept
+{
+    for (const WorkshopChange& change : m_workshopChanges)
+    {
+        NotifyWorkshopChange notify;
+        notify.Change = change;
+        notify.Change.Replay = true;
+        acEvent.pPlayer->Send(notify);
+    }
+}
+
+void ObjectService::RememberWorkshopChange(const WorkshopChange& acChange) noexcept
+{
+    const auto itor = std::find_if(
+        std::begin(m_workshopChanges), std::end(m_workshopChanges),
+        [&acChange](const WorkshopChange& acOther)
+        {
+            if (acChange.ObjectId != 0)
+                return acOther.OwnerId == acChange.OwnerId && acOther.ObjectId == acChange.ObjectId;
+
+            return acOther.ObjectId == 0 && acOther.ObjectServerId == acChange.ObjectServerId;
+        });
+
+    if (itor == std::end(m_workshopChanges))
+    {
+        m_workshopChanges.push_back(acChange);
+        return;
+    }
+
+    if (acChange.Kind == WorkshopChange::kPlaced || itor->Kind == WorkshopChange::kMoved)
+    {
+        *itor = acChange;
+        return;
+    }
+
+    if (itor->Kind == WorkshopChange::kDestroyed)
+        return;
+
+    // Still a placed object, it stays one until destroyed. Scrapped objects are
+    // kept as well, the save of somebody joining can still hold them.
+    if (acChange.Kind == WorkshopChange::kDestroyed)
+        itor->Kind = WorkshopChange::kDestroyed;
+
+    itor->Position = acChange.Position;
+    itor->Rotation = acChange.Rotation;
 }
 
 void ObjectService::OnScriptAnimationRequest(const PacketEvent<ScriptAnimationRequest>& acMessage) noexcept

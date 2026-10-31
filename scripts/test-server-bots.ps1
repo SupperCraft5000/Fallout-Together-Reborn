@@ -43,6 +43,24 @@ try {
         # Jeder Bot außer dem letzten muss mindestens die später gekommenen Bots sehen
         if ($i -lt $Bots -and -not ($log -match 'Mitspieler beigetreten')) { $failed += "Bot$i sieht keine Mitspieler" }
     }
+
+    # Bau-Sync: Beobachter sieht alles live, der Nachzügler nur den zusammengefassten Stand
+    $bot = Join-Path $Bin 'FalloutBot.exe'
+    $watcher = Start-Process -FilePath $bot -PassThru -NoNewWindow -ArgumentList "127.0.0.1:$Port", 'Beobachter', 5, $Password `
+        -RedirectStandardOutput (Join-Path $Run 'Beobachter.log')
+    Start-Sleep -Milliseconds 500
+    $builder = Start-Process -FilePath $bot -PassThru -NoNewWindow -ArgumentList "127.0.0.1:$Port", 'Baumeister', 2, $Password, 'bauen' `
+        -RedirectStandardOutput (Join-Path $Run 'Baumeister.log')
+    $builder, $watcher | Wait-Process -Timeout 15
+    $late = & $bot "127.0.0.1:$Port" 'Nachzuegler' 2 $Password
+    $late | Write-Host
+    $live = Get-Content (Join-Path $Run 'Beobachter.log') | Where-Object { $_ -match 'Bauteil .* Replay 0' }
+    if (@($live).Count -ne 5) { $failed += "Beobachter sah $(@($live).Count) statt 5 Bau-Nachrichten" }
+    $replay = $late | Where-Object { $_ -match 'Bauteil ' }
+    if (@($replay).Count -ne 3) { $failed += "Nachzügler bekam $(@($replay).Count) statt 3 Einträge" }
+    if (-not ($replay -match 'Bauteil FF000001 Art 0 Replay 1 x 2 Ursprung 1')) { $failed += 'Verschobenes Objekt falsch nachgeholt' }
+    if (-not ($replay -match 'Bauteil FF000002 Art 2 Replay 1 x 3 Ursprung 3')) { $failed += 'Verschrottetes Objekt falsch nachgeholt' }
+    if (-not ($replay -match 'Bauteil 0 Art 1 Replay 1 x 4')) { $failed += 'Plugin-Objekt falsch nachgeholt' }
 }
 finally {
     if (-not $server.HasExited) { Stop-Process -Id $server.Id -Force }

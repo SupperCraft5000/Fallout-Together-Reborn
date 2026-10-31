@@ -80,9 +80,12 @@ Zwei PCs verbanden sich unter App-ID 377160 über `P2P SDR`, Relay `fra`. Aufbau
 Der Tunnel im Starter (`package/Tunnel.cs`) ist auf `dev`. Getestet über eine künstliche Leitung mit 30 ms und 3 % Verlust: Bots mit echtem Server, zwei Spieler, harter Abbruch mit sofortigem Neustart, falsches Passwort, Versionsabgleich, 20 MB Spielstand. Nicht getestet: über das echte Steam-Netz zwischen zwei PCs, Spielverkehr, Annehmen der Sitzung beim Host, Betrieb neben dem Spiel unter derselben App-ID.
 
 ## Stand 2026-10-31: Bau-Sync Stufe 1 (im Spiel ungetestet)
-Bauen, Verschieben und Verschrotten laufen über `WorkshopService` und die Nachrichten `RequestWorkshopChange`/`NotifyWorkshopChange`. Der Server leitet nur weiter und speichert nichts. Änderungen warten beim Empfänger, bis die Werkbank geladen ist. Verbindung, Tests und Bots laufen, im Spiel fehlt der Nachweis. Erwartete Logzeilen: `Workshop event` beim Bauenden, `Workshop sync: placed` beim Empfänger.
+Bauen, Verschieben und Verschrotten laufen über `WorkshopService` und die Nachrichten `RequestWorkshopChange`/`NotifyWorkshopChange`. Änderungen warten beim Empfänger, bis die Werkbank geladen ist. Vom Nutzer auf zwei PCs bestätigt. Logzeilen: `Workshop event` beim Bauenden, `Workshop sync: placed` beim Empfänger.
 
-Noch nicht enthalten: Bauten für später Beitretende (Stufe 2), Strom, Kabel, Betten, Generatoren, Siedler (Stufe 3). Geschütze sind Actors und werden nicht als Bauteil übertragen.
+## Stand 2026-10-31: Bau-Sync Stufe 2 (im Spiel ungetestet)
+Der Server merkt sich pro Objekt den letzten Stand und schickt ihn jedem Beitretenden mit `Replay`. Der Speicher lebt nur im Arbeitsspeicher und endet mit dem Server, Bauten überdauern über den Spielstand des Hosts. Beim Nachholen sucht der Client erst ein gleiches Objekt an aktueller und ursprünglicher Stelle (`FindClosestReferenceOfType`), damit nichts doppelt entsteht, wenn der Spielstand es schon enthält oder ein Client neu verbindet. Logzeile dafür: `Workshop sync: ... is already here as ...`. `scripts/test-server-bots.ps1` prüft Weiterleitung und Zusammenfassung.
+
+Noch nicht enthalten: Strom, Kabel, Betten, Generatoren, Siedler (Stufe 3). Geschütze sind Actors und werden nicht als Bauteil übertragen.
 
 ## Nicht getestet
 - Regressionstest 1.10.163 mit den Next-Gen-Änderungen und dem Shutdown-Hook.

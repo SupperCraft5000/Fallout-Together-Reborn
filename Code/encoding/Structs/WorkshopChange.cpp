@@ -6,7 +6,8 @@ using TiltedPhoques::Serialization;
 bool WorkshopChange::operator==(const WorkshopChange& acRhs) const noexcept
 {
     return Kind == acRhs.Kind && OwnerId == acRhs.OwnerId && ObjectId == acRhs.ObjectId && ObjectServerId == acRhs.ObjectServerId &&
-           WorkshopId == acRhs.WorkshopId && BaseId == acRhs.BaseId && Position == acRhs.Position && Rotation == acRhs.Rotation;
+           WorkshopId == acRhs.WorkshopId && BaseId == acRhs.BaseId && Position == acRhs.Position && Rotation == acRhs.Rotation &&
+           OriginalPosition == acRhs.OriginalPosition && Replay == acRhs.Replay;
 }
 
 bool WorkshopChange::operator!=(const WorkshopChange& acRhs) const noexcept
@@ -28,6 +29,10 @@ void WorkshopChange::Serialize(TiltedPhoques::Buffer::Writer& aWriter) const noe
         Serialization::WriteFloat(aWriter, Position[i]);
     for (int i = 0; i < 3; ++i)
         Serialization::WriteFloat(aWriter, Rotation[i]);
+    for (int i = 0; i < 3; ++i)
+        Serialization::WriteFloat(aWriter, OriginalPosition[i]);
+
+    Serialization::WriteBool(aWriter, Replay);
 }
 
 void WorkshopChange::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcept
@@ -46,4 +51,8 @@ void WorkshopChange::Deserialize(TiltedPhoques::Buffer::Reader& aReader) noexcep
         Position[i] = Serialization::ReadFloat(aReader);
     for (int i = 0; i < 3; ++i)
         Rotation[i] = Serialization::ReadFloat(aReader);
+    for (int i = 0; i < 3; ++i)
+        OriginalPosition[i] = Serialization::ReadFloat(aReader);
+
+    Replay = Serialization::ReadBool(aReader);
 }

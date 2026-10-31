@@ -78,6 +78,8 @@ TEST_CASE("Workshop change", "[encoding.workshop]")
     notify.Change.BaseId = GameId(4, 0xABCDE);
     notify.Change.Position = glm::vec3(-54321.125f, 1234.5f, 0.0625f);
     notify.Change.Rotation = glm::vec3(0.f, 1.5707964f, -3.1415927f);
+    notify.Change.OriginalPosition = glm::vec3(-54000.5f, 1200.25f, 12.f);
+    notify.Change.Replay = true;
 
     Buffer::Writer writer(&buff);
     notify.Serialize(writer);

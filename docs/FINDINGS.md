@@ -136,3 +136,5 @@ Die Empfänger, die Skript-Ereignisse wie `OnWorkshopObjectPlaced` auslösen, si
 Belegt ist, dass jeder Empfänger das Skript-Ereignis an beide Referenzen schickt. Dass `[0]` die Werkbank und `[1]` das Objekt ist, ist eine Annahme. `WorkshopService` tauscht beide, falls nur `[0]` temporär ist. `WorkshopReferenceEventSink` ist der falsche Ansatzpunkt, die Stat-Handler werten die Ereignisdaten nicht aus.
 
 Papyrus-Natives auf NG: `PlaceAtMe` `0x1159E80` liefert `TESObjectREFR*` und gibt die eigene Referenz wieder ab, `abDeleteWhenAble` muss `false` sein, sonst verschwindet das Objekt. `SetPosition` `0x115DED0` und `SetAngle` `0x115CEE0` nehmen `RefrOrInventoryObj` und drei floats, `SetAngle` in Grad. `SetLinkedRef` `0x11815D0` nimmt `(self, ziel, keyword)` als einfache Zeiger. `WorkshopItemKeyword` ist `0x54BA6`.
+
+`Game.FindClosestReferenceOfType` (NG `0x1121840`) hat die Form `(vm, stack, nullptr, form, x, y, z, radius)` und durchsucht die geladenen Zellen.

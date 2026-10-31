@@ -12,6 +12,7 @@
 #include <Messages/NotifyWorkshopChange.h>
 
 #include <Actor.h>
+#include <PlayerCharacter.h>
 
 #include <mutex>
 
@@ -19,6 +20,8 @@ namespace
 {
 constexpr uint32_t kWorkshopItemKeyword = 0x54BA6;
 constexpr float kRadToDeg = 57.2957795f;
+// Saves round positions a little
+constexpr float kSameSpotRadius = 2.f;
 // Spreads a burst of incoming pieces over a few frames
 constexpr size_t kMaxAppliedPerFrame = 8;
 
@@ -108,6 +111,12 @@ bool HasPapyrusFunctions() noexcept
         }
     }
 
+    if (!papyrus.Get("Game", "FindClosestReferenceOfType"))
+    {
+        spdlog::error("Workshop sync: papyrus function FindClosestReferenceOfType is missing");
+        return false;
+    }
+
     return true;
 }
 
@@ -141,6 +150,14 @@ void LinkToWorkshop(TESObjectREFR* apObject, TESObjectREFR* apWorkshop) noexcept
 
     if (TESForm* pKeyword = TESForm::GetById(kWorkshopItemKeyword))
         s_pSetLinkedRef(apObject, apWorkshop, pKeyword);
+}
+
+// Only looks through the loaded cells, which holds as the workbench is loaded
+TESObjectREFR* FindAtSpot(TESForm* apBase, const glm::vec3& acPosition) noexcept
+{
+    GLOBAL_PAPYRUS_FUNCTION(TESObjectREFR*, Game, FindClosestReferenceOfType, uint32_t, void*, TESForm*, float, float, float, float);
+
+    return s_pFindClosestReferenceOfType(0, nullptr, apBase, acPosition.x, acPosition.y, acPosition.z, kSameSpotRadius);
 }
 
 uint64_t MakeKey(uint32_t aOwnerId, uint32_t aObjectId) noexcept
@@ -214,6 +231,8 @@ void WorkshopService::SendLocalChanges() noexcept
         change.Kind = event.Action;
         change.Position = event.Position;
         change.Rotation = event.Rotation;
+        if (event.Action == WorkshopChange::kPlaced)
+            change.OriginalPosition = event.Position;
 
         if (!modSystem.GetServerModId(event.WorkshopId, change.WorkshopId) || !modSystem.GetServerModId(event.BaseId, change.BaseId))
             continue;
@@ -244,6 +263,11 @@ void WorkshopService::SendLocalChanges() noexcept
 void WorkshopService::ApplyPendingChanges() noexcept
 {
     if (m_pending.empty())
+        return;
+
+    // Somebody joining gets these while the game may still be loading
+    PlayerCharacter* pPlayer = PlayerCharacter::Get();
+    if (!pPlayer || !pPlayer->GetNiNode())
         return;
 
     static const bool s_ready = HasPapyrusFunctions();
@@ -295,6 +319,21 @@ void WorkshopService::ApplyChange(const WorkshopChange& acChange, TESObjectREFR*
             return;
         }
 
+        // The save of somebody joining can already hold it
+        if (acChange.Replay)
+        {
+            if (TESObjectREFR* pExisting = FindSavedObject(acChange, pBase))
+            {
+                SetTransform(pExisting, acChange.Position, acChange.Rotation);
+
+                m_keyToLocal[key] = pExisting->formID;
+                m_localToKey[pExisting->formID] = key;
+
+                spdlog::info("Workshop sync: {:X} is already here as {:X}", pBase->formID, pExisting->formID);
+                return;
+            }
+        }
+
         TESObjectREFR* pObject = PlaceCopy(apWorkshop, pBase);
         if (!pObject)
         {
@@ -340,6 +379,18 @@ void WorkshopService::ApplyChange(const WorkshopChange& acChange, TESObjectREFR*
     }
 }
 
+TESObjectREFR* WorkshopService::FindSavedObject(const WorkshopChange& acChange, TESForm* apBase) const noexcept
+{
+    for (const glm::vec3* cpPosition : {&acChange.Position, &acChange.OriginalPosition})
+    {
+        TESObjectREFR* pObject = FindAtSpot(apBase, *cpPosition);
+        if (pObject && !m_localToKey.count(pObject->formID))
+            return pObject;
+    }
+
+    return nullptr;
+}
+
 TESObjectREFR* WorkshopService::FindObject(const WorkshopChange& acChange) const noexcept
 {
     const auto& modSystem = m_world.GetModSystem();
@@ -357,7 +408,13 @@ TESObjectREFR* WorkshopService::FindObject(const WorkshopChange& acChange) const
 
     // Temporary ids get reused, the base tells us if this still is the same object
     if (!pObject || !pObject->baseForm || pObject->baseForm->formID != modSystem.GetGameId(acChange.BaseId))
-        return nullptr;
+    {
+        if (!acChange.Replay)
+            return nullptr;
+
+        TESForm* pBase = TESForm::GetById(modSystem.GetGameId(acChange.BaseId));
+        return pBase ? FindSavedObject(acChange, pBase) : nullptr;
+    }
 
     return pObject;
 }

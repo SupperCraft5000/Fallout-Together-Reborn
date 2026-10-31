@@ -33,4 +33,8 @@ struct WorkshopChange
     GameId BaseId{};
     glm::vec3 Position{};
     glm::vec3 Rotation{};
+    // Where it was first placed, a save can hold it there
+    glm::vec3 OriginalPosition{};
+    // Sent from the server's memory to somebody joining
+    bool Replay{};
 };

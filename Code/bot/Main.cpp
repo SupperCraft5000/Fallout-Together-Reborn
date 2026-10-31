@@ -1,5 +1,6 @@
 // FalloutBot: verbindet sich wie ein Spieler, aber ohne Spiel, und prüft die Antworten des Servers.
-// Aufruf: FalloutBot <host:port> <name> <sekunden> [passwort]
+// Aufruf: FalloutBot <host:port> <name> <sekunden> [passwort] [bauen]
+// Mit "bauen" schickt der Bot nach der Anmeldung feste Siedlungs-Änderungen.
 // Exit-Code: 0 = angenommen, 2 = abgewiesen, 3 = keine Verbindung oder Zeitüberschreitung
 // Was der Encoding-Code sonst über EncodingPch.h bekommt
 #include <chrono>
@@ -21,6 +22,8 @@
 #include <Messages/AuthenticationResponse.h>
 #include <Messages/NotifyPlayerJoined.h>
 #include <Messages/NotifyPlayerLeft.h>
+#include <Messages/NotifyWorkshopChange.h>
+#include <Messages/RequestWorkshopChange.h>
 #include <Messages/ServerMessageFactory.h>
 
 #include <cstdio>
@@ -53,6 +56,32 @@ struct Bot final : TiltedPhoques::Client
     std::string Password;
     int Result = 3;
     bool Finished = false;
+    bool Build = false;
+    uint32_t PlayerId = 0;
+
+    void SendChange(uint8_t aKind, uint32_t aObjectId, float aX)
+    {
+        RequestWorkshopChange request;
+        request.Change.Kind = aKind;
+        request.Change.OwnerId = aObjectId ? PlayerId : 0;
+        request.Change.ObjectId = aObjectId;
+        if (!aObjectId)
+            request.Change.ObjectServerId = GameId(0, 0x1234);
+        request.Change.Position = glm::vec3(aX, 0.f, 0.f);
+        if (aKind == WorkshopChange::kPlaced)
+            request.Change.OriginalPosition = request.Change.Position;
+        SendMessage(request);
+    }
+
+    // A wird verschoben, B verschrottet, C stammt aus einem Plugin
+    void SendBuildScript()
+    {
+        SendChange(WorkshopChange::kPlaced, 0xFF000001, 1.f);
+        SendChange(WorkshopChange::kMoved, 0xFF000001, 2.f);
+        SendChange(WorkshopChange::kPlaced, 0xFF000002, 3.f);
+        SendChange(WorkshopChange::kDestroyed, 0xFF000002, 3.f);
+        SendChange(WorkshopChange::kMoved, 0, 4.f);
+    }
 
     void SendMessage(const ClientMessage& acMessage)
     {
@@ -110,6 +139,15 @@ struct Bot final : TiltedPhoques::Client
             Result = pResponse->Type == AuthenticationResponse::ResponseType::kAccepted ? 0 : 2;
             if (Result != 0)
                 Finished = true;
+            PlayerId = pResponse->PlayerId;
+            if (Result == 0 && Build)
+                SendBuildScript();
+        }
+        else if (opcode == NotifyWorkshopChange::Opcode)
+        {
+            const auto& change = static_cast<NotifyWorkshopChange*>(pMessage.get())->Change;
+            std::printf("[%s] Bauteil %X Art %u Replay %d x %g Ursprung %g\n", Name.c_str(), change.ObjectId, static_cast<unsigned>(change.Kind),
+                        change.Replay ? 1 : 0, change.Position.x, change.OriginalPosition.x);
         }
         else if (opcode == NotifyPlayerJoined::Opcode)
         {
@@ -147,6 +185,7 @@ int main(int argc, char** argv)
     Bot bot;
     bot.Name = argv[2];
     bot.Password = argc > 4 ? argv[4] : "";
+    bot.Build = argc > 5 && std::string(argv[5]) == "bauen";
     const auto seconds = std::atoi(argv[3]);
 
     if (!bot.ConnectByIp(argv[1]))

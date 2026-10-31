@@ -5,6 +5,7 @@
 struct World;
 struct TransportService;
 struct TESObjectREFR;
+struct TESForm;
 
 struct UpdateEvent;
 struct DisconnectedEvent;
@@ -13,7 +14,7 @@ struct NotifyWorkshopChange;
 /**
  * @brief Mirrors what players place, move and scrap in a settlement.
  *
- * Nothing is stored on the server, somebody joining later does not get earlier edits.
+ * The server keeps the edits of its run and replays them to anybody joining.
  */
 struct WorkshopService
 {
@@ -31,6 +32,7 @@ private:
     void ApplyPendingChanges() noexcept;
     void ApplyChange(const WorkshopChange& acChange, TESObjectREFR* apWorkshop) noexcept;
     TESObjectREFR* FindObject(const WorkshopChange& acChange) const noexcept;
+    TESObjectREFR* FindSavedObject(const WorkshopChange& acChange, TESForm* apBase) const noexcept;
 
     World& m_world;
     TransportService& m_transport;
